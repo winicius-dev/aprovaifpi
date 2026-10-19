@@ -1,4 +1,5 @@
 {% load static %}
+{% load questoes_tags %}
 <!doctype html>
 <html lang="pt-BR">
 
@@ -73,6 +74,40 @@
             background-color: #dbeafe;
             border-color: #3b82f6;
             color: #1d4ed8;
+        }
+        .questao-enunciado {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+        .alternativa-text {
+            text-align: justify;
+            text-justify: inter-word;
+            flex: 1;
+            min-width: 0;
+        }
+        .questao-imagem {
+            margin: 16px 0;
+            text-align: center;
+        }
+        .questao-imagem img {
+            display: inline-block;
+            max-width: 100%;
+            max-height: 500px;
+            height: auto;
+            object-fit: contain;
+        }
+        .alternativa-imagem {
+            display: block;
+            max-width: 100%;
+            max-height: 300px;
+            height: auto;
+            object-fit: contain;
+            margin-top: 10px;
+        }
+        .alternativa-text {
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
     </style>
 </head>
@@ -369,6 +404,14 @@
                     <i class="bi bi-chevron-down" id="iconHintFiltros"></i>
                 </button>
             </div>
+            
+            <div class="contador-questoes">
+                {% if total_questoes == 1 %}
+                    1 questão encontrada.
+                {% else %}
+                    {{ total_questoes }} questões encontradas.
+                {% endif %}
+            </div>
 
         </section>
 
@@ -386,6 +429,9 @@
                         {% if questao.conteudo %}
                             <span class="badge-disciplina">
                                 {{ questao.conteudo.disciplina.nome }}
+                            </span>
+                            <span class="badge-disciplina">
+                                {{ questao.conteudo.nome }}
                             </span>
                         {% endif %}
                         <span class="badge-xp-preview">
@@ -423,16 +469,10 @@
                         <strong>Órgão:</strong> Instituto Federal do Piauí &nbsp;|&nbsp;
                         <strong>Prova:</strong> Curso Ensino Médio Integrado
                     </div>
-
+                    
                     <div class="questao-enunciado">
-                        {{ questao.enunciado|linebreaksbr }}
+                        {% render_enunciado questao %}
                     </div>
-
-                    {% for img in questao.imagemquestao_set.all %}
-                        <div class="text-center my-3">
-                            <img src="{{ img.arquivo.url }}" alt="Imagem da questão {{ questao.id }}" class="questao-imagem img-fluid">
-                        </div>
-                    {% endfor %}
 
                     <form method="POST" action="{% url 'questoes' %}" class="form-resposta-ajax" id="form-questao-{{ questao.id }}" data-questao-id="{{ questao.id }}">
                         {% csrf_token %}
@@ -453,9 +493,10 @@
                                         >
                                         <div class="radio-check-circle"></div>
                                     </div>
-                                    <span class="alternativa-text">
-                                        <strong>{{ alternativa.letra }})</strong> {{ alternativa.texto }}
-                                    </span>
+
+                                    <strong>{{ alternativa.letra }})&nbsp;</strong>
+                                    {% render_alternativa alternativa %}
+
                                     <button
                                         type="button"
                                         class="btn-riscar-alternativa"
@@ -559,7 +600,7 @@
                                             <h6 class="fw-bold mb-2 text-primary">
                                                 <i class="bi bi-info-circle me-1"></i> Comentário do Professor
                                             </h6>
-                                            <p class="mb-0">A pontuação empregada liga duas orações coordenadas, marcando uma pausa expressiva e relação lógica entre as proposições.</p>
+                                            <p class="mb-0">Em construção.</p>
                                         </div>
                                     </div>
                                 </div>

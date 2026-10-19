@@ -155,6 +155,7 @@ def questoes(request):
     if dificuldade:
         questoes = questoes.filter(dificuldade=dificuldade)
 
+    total_questoes = questoes.count()
     disciplinas = Disciplina.objects.all().order_by("nome")
     conteudos = Conteudo.objects.select_related("disciplina").order_by("disciplina__nome", "nome")
     anos = Questao.objects.values_list("ano", flat=True).distinct().order_by("-ano")
@@ -268,6 +269,7 @@ def questoes(request):
         "questoes.html",
         {
             "questoes": questoes,
+            "total_questoes": total_questoes,
             "filtro": filtro,
             "disciplinas": disciplinas,
             "conteudos": conteudos,

@@ -40,6 +40,7 @@ class Conteudo(models.Model):
 
 
 class Questao(models.Model):
+    id_original = models.CharField(max_length=50, unique=True, null=True, blank=True)
     enunciado = models.TextField()
     dificuldade = models.CharField(max_length=20)
     ano = models.IntegerField()
@@ -50,9 +51,9 @@ class Questao(models.Model):
 
 
 class ImagemQuestao(models.Model):
-    arquivo = models.ImageField()
+    arquivo = models.ImageField(upload_to='questoes/')
     ordem = models.IntegerField()
-    questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
+    questao = models.ForeignKey(Questao, on_delete=models.CASCADE, related_name='imagens')
 
     def __str__(self):
         return f"Imagem da questão {self.questao.id}"
@@ -61,7 +62,7 @@ class ImagemQuestao(models.Model):
 class Alternativa(models.Model):
     letra = models.CharField(max_length=1)
     texto = models.TextField(blank=True)
-    imagem = models.ImageField(blank=True)
+    imagem = models.ImageField(upload_to='alternativas/', blank=True)
     e_correta = models.BooleanField()
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
 

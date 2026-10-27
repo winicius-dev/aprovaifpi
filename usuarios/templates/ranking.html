@@ -1,181 +1,137 @@
-{% load static %}
+<h1>Ranking</h1>
 
-<!doctype html>
-<html lang="pt-br">
+<h2>Seu ranking</h2>
 
-<head>
-    <title>Aprova IFPI</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{% static 'styles/geral.css' %}">
+<p>
+    Sua posição:
+    {{ posicao_usuario|default:"-" }}º lugar
+</p>
 
-    <style>
-        html, body {
-            overflow-x: hidden !important;
-            width: 100%;
-        }
+<p>XP: {{ perfil.xp }}</p>
 
-        .container-x, .container-fluid {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
+<p>Ofensiva atual: {{ ofensiva_usuario }} dia(s)</p>
 
-        .faixa {
-            height: 35px;
-            margin-top: -10px;
-        }
+<p>Posições conquistadas: -</p>
 
-        @media (max-width: 992px), (max-width: 576px) {
-            .faixa {
-                top: 10%;
-                height: 40px;
-            }
-        }
+<p>Faltam {{ xp_para_top1 }} XP para o Top 1</p>
 
-        .table tbody tr:first-child td:first-child { color: #ffb703; font-weight: bold; }
-        .table tbody tr:nth-child(2) td:first-child { color: #8ecae6; font-weight: bold; }
-        .table tbody tr:nth-child(3) td:first-child { color: #d79b62; font-weight: bold; }
+<h2>Ranking</h2>
 
-        @media (max-width: 768px) {
-            .table thead { display: none; }
-            .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
-            .table tr { margin-bottom: 15px; border-radius: 10px; background-color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-            .table td { text-align: left; padding: 8px 14px; position: relative; }
-            .table td::before { content: attr(data-label); position: absolute; left: 14px; width: 50%; text-align: left; font-weight: 600; color: #0d6efd; }
-        }
-    </style>
-</head>
+<nav>
+    <a href="?tipo=geral">Ranking Geral</a> |
+    <a href="?tipo=semanal">Ranking Semanal</a> |
+    <a href="?tipo=escola">Ranking por Escola</a>
+</nav>
 
-<body>
-<header>
-    <nav class="navbar bg-light navbar-expand-lg fixed-top">
-        <div class="container-fluid d-flex align-items-center justify-content-between">
-            <a class="navbar-brand ms-2" href="{% url 'questoes' %}">
-                <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Logo">
-            </a>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>
+                {% if modalidade == "escola" %}
+                    Escola
+                {% else %}
+                    Usuário
+                {% endif %}
+            </th>
 
-            <button class="navbar-toggler me-3" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            {% if modalidade != "escola" %}
+                <th>Ofensiva</th>
+                <th>Banners</th>
+            {% endif %}
 
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title">APROVAIFPI</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
+            <th>XP</th>
+        </tr>
+    </thead>
 
-                <div class="offcanvas-body d-flex flex-column flex-lg-row justify-content-center align-items-center">
-                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'questoes' %}">QUESTÕES</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'conteudos' %}">CONTEÚDOS</a></li>
-                        <li class="nav-item"><a class="nav-link active text-primary" href="{% url 'ranking' %}">RANKING</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'sobre' %}">SOBRE</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <header class="faixa"></header>
-</header>
+    <tbody>
+        {% for p in perfis_ranking %}
+            <tr>
+                <td>{{ p.posicao }}º</td>
 
-<main class="container-x mt-5 pt-5">
-    <div class="text-center my-4">
-        <h2 class="fw-bold text-light">.</h2>
-    </div>
+                <td>
+                    {{ p.nome }}
+                </td>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle text-center shadow-sm rounded-3 overflow-hidden mb-5">
-            <thead class="table-primary">
-                <tr>
-                    <th>Posição</th>
-                    <th>Nome de Usuário</th>
-                    <th>Experiência</th>
-                    <th>Level</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for registro in ranking %}
-                <tr>
+                {% if modalidade != "escola" %}
+                    <td>{{ p.ofensiva }} dia(s)</td>
                     <td>
-                        {% if forloop.counter == 1 %} 🥇 {{ forloop.counter }}
-                        {% elif forloop.counter == 2 %} 🥈 {{ forloop.counter }}
-                        {% elif forloop.counter == 3 %} 🥉 {{ forloop.counter }}
-                        {% else %} {{ forloop.counter }}
-                        {% endif %}
+                        {% for banner in p.banners %}
+                            <span class="banner banner-{{ banner.codigo }}">
+                                {{ banner.nome }}
+                            </span>
+                        {% empty %}
+                            -
+                        {% endfor %}
                     </td>
-                    <td>{{ registro.first_name  }}</td>
-                    <td>{{ registro.total_xp|default:0 }}</td>
-                    <td>{{ registro.level }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-3">
-                        Nenhum usuário encontrado.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    
-</main>
+                {% endif %}
 
-<footer class="bg-light text-dark pt-5 pb-3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3 mb-4">
-                    <h5 class="text-uppercase fw-bold">AprovaIFPI.com</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'logout' %}" class="text-secondary text-decoration-none d-block py-1">Login</a></li>
-                        <li><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none d-block py-1">Questões</a></li>
-                        <li><a href="{% url 'conteudos' %}" class="text-secondary text-decoration-none d-block py-1">Conteúdos</a></li>
-                        <li><a href="{% url 'ranking' %}" class="text-secondary text-decoration-none d-block py-1">Rankings</a></li>
-                        <li><a href="{% url 'sobre' %}" class="text-secondary text-decoration-none d-block py-1">Sobre</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h5 class="text-uppercase fw-bold">Colaboradores</h5>
-                    <ul class="list-unstyled">
-                        <li>Aluno João Gabriel Lopes</li>
-                        <li>Aluno Marcos Winicius Gomes</li>
-                        <li>Aluno Victor Daniel Castro</li>
-                        <li>Prof. Alexandre Cajazeira</li>
-                        <li>Prof. Alexandre Lages</li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h5 class="text-uppercase fw-bold">Recursos Utilizados</h5>
-                    <ul class="list-unstyled">
-                        <li>Bootstrap 5</li>
-                        <li>HTML</li>
-                        <li>CSS</li>
-                        <li>JavaScript</li>
-                        <li>Django</li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h5 class="text-uppercase fw-bold">Disciplinas</h5>
-                    <ul class="list-unstyled">
-                        <li>Português</li>
-                        <li>Matemática</li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="border-light">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <img src="{% static 'img/logo_aprovaifpi 1.svg' %}" alt="Logo AprovaIFPI" height="40" class="me-2">
-                    <span class="fw-bold">© 2025 - Um produto AprovaIFPI.com</span>
-                </div>
-            </div>
-        </div>
-    </footer>
+                <td>
+                    {% if modalidade == "semanal" or modalidade == "escola" %}
+                        {{ p.xp_ranking }}
+                    {% else %}
+                        {{ p.xp }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">
+                    Nenhum resultado no ranking.
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<hr>
 
-</body>
-</html>
+<h2>Hall da Fama</h2>
+
+<p>
+    Acompanhe as conquistas disponíveis no AprovaIFPI
+    e veja quais você já desbloqueou.
+</p>
+
+<div class="hall-da-fama">
+    {% for conquista in conquistas %}
+        <article class="conquista"> 
+
+            <h3>{{ conquista.nome }}</h3>
+
+            <p>{{ conquista.descricao }}</p>
+
+            <p>
+                <strong>Requisito:</strong>
+                {{ conquista.requisito }}
+            </p>
+
+            <p>
+                <strong>Recompensa:</strong>
+                {{ conquista.xp_recompensa }} XP
+            </p>
+
+            {% if conquista.desbloqueada %}
+                <p>
+                    <strong>Estado:</strong>
+                    Desbloqueada
+                </p>
+
+                <p>
+                    <strong>Data:</strong>
+                    {{ conquista.data_desbloqueio|date:"d/m/Y" }}
+                </p>
+            {% else %}
+                <p>
+                    <strong>Estado:</strong>
+                    Bloqueada
+                </p>
+            {% endif %}
+
+        </article>
+
+        <hr>
+    {% empty %}
+        <p>Nenhuma conquista cadastrada.</p>
+    {% endfor %}
+</div>

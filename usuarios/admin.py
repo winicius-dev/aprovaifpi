@@ -8,6 +8,8 @@ from .models import (
     ImagemQuestao,
     Alternativa,
     TentativaQuestao,
+    Conquista,
+    ConquistaPerfil,
 )
 
 admin.site.register(Escola)
@@ -18,3 +20,5 @@ admin.site.register(Questao)
 admin.site.register(ImagemQuestao)
 admin.site.register(Alternativa)
 admin.site.register(TentativaQuestao)
+admin.site.register(Conquista)
+admin.site.register(ConquistaPerfil)

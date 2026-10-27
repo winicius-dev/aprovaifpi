@@ -81,3 +81,41 @@ class TentativaQuestao(models.Model):
 
     def __str__(self):
         return f"Tentativa {self.numero_tentativa} - Questão {self.questao.id}"
+
+
+class Conquista(models.Model):
+    codigo = models.SlugField(max_length=50, unique=True)
+    nome = models.CharField(max_length=100)
+    descricao = models.CharField(max_length=255)
+    requisito = models.CharField(max_length=255)
+    xp_recompensa = models.IntegerField(default=0)
+    ativa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nome
+
+
+class ConquistaPerfil(models.Model):
+    perfil = models.ForeignKey(
+        Perfil,
+        on_delete=models.CASCADE,
+        related_name="conquistas"
+    )
+    conquista = models.ForeignKey(
+        Conquista,
+        on_delete=models.CASCADE,
+        related_name="desbloqueios"
+    )
+    data_desbloqueio = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["perfil", "conquista"],
+                name="unica_conquista_por_perfil"
+            )
+        ]
+        ordering = ["data_desbloqueio"]
+
+    def __str__(self):
+        return f"{self.perfil.nome} - {self.conquista.nome}"

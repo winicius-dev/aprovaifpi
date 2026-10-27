@@ -10,10 +10,20 @@ from .models import (
     Alternativa,
     TentativaQuestao,
     Disciplina,
-    Conteudo
+    Conteudo,
+    Conquista,
+    ConquistaPerfil
 )
 from urllib.parse import urlencode
 from django.core.paginator import Paginator
+from django.db import models
+from datetime import timedelta
+from django.utils import timezone
+from django.db.models import Sum, Q, IntegerField
+from django.db.models.functions import Coalesce
+
+
+
 
 def cadastro(request):
     escolas = Escola.objects.all().order_by("nome")
@@ -95,6 +105,163 @@ def calcular_taxa_acerto(questao):
     acertos = primeiras_tentativas.filter(acertou=True).values("perfil").distinct().count()
 
     return round(acertos / total * 100, 1)
+
+
+def desbloquear_conquista(perfil, codigo):
+    conquista = Conquista.objects.filter(codigo=codigo, ativa=True).first()
+
+    if conquista is None:
+        return False
+
+    _, criada = ConquistaPerfil.objects.get_or_create(perfil=perfil, conquista=conquista)
+
+    if criada and conquista.xp_recompensa > 0:
+        perfil.xp += conquista.xp_recompensa
+        perfil.save(update_fields=["xp"])
+
+    return criada
+
+
+def verificar_conquistas(perfil):
+    tentativas = TentativaQuestao.objects.filter(perfil=perfil)
+
+    # CENTENA E VETERNANO
+    total_questoes = tentativas.values("questao_id").distinct().count()
+
+    if total_questoes >= 100:
+        desbloquear_conquista(perfil, "centena")
+
+    if total_questoes >= 300:
+        desbloquear_conquista(perfil, "veterano")
+
+    # 2. MESTRE E PALAVRA CERTA
+    acertos_primeira = tentativas.filter(acertou=True, numero_tentativa=1)
+
+    acertos_matematica = acertos_primeira.filter(questao__conteudo__disciplina__nome__iexact="Matemática").values("questao_id").distinct().count()
+
+    if acertos_matematica >= 50:
+        desbloquear_conquista(perfil, "mestre")
+
+    acertos_portugues = acertos_primeira.filter(questao__conteudo__disciplina__nome__iexact="Português").values("questao_id").distinct().count()
+
+    if acertos_portugues >= 50:
+        desbloquear_conquista(perfil, "palavra-certa")
+
+    # 3. RUMO AO IFPI
+    total_disponiveis = Questao.objects.count()
+    total_acertos_primeira = acertos_primeira.values("questao_id").distinct().count()
+
+    if total_disponiveis and total_acertos_primeira / total_disponiveis >= 0.5:
+        desbloquear_conquista(perfil, "rumo-ao-ifpi")
+
+    # 4. POLIVALENTE
+    total_conteudos = tentativas.values("questao__conteudo_id").distinct().count()
+
+    if total_conteudos >= 10:
+        desbloquear_conquista(perfil, "polivalente")
+
+    # 5. NA MOSCA
+    ultimas_tentativas = list(tentativas.order_by("-data_realizacao", "-id")[:10])
+
+    if (
+        len(ultimas_tentativas) == 10
+        and len({t.questao_id for t in ultimas_tentativas}) == 10
+        and all(t.acertou and t.numero_tentativa == 1 for t in ultimas_tentativas)
+    ):
+        desbloquear_conquista(perfil, "na-mosca")
+
+    # 6. ATIVO
+    dias_ativos = set(tentativas.dates("data_realizacao", "day", order="DESC"))
+
+    hoje = timezone.localdate()
+    sequencia_dias = 0
+
+    for i in range(30):
+        dia = hoje - timedelta(days=i)
+
+        if dia in dias_ativos:
+            sequencia_dias += 1
+        else:
+            break
+
+    if sequencia_dias == 30:
+        desbloquear_conquista(perfil, "ativo")
+
+    # 7. CONQUISTAS DO RANKNG
+    perfis_geral = list(
+        Perfil.objects.order_by("-xp", "nome", "id")
+    )
+
+    posicao_geral = next(
+        (
+            indice
+            for indice, item in enumerate(perfis_geral, start=1)
+            if item.id == perfil.id
+        ),
+        None
+    )
+
+    if posicao_geral == 1:
+        desbloquear_conquista(perfil, "top-1")
+
+    if posicao_geral is not None and posicao_geral <= 10:
+        desbloquear_conquista(perfil, "top-10")
+
+    # RANKING SEMANAL
+    hoje = timezone.localdate()
+    inicio_semana = hoje - timedelta(days=hoje.weekday())
+
+    perfis_semanais = Perfil.objects.annotate(
+        xp_semanal=Coalesce(
+            Sum(
+                "tentativaquestao__xp_ganho",
+                filter=Q(
+                    tentativaquestao__data_realizacao__date__gte=inicio_semana,
+                    tentativaquestao__data_realizacao__date__lte=hoje
+                )
+            ),
+            0,
+            output_field=IntegerField()
+        )
+    ).order_by("-xp_semanal", "nome", "id")
+
+    posicao_semanal = next(
+        (
+            indice
+            for indice, item in enumerate(perfis_semanais, start=1)
+            if item.id == perfil.id
+        ),
+        None
+    )
+
+    xp_semanal_usuario = next((item.xp_semanal for item in perfis_semanais if item.id == perfil.id), 0)
+
+    if posicao_semanal is not None and posicao_semanal <= 3 and xp_semanal_usuario > 0:
+        desbloquear_conquista(perfil, "top-3-semanal")
+
+
+def calcular_ofensiva(perfil):
+    dias_ativos = set(
+        TentativaQuestao.objects.filter(perfil=perfil).dates("data_realizacao", "day", order="DESC")
+    )
+
+    hoje = timezone.localdate()
+
+    if hoje in dias_ativos:
+        dia_referencia = hoje
+    elif hoje - timedelta(days=1) in dias_ativos:
+        dia_referencia = hoje - timedelta(days=1)
+    else:
+        return 0
+
+    ofensiva = 0
+
+    while dia_referencia in dias_ativos:
+        ofensiva += 1
+        dia_referencia -= timedelta(days=1)
+
+    return ofensiva
+
 
 @login_required
 def questoes(request):
@@ -188,7 +355,7 @@ def questoes(request):
         perfil.save()
 
         TentativaQuestao.objects.create(xp_ganho=xp_ganho, acertou=alternativa.e_correta, numero_tentativa=numero_tentativa, perfil=perfil, questao=questao, alternativa=alternativa)
-
+        verificar_conquistas(perfil)
         alternativa_correta = Alternativa.objects.get(questao=questao, e_correta=True)
         taxa_acerto = calcular_taxa_acerto(questao)
         circunferencia_offset = 301.59 * (1 - max(0, min(100, taxa_acerto)) / 100)
@@ -222,7 +389,7 @@ def questoes(request):
                 "total_xp": perfil.xp,
                 "taxa_acerto": taxa_acerto,
                 "circunferencia_offset": circunferencia_offset,
-                "explicacao": "A pontuação empregada liga duas orações coordenadas, marcando uma pausa expressiva e relação lógica entre as proposições."
+                "explicacao": "Em construção."
             }, json_dumps_params={"ensure_ascii": False})
 
         parametros_url = (
@@ -301,11 +468,107 @@ def conteudos(request):
 
     return render(request, "questoes.html", {"questoes": questoes})
 
+
+
 @login_required
 def ranking(request):
-    questoes = Questao.objects.all()
+    from datetime import timedelta
+    from django.utils import timezone
+    from django.db.models import Sum, IntegerField, Q
+    from django.db.models.functions import Coalesce
 
-    return render(request, "questoes.html", {"questoes": questoes})
+    perfil = Perfil.objects.select_related("escola").get(usuario=request.user)
+    modalidade = request.GET.get("tipo", "geral")
+
+    if modalidade not in ["geral", "semanal", "escola"]:
+        modalidade = "geral"
+
+    hoje = timezone.localdate()
+    inicio_semana = hoje - timedelta(days=hoje.weekday())
+
+    if modalidade == "escola":
+        ranking_escolas = Escola.objects.annotate(
+            xp_ranking=Coalesce(Sum("perfil__xp"), 0, output_field=IntegerField())
+        ).order_by("-xp_ranking", "nome", "id")
+
+        lista_perfis = list(ranking_escolas)
+
+        for escola in lista_perfis:
+            escola.ofensiva = "-"
+
+        for i, escola in enumerate(lista_perfis, start=1):
+            escola.posicao = i
+
+        posicao_usuario = next((e.posicao for e in lista_perfis if e.id == perfil.escola_id), None)
+        xp_usuario = next((e.xp_ranking for e in lista_perfis if e.id == perfil.escola_id), 0)
+        xp_para_top1 = max(0, lista_perfis[0].xp_ranking - xp_usuario) if lista_perfis else 0
+
+    else:
+        perfis = Perfil.objects.select_related("usuario", "escola")
+
+        if modalidade == "semanal":
+            perfis = perfis.annotate(
+                xp_ranking=Coalesce(
+                    Sum(
+                        "tentativaquestao__xp_ganho",
+                        filter=Q(
+                            tentativaquestao__data_realizacao__date__gte=inicio_semana,
+                            tentativaquestao__data_realizacao__date__lte=hoje
+                        )
+                    ),
+                    0,
+                    output_field=IntegerField()
+                )
+            ).order_by("-xp_ranking", "nome", "id")
+        else:
+            perfis = perfis.order_by("-xp", "nome", "id")
+
+        lista_perfis = list(perfis)
+
+        for p in lista_perfis:
+            p.ofensiva = calcular_ofensiva(p)
+
+        for i, p in enumerate(lista_perfis, start=1):
+            p.posicao = i
+
+        for p in lista_perfis:
+            p.banners = Conquista.objects.filter(ativa=True, desbloqueios__perfil=p).distinct()
+
+        posicao_usuario = next((p.posicao for p in lista_perfis if p.id == perfil.id), None)
+
+        if modalidade == "semanal":
+            xp_usuario = next((p.xp_ranking for p in lista_perfis if p.id == perfil.id), 0)
+            xp_top1 = lista_perfis[0].xp_ranking if lista_perfis else 0
+        else:
+            xp_usuario = perfil.xp
+            xp_top1 = lista_perfis[0].xp if lista_perfis else 0
+
+        xp_para_top1 = max(0, xp_top1 - xp_usuario)
+
+    verificar_conquistas(perfil)
+
+    conquistas = list(Conquista.objects.filter(ativa=True).order_by("nome"))
+
+    desbloqueios = {
+        item.conquista_id: item
+        for item in ConquistaPerfil.objects.filter(perfil=perfil)
+    }
+
+    for conquista in conquistas:
+        registro = desbloqueios.get(conquista.id)
+        conquista.desbloqueada = registro is not None
+        conquista.data_desbloqueio = (registro.data_desbloqueio if registro else None)
+
+    return render(request, "ranking.html", {
+        "perfil": perfil,
+        "perfis_ranking": lista_perfis,
+        "modalidade": modalidade,
+        "posicao_usuario": posicao_usuario,
+        "xp_para_top1": xp_para_top1,
+        "conquistas": conquistas,
+        "ofensiva_usuario": calcular_ofensiva(perfil),
+    })
+
 
 @login_required
 def sobre(request):

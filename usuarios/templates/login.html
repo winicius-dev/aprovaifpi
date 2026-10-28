@@ -81,9 +81,13 @@
                   <input type="text" name="email" class="form-control"/>
                 </div>
 
-                <div class="form-group mb-3">
+                <div class="form-group mb-2">
                   <label class="form-label">Senha</label>
                   <input type="password" name="senha" class="form-control"/>
+                </div>
+
+                <div class="text-end mb-3">
+                  <a href="{% url 'recuperar_conta' %}" class="form-link small text-decoration-none">Esqueceu sua senha?</a>
                 </div>
 
                 <button type="submit" class="btn-login">Entrar</button>

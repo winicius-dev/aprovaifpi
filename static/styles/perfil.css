@@ -1,0 +1,647 @@
+/* ==========================================================================
+   AprovaIFPI - Perfil e Configurações CSS
+   ========================================================================== */
+
+:root {
+  --primary-blue: #0056d6;
+  --primary-blue-hover: #0042a5;
+  --primary-blue-light: #eff6ff;
+  --primary-blue-border: #bfdbfe;
+  --secondary-blue: #0284c7;
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  --success-green: #16a34a;
+  --danger-red: #dc2626;
+  --warning-amber: #d97706;
+}
+
+body.perfil-body {
+  background-color: var(--bg-page);
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  margin: 0;
+  padding-top: 85px;
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   1. Navbar & Header Fixa
+   -------------------------------------------------------------------------- */
+.header-fixed-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.navbar-perfil {
+  background-color: #ffffff;
+  padding: 0.65rem 1rem;
+}
+
+/* Faixa Gradiente Azul da Navbar (Idêntica à página de questões) */
+.top-gradient-bar {
+  width: 100%;
+  height: 12px;
+  background: linear-gradient(90deg, #0051f2 0%, #0051f2 35%, rgba(0, 81, 242, 0.45) 65%, rgba(255, 255, 255, 0) 100%);
+}
+
+.navbar-perfil .navbar-brand img {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-perfil .nav-link {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding: 0.5rem 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.navbar-perfil .nav-link:hover,
+.navbar-perfil .nav-link.active {
+  color: var(--primary-blue);
+}
+
+.navbar-perfil .user-avatar-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.navbar-perfil .avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.15rem;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 56, 184, 0.25);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-img-circle {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   2. Capa / Banner do Topo
+   -------------------------------------------------------------------------- */
+.profile-cover-banner {
+  background: linear-gradient(135deg, #0045e6 0%, #0067d4 50%, #0284c7 100%);
+  height: 160px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 69, 230, 0.15);
+  margin-bottom: -65px;
+}
+
+.profile-cover-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   3. Card Principal do Usuário
+   -------------------------------------------------------------------------- */
+.profile-header-card {
+  background-color: #ffffff;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 24px;
+}
+
+.profile-avatar-large-wrapper {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.profile-avatar-large {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  font-weight: 800;
+  border: 4px solid #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.profile-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-edit-avatar-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 34px;
+  height: 34px;
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-edit-avatar-badge:hover {
+  transform: scale(1.1);
+  background-color: var(--primary-blue-hover);
+  color: #ffffff;
+}
+
+.profile-user-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.profile-user-email {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+}
+
+.profile-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.profile-pill-xp {
+  background-color: #eff6ff;
+  color: var(--primary-blue);
+  border: 1px solid #bfdbfe;
+}
+
+.profile-pill-fire {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.profile-pill-school {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* --------------------------------------------------------------------------
+   4. Abas de Navegação (Tabs)
+   -------------------------------------------------------------------------- */
+.nav-pills-perfil {
+  background-color: #f1f5f9;
+  padding: 6px;
+  border-radius: 14px;
+  display: inline-flex;
+  gap: 6px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.nav-pills-perfil .nav-link {
+  border-radius: 10px;
+  padding: 9px 20px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border: none;
+  background: transparent;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-pills-perfil .nav-link:hover {
+  color: var(--primary-blue);
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.nav-pills-perfil .nav-link.active {
+  background-color: #ffffff;
+  color: var(--primary-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   5. Cards de Métricas e Estatísticas
+   -------------------------------------------------------------------------- */
+.stat-metric-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stat-metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.stat-metric-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.stat-icon-blue { background-color: #eff6ff; color: #0284c7; }
+.stat-icon-green { background-color: #f0fdf4; color: #16a34a; }
+.stat-icon-red { background-color: #fef2f2; color: #dc2626; }
+.stat-icon-purple { background-color: #faf5ff; color: #9333ea; }
+.stat-icon-amber { background-color: #fffbeb; color: #d97706; }
+
+.stat-metric-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-metric-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.progress-thin {
+  height: 8px;
+  border-radius: 10px;
+  background-color: #e2e8f0;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar-accuracy {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  border-radius: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Banners Equipados & Gerenciamento de Banners
+   -------------------------------------------------------------------------- */
+.equipped-banners-box {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.equipped-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.banner-slot-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.banner-slot-card.empty-slot {
+  border: 2px dashed #cbd5e1;
+  background-color: #f8fafc;
+  color: #94a3b8;
+}
+
+.banner-slot-header {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+  border: none;
+  line-height: 1.25;
+}
+
+/* Mapeamento de gradientes de banners */
+.banner-veterano, .banner-domino { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.banner-top-1, .banner-top1 { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
+.banner-rumo-ao-ifpi { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+.banner-centena, .banner-gabaritou { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
+.banner-mestre { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
+.banner-palavra-certa, .banner-palavreado { background: linear-gradient(135deg, #be123c 0%, #881337 100%); }
+.banner-polivalente { background: linear-gradient(135deg, #84cc16 0%, #4d7c0f 100%); }
+.banner-na-mosca { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+.banner-top-10 { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+.banner-top-3-semanal { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); }
+.banner-ativo { background: linear-gradient(135deg, #f97316 0%, #c2410c 100%); }
+
+/* Grid de conquistas para equipar */
+.achievements-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.achievement-card-equip {
+  background-color: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.achievement-card-equip:hover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+}
+
+.achievement-card-equip.is-equipped {
+  border: 2px solid var(--primary-blue);
+  background-color: #f8faff;
+}
+
+.achievement-card-equip.is-locked {
+  background-color: #f8fafc;
+  opacity: 0.65;
+  filter: grayscale(85%);
+  cursor: not-allowed;
+}
+
+.achievement-badge-equipped-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.achievement-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.achievement-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+   7. Formulários de Edição e Configurações
+   -------------------------------------------------------------------------- */
+.settings-section-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  padding: 26px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 24px;
+}
+
+.settings-card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-card-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.form-label-custom {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.form-control-custom {
+  background-color: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 11px 16px;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control-custom:focus {
+  background-color: #ffffff;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 86, 214, 0.15);
+  outline: none;
+}
+
+.btn-primary-custom {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 11px 24px;
+  border-radius: 10px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 8px rgba(0, 86, 214, 0.25);
+}
+
+.btn-primary-custom:hover {
+  background-color: var(--primary-blue-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(0, 86, 214, 0.35);
+}
+
+.btn-outline-custom {
+  background-color: transparent;
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  transition: all 0.2s;
+}
+
+.btn-outline-custom:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+/* --------------------------------------------------------------------------
+   8. Modal de Perfil no Ranking
+   -------------------------------------------------------------------------- */
+.modal-perfil-content {
+  border-radius: 20px;
+  border: none;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+}
+
+.modal-perfil-header {
+  background: linear-gradient(135deg, #0045e6 0%, #0284c7 100%);
+  color: #ffffff;
+  padding: 24px;
+  position: relative;
+  border: none;
+}
+
+.modal-perfil-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.ranking-user-click:hover {
+  color: var(--primary-blue) !important;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .profile-cover-banner {
+    height: 120px;
+    margin-bottom: -45px;
+    border-radius: 12px;
+  }
+
+  .profile-avatar-large-wrapper,
+  .profile-avatar-large {
+    width: 85px;
+    height: 85px;
+    font-size: 2.2rem;
+  }
+
+  .profile-header-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .profile-user-name {
+    font-size: 1.3rem;
+  }
+
+  .nav-pills-perfil {
+    width: 100%;
+    display: flex;
+  }
+
+  .nav-pills-perfil .nav-item {
+    flex: 1 1 100%;
+  }
+
+  .nav-pills-perfil .nav-link {
+    width: 100%;
+    justify-content: center;
+  }
+}

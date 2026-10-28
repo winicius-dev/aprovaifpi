@@ -17,11 +17,23 @@ class Perfil(models.Model):
     nome = models.CharField(max_length=50)
     data_criacao = models.DateTimeField(auto_now_add=True)
     xp = models.IntegerField(default=0)
-    avatar = models.ImageField(blank=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     escola = models.ForeignKey(Escola, on_delete=models.PROTECT)
+    banner_1 = models.ForeignKey('Conquista', null=True, blank=True, on_delete=models.SET_NULL, related_name="perfil_banner_1")
+    banner_2 = models.ForeignKey('Conquista', null=True, blank=True, on_delete=models.SET_NULL, related_name="perfil_banner_2")
 
     def __str__(self):
         return self.nome
+
+    def get_banners_equipados(self):
+        """Retorna até 2 banners equipados garantindo mérito em ConquistaPerfil."""
+        desbloqueadas_ids = set(self.conquistas.values_list("conquista_id", flat=True))
+        banners = []
+        if self.banner_1 and self.banner_1.id in desbloqueadas_ids and self.banner_1.ativa:
+            banners.append(self.banner_1)
+        if self.banner_2 and self.banner_2.id in desbloqueadas_ids and self.banner_2.ativa and (self.banner_2 != self.banner_1):
+            banners.append(self.banner_2)
+        return banners
 
 
 class Disciplina(models.Model):

@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login as login_django, logout
+from django.contrib.auth import authenticate, login as login_django, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from .models import (
     Perfil,
     Escola,
@@ -486,6 +487,11 @@ def ranking(request):
     hoje = timezone.localdate()
     inicio_semana = hoje - timedelta(days=hoje.weekday())
 
+    AVATAR_CORES = [
+        "#0056d6", "#dc2626", "#16a34a", "#9333ea", "#0d9488",
+        "#ca8a04", "#4b5563", "#0284c7", "#c026d3", "#ea580c"
+    ]
+
     if modalidade == "escola":
         ranking_escolas = Escola.objects.annotate(
             xp_ranking=Coalesce(Sum("perfil__xp"), 0, output_field=IntegerField())
@@ -495,6 +501,8 @@ def ranking(request):
 
         for escola in lista_perfis:
             escola.ofensiva = "-"
+            escola.cor_avatar = AVATAR_CORES[(escola.id if hasattr(escola, 'id') else 1) % len(AVATAR_CORES)]
+            escola.inicial = (escola.nome[:1].upper() if hasattr(escola, 'nome') and escola.nome else 'E')
 
         for i, escola in enumerate(lista_perfis, start=1):
             escola.posicao = i
@@ -527,12 +535,17 @@ def ranking(request):
 
         for p in lista_perfis:
             p.ofensiva = calcular_ofensiva(p)
+            p.cor_avatar = AVATAR_CORES[(p.id if hasattr(p, 'id') else 1) % len(AVATAR_CORES)]
+            p.inicial = (p.nome[:1].upper() if hasattr(p, 'nome') and p.nome else 'U')
 
         for i, p in enumerate(lista_perfis, start=1):
             p.posicao = i
 
         for p in lista_perfis:
-            p.banners = Conquista.objects.filter(ativa=True, desbloqueios__perfil=p).distinct()
+            banners = p.get_banners_equipados()
+            if not banners:
+                banners = list(Conquista.objects.filter(ativa=True, desbloqueios__perfil=p).distinct().order_by("-xp_recompensa")[:2])
+            p.banners = banners[:2]
 
         posicao_usuario = next((p.posicao for p in lista_perfis if p.id == perfil.id), None)
 
@@ -547,7 +560,7 @@ def ranking(request):
 
     verificar_conquistas(perfil)
 
-    conquistas = list(Conquista.objects.filter(ativa=True).order_by("nome"))
+    conquistas = list(Conquista.objects.filter(ativa=True).order_by("-xp_recompensa", "nome"))
 
     desbloqueios = {
         item.conquista_id: item
@@ -559,9 +572,14 @@ def ranking(request):
         conquista.desbloqueada = registro is not None
         conquista.data_desbloqueio = (registro.data_desbloqueio if registro else None)
 
+    top_3 = lista_perfis[:3]
+    resto_perfis = lista_perfis[3:]
+
     return render(request, "ranking.html", {
         "perfil": perfil,
         "perfis_ranking": lista_perfis,
+        "top_3": top_3,
+        "resto_perfis": resto_perfis,
         "modalidade": modalidade,
         "posicao_usuario": posicao_usuario,
         "xp_para_top1": xp_para_top1,
@@ -570,11 +588,308 @@ def ranking(request):
     })
 
 
+def obter_estatisticas_perfil(perfil_alvo):
+    """Calcula estatísticas de desempenho, banners e ofensiva para um perfil."""
+    verificar_conquistas(perfil_alvo)
+
+    questoes_respondidas = Questao.objects.filter(tentativaquestao__perfil=perfil_alvo).distinct().count()
+    questoes_acertadas = Questao.objects.filter(tentativaquestao__perfil=perfil_alvo, tentativaquestao__acertou=True).distinct().count()
+    questoes_erradas = max(0, questoes_respondidas - questoes_acertadas)
+
+    total_tentativas = TentativaQuestao.objects.filter(perfil=perfil_alvo).count()
+    tentativas_certas = TentativaQuestao.objects.filter(perfil=perfil_alvo, acertou=True).count()
+    tentativas_erradas = TentativaQuestao.objects.filter(perfil=perfil_alvo, acertou=False).count()
+
+    taxa_acerto = round((questoes_acertadas / questoes_respondidas * 100), 1) if questoes_respondidas > 0 else 0.0
+
+    banners = perfil_alvo.get_banners_equipados()
+    if not banners:
+        banners = list(Conquista.objects.filter(ativa=True, desbloqueios__perfil=perfil_alvo).distinct().order_by("-xp_recompensa")[:2])
+
+    conquistas_desbloqueadas = list(
+        Conquista.objects.filter(ativa=True, desbloqueios__perfil=perfil_alvo).distinct().order_by("-xp_recompensa", "nome")
+    )
+
+    perfis_geral = list(Perfil.objects.order_by("-xp", "nome", "id"))
+    posicao_ranking = next((idx for idx, p in enumerate(perfis_geral, start=1) if p.id == perfil_alvo.id), None)
+
+    return {
+        "questoes_respondidas": questoes_respondidas,
+        "questoes_acertadas": questoes_acertadas,
+        "questoes_erradas": questoes_erradas,
+        "total_tentativas": total_tentativas,
+        "tentativas_certas": tentativas_certas,
+        "tentativas_erradas": tentativas_erradas,
+        "taxa_acerto": taxa_acerto,
+        "ofensiva": calcular_ofensiva(perfil_alvo),
+        "banners_equipados": banners[:2],
+        "conquistas_desbloqueadas": conquistas_desbloqueadas,
+        "posicao_ranking": posicao_ranking,
+    }
+
+
+@login_required
+def meu_perfil(request):
+    perfil = Perfil.objects.select_related("usuario", "escola").get(usuario=request.user)
+    verificar_conquistas(perfil)
+
+    aba_ativa = request.GET.get("aba", "perfil")
+
+    if request.method == "POST":
+        acao = request.POST.get("acao", "")
+
+        if acao == "atualizar_perfil":
+            nome = request.POST.get("nome", "").strip()
+            remover_avatar = request.POST.get("remover_avatar", "") == "true"
+
+            if not nome or len(nome.split()) < 2:
+                messages.error(request, "Por favor, digite seu nome completo (nome e sobrenome).")
+                return redirect(f"/auth/perfil/?aba=perfil")
+
+            perfil.nome = nome
+
+            if remover_avatar:
+                if perfil.avatar:
+                    perfil.avatar.delete(save=False)
+                    perfil.avatar = None
+
+            if "avatar" in request.FILES:
+                avatar_file = request.FILES["avatar"]
+                if avatar_file.size > 5 * 1024 * 1024:
+                    messages.error(request, "A imagem de perfil deve ter no máximo 5MB.")
+                    return redirect(f"/auth/perfil/?aba=perfil")
+                perfil.avatar = avatar_file
+
+            perfil.save()
+            messages.success(request, "Perfil atualizado com sucesso!")
+            return redirect(f"/auth/perfil/?aba=perfil")
+
+        elif acao == "atualizar_banners":
+            desbloqueadas_ids = set(
+                ConquistaPerfil.objects.filter(perfil=perfil).values_list("conquista_id", flat=True)
+            )
+
+            banner_1_val = request.POST.get("banner_1", "").strip()
+            banner_2_val = request.POST.get("banner_2", "").strip()
+
+            novo_b1 = None
+            if banner_1_val and banner_1_val.isdigit():
+                b1_id = int(banner_1_val)
+                if b1_id in desbloqueadas_ids:
+                    novo_b1 = Conquista.objects.filter(id=b1_id, ativa=True).first()
+
+            novo_b2 = None
+            if banner_2_val and banner_2_val.isdigit():
+                b2_id = int(banner_2_val)
+                if b2_id in desbloqueadas_ids and (novo_b1 is None or b2_id != novo_b1.id):
+                    novo_b2 = Conquista.objects.filter(id=b2_id, ativa=True).first()
+
+            perfil.banner_1 = novo_b1
+            perfil.banner_2 = novo_b2
+            perfil.save()
+
+            messages.success(request, "Banners em destaque atualizados com sucesso! Eles serão exibidos no seu perfil e no ranking.")
+            return redirect(f"/auth/perfil/?aba=banners")
+
+    stats = obter_estatisticas_perfil(perfil)
+
+    desbloqueios = {
+        item.conquista_id: item
+        for item in ConquistaPerfil.objects.filter(perfil=perfil)
+    }
+
+    todas_conquistas = list(Conquista.objects.filter(ativa=True).order_by("-xp_recompensa", "nome"))
+    for c in todas_conquistas:
+        registro = desbloqueios.get(c.id)
+        c.desbloqueada = registro is not None
+        c.data_desbloqueio = (registro.data_desbloqueio if registro else None)
+        c.equipado_slot1 = (perfil.banner_1_id == c.id)
+        c.equipado_slot2 = (perfil.banner_2_id == c.id)
+
+    conquistas_desbloqueadas = [c for c in todas_conquistas if c.desbloqueada]
+
+    return render(request, "perfil.html", {
+        "perfil": perfil,
+        "stats": stats,
+        "aba_ativa": aba_ativa,
+        "todas_conquistas": todas_conquistas,
+        "conquistas_desbloqueadas": conquistas_desbloqueadas,
+        "is_proprio_perfil": True,
+    })
+
+
+@login_required
+def configuracoes(request):
+    perfil = Perfil.objects.select_related("usuario", "escola").get(usuario=request.user)
+
+    if request.method == "POST":
+        acao = request.POST.get("acao", "")
+
+        if acao == "alterar_email":
+            novo_email = request.POST.get("email", "").strip().lower()
+
+            if not novo_email or "@" not in novo_email:
+                messages.error(request, "Por favor, informe um endereço de e-mail válido.")
+                return redirect("configuracoes")
+
+            if User.objects.exclude(id=request.user.id).filter(Q(email__iexact=novo_email) | Q(username__iexact=novo_email)).exists():
+                messages.error(request, "Este endereço de e-mail já está em uso por outra conta.")
+                return redirect("configuracoes")
+
+            request.user.email = novo_email
+            request.user.username = novo_email
+            request.user.save()
+
+            messages.success(request, "E-mail alterado com sucesso!")
+            return redirect("configuracoes")
+
+        elif acao == "alterar_senha":
+            senha_atual = request.POST.get("senha_atual", "")
+            nova_senha = request.POST.get("nova_senha", "")
+            confirmar_senha = request.POST.get("confirmar_senha", "")
+
+            if not request.user.check_password(senha_atual):
+                messages.error(request, "A senha atual informada está incorreta.")
+                return redirect("configuracoes")
+
+            if len(nova_senha) < 8:
+                messages.error(request, "A nova senha deve possuir pelo menos 8 caracteres.")
+                return redirect("configuracoes")
+
+            if nova_senha != confirmar_senha:
+                messages.error(request, "A nova senha e a confirmação não conferem.")
+                return redirect("configuracoes")
+
+            request.user.set_password(nova_senha)
+            request.user.save()
+            update_session_auth_hash(request, request.user)
+
+            messages.success(request, "Senha alterada com sucesso!")
+            return redirect("configuracoes")
+
+    stats = obter_estatisticas_perfil(perfil)
+
+    return render(request, "configuracoes.html", {
+        "perfil": perfil,
+        "stats": stats,
+        "aba_ativa": "configuracoes",
+    })
+
+
+@login_required
+def perfil_publico(request, perfil_id):
+    perfil_alvo = get_object_or_404(Perfil.objects.select_related("usuario", "escola"), id=perfil_id)
+    perfil_logado = Perfil.objects.select_related("usuario", "escola").get(usuario=request.user)
+
+    if perfil_alvo.id == perfil_logado.id:
+        return redirect("perfil")
+
+    stats = obter_estatisticas_perfil(perfil_alvo)
+
+    return render(request, "perfil.html", {
+        "perfil": perfil_alvo,
+        "perfil_logado": perfil_logado,
+        "stats": stats,
+        "is_proprio_perfil": False,
+        "aba_ativa": "perfil",
+    })
+
+
+@login_required
+def perfil_api(request, perfil_id):
+    """Endpoint JSON rápido para visualização instantânea de perfil no ranking."""
+    perfil_alvo = get_object_or_404(Perfil.objects.select_related("usuario", "escola"), id=perfil_id)
+    stats = obter_estatisticas_perfil(perfil_alvo)
+
+    banners_data = [
+        {"codigo": b.codigo, "nome": b.nome, "xp": b.xp_recompensa}
+        for b in stats["banners_equipados"]
+    ]
+
+    conquistas_data = [
+        {"codigo": c.codigo, "nome": c.nome, "xp": c.xp_recompensa}
+        for c in stats["conquistas_desbloqueadas"]
+    ]
+
+    AVATAR_CORES = [
+        "#0056d6", "#dc2626", "#16a34a", "#9333ea", "#0d9488",
+        "#ca8a04", "#4b5563", "#0284c7", "#c026d3", "#ea580c"
+    ]
+
+    return JsonResponse({
+        "success": True,
+        "id": perfil_alvo.id,
+        "nome": perfil_alvo.nome,
+        "escola": perfil_alvo.escola.nome,
+        "xp": perfil_alvo.xp,
+        "avatar_url": perfil_alvo.avatar.url if perfil_alvo.avatar else None,
+        "inicial": perfil_alvo.nome[:1].upper() if perfil_alvo.nome else "U",
+        "cor_avatar": AVATAR_CORES[perfil_alvo.id % len(AVATAR_CORES)],
+        "questoes_respondidas": stats["questoes_respondidas"],
+        "questoes_acertadas": stats["questoes_acertadas"],
+        "questoes_erradas": stats["questoes_erradas"],
+        "taxa_acerto": stats["taxa_acerto"],
+        "ofensiva": stats["ofensiva"],
+        "posicao_ranking": stats["posicao_ranking"],
+        "banners": banners_data,
+        "conquistas": conquistas_data,
+    })
+
+
+def recuperar_conta(request):
+    """Página de recuperação de conta / redefinição de senha."""
+    etapa = "identificar"
+    email_identificado = ""
+
+    if request.method == "POST":
+        acao = request.POST.get("acao", "")
+
+        if acao == "buscar_conta":
+            email = request.POST.get("email", "").strip().lower()
+            usuario = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).first()
+
+            if not usuario:
+                messages.error(request, "Nenhuma conta foi encontrada com o e-mail informado.")
+            else:
+                messages.success(request, f"Conta encontrada com sucesso para {usuario.email}! Agora defina sua nova senha.")
+                etapa = "redefinir"
+                email_identificado = usuario.email
+
+        elif acao == "redefinir_senha":
+            email = request.POST.get("email", "").strip().lower()
+            nova_senha = request.POST.get("nova_senha", "")
+            confirmar_senha = request.POST.get("confirmar_senha", "")
+
+            usuario = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).first()
+
+            if not usuario:
+                messages.error(request, "Usuário não encontrado.")
+            elif len(nova_senha) < 8:
+                messages.error(request, "A nova senha deve ter no mínimo 8 caracteres.")
+                etapa = "redefinir"
+                email_identificado = email
+            elif nova_senha != confirmar_senha:
+                messages.error(request, "A nova senha e a confirmação não coincidem.")
+                etapa = "redefinir"
+                email_identificado = email
+            else:
+                usuario.set_password(nova_senha)
+                usuario.save()
+                messages.success(request, "Senha redefinida com sucesso! Você já pode entrar com sua nova senha.")
+                return redirect("login")
+
+    return render(request, "recuperar_conta.html", {
+        "etapa": etapa,
+        "email_identificado": email_identificado,
+    })
+
+
 @login_required
 def sobre(request):
+    perfil = Perfil.objects.get(usuario=request.user)
     questoes = Questao.objects.all()
+    return render(request, "questoes.html", {"questoes": questoes, "perfil": perfil})
 
-    return render(request, "questoes.html", {"questoes": questoes})
 
 def logout_view(request):
     logout(request)

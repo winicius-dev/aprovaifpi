@@ -1,0 +1,718 @@
+/* Ranking CSS - AprovaIFPI - Versão Responsiva & Desktop Aprimorada */
+:root {
+  --primary-blue: #0056d6;
+  --primary-blue-hover: #0045ab;
+  --bg-page: #f1f5f9;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+}
+
+body.ranking-body {
+  background-color: var(--bg-page);
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  margin: 0;
+  padding-top: 80px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   1. Navbar Fixa
+   -------------------------------------------------------------------------- */
+.header-fixed-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-ranking {
+  background-color: #ffffff;
+  padding: 0.65rem 1rem;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-ranking {
+    padding: 0.65rem 0.5rem;
+  }
+  .navbar-ranking .container-fluid {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  .navbar-ranking .navbar-toggler {
+    padding: 0.25rem 0.25rem !important;
+    margin-right: 0 !important;
+  }
+}
+
+.navbar-ranking .navbar-brand img {
+  height: 38px;
+  width: auto;
+}
+
+.navbar-ranking .nav-link {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding: 0.5rem 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.navbar-ranking .nav-link:hover {
+  color: var(--primary-blue);
+}
+
+.navbar-ranking .nav-link.active {
+  color: var(--primary-blue) !important;
+}
+
+@media (min-width: 992px) {
+  .navbar-ranking .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 20%;
+    right: 20%;
+    height: 3px;
+    background-color: var(--primary-blue);
+    border-radius: 2px;
+  }
+}
+
+.user-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #0038b8;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 56, 184, 0.25);
+  transition: transform 0.2s;
+  overflow: hidden;
+}
+
+.avatar-img-circle {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.user-avatar-btn:hover .avatar-circle {
+  transform: scale(1.05);
+}
+
+.user-avatar-chevron {
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.top-gradient-bar {
+  width: 100%;
+  height: 12px;
+  background: linear-gradient(90deg, #0051f2 0%, #0051f2 35%, rgba(0, 81, 242, 0.45) 65%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* --------------------------------------------------------------------------
+   2. Barra de Título e Breadcrumbs (Idêntica à de Questões)
+   -------------------------------------------------------------------------- */
+.title-header-bar {
+  background-color: #ffffff;
+  padding: 20px 0;
+  border-bottom: 2px solid #2b7fff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: 76px;
+}
+
+.title-header-bar .container-xl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.watermark-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 52px;
+  max-height: 75%;
+  opacity: 0.14;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #1e293b;
+  margin: 0;
+}
+
+.page-title .brand-accent {
+  color: var(--primary-blue);
+  font-weight: 700;
+}
+
+.breadcrumbs-nav {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.breadcrumbs-nav a {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumbs-nav a:hover {
+  color: var(--primary-blue);
+}
+
+.breadcrumbs-nav .active {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.mobile-mini-logo {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .title-header-bar {
+    padding: 20px 0;
+    min-height: auto;
+  }
+
+  .watermark-bg {
+    display: none;
+  }
+
+  .mobile-mini-logo {
+    display: block !important;
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Hero Section do Ranking (100% da largura da tela horizontalmente)
+   -------------------------------------------------------------------------- */
+.ranking-hero-fullwidth {
+  width: 100%;
+  background-color: #ffffff;
+  padding-top: 2rem;
+  padding-bottom: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: #475569;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.hero-title-pixel {
+  font-family: 'Press Start 2P', 'Silkscreen', monospace;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  color: #0045e6;
+  letter-spacing: 0.12em;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 2px 2px 0px rgba(0, 69, 230, 0.15);
+}
+
+.hero-trophy-img {
+  height: 155px;
+  max-width: 200px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+}
+
+.hero-fullwidth-divider {
+  width: 100%;
+  height: 2.5px;
+  background-color: #b9d5ff;
+  margin-top: 1.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   3. Card "Seu Ranking"
+   -------------------------------------------------------------------------- */
+.card-seu-ranking {
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.seu-ranking-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 1rem;
+}
+
+.ranking-pill {
+  background-color: #e2e8f0;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s;
+}
+
+.ranking-pill:hover {
+  background-color: #cbd5e1;
+}
+
+.ranking-pill-xp {
+  font-size: 0.98rem;
+}
+
+.text-xp-blue {
+  color: #2563eb;
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   4. Seletor de Tipo de Ranking (Ranking Geral ▾)
+   -------------------------------------------------------------------------- */
+.ranking-type-dropdown .btn-ranking-type {
+  background: transparent;
+  border: none;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #334155;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: none !important;
+}
+
+.ranking-type-dropdown .btn-ranking-type::after {
+  display: none !important;
+}
+
+.ranking-type-dropdown .btn-ranking-type:hover {
+  color: var(--primary-blue);
+}
+
+.ranking-type-dropdown .btn-ranking-type i {
+  font-size: 1.35rem;
+  color: #64748b;
+  transition: transform 0.2s;
+}
+
+/* --------------------------------------------------------------------------
+   5. Cards do Pódio (Top 3)
+   -------------------------------------------------------------------------- */
+.card-podio {
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  padding: 1.25rem 1.4rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-podio:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.podio-avatar-wrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.podio-avatar-wrapper .avatar-circle {
+  width: 48px;
+  height: 48px;
+  font-size: 1.3rem;
+}
+
+.podio-medal-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -5px;
+  font-size: 1.15rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.podio-user-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.podio-xp {
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.podio-banners {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 32px;
+}
+
+.podio-ofensiva {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* --------------------------------------------------------------------------
+   6. Tabela do Ranking (4º em diante)
+   -------------------------------------------------------------------------- */
+.card-table-ranking {
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  margin-bottom: 2.75rem;
+}
+
+.table-ranking {
+  margin-bottom: 0;
+}
+
+.table-ranking thead th {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 16px 20px;
+  background-color: #ffffff;
+}
+
+.table-ranking tbody td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 0.98rem;
+  vertical-align: middle;
+}
+
+.table-ranking tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-ranking tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.table-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.table-chevron-footer {
+  background-color: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+  padding: 8px;
+  color: #94a3b8;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+.table-chevron-footer:hover {
+  color: var(--primary-blue);
+  background-color: #f8fafc;
+}
+
+/* --------------------------------------------------------------------------
+   7. Banners / Conquistas (Gradientes Refinados)
+   -------------------------------------------------------------------------- */
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border: none;
+  line-height: 1.25;
+}
+
+.banner-badge.hall-banner {
+  min-width: 125px;
+  justify-content: center;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+}
+
+/* Mapeamento de gradientes e cores dos banners */
+.banner-veterano, .banner-domino {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.banner-top-1, .banner-top1 {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+}
+
+.banner-rumo-ao-ifpi {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.banner-centena, .banner-gabaritou {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+}
+
+.banner-mestre {
+  background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+}
+
+.banner-palavra-certa, .banner-palavreado {
+  background: linear-gradient(135deg, #be123c 0%, #881337 100%);
+}
+
+.banner-polivalente {
+  background: linear-gradient(135deg, #84cc16 0%, #4d7c0f 100%);
+}
+
+.banner-na-mosca {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.banner-top-10 {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.banner-top-3-semanal {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+}
+
+.banner-ativo {
+  background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+}
+
+/* --------------------------------------------------------------------------
+   8. Hall da Fama (Conquistas)
+   -------------------------------------------------------------------------- */
+.hall-da-fama-section .hall-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #334155;
+  margin: 0;
+}
+
+.hall-da-fama-section .hall-subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.btn-toggle-hall {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 50rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-toggle-hall:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #1e293b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.btn-toggle-hall:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.card-hall-fama {
+  background: #ffffff;
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  padding: 1.75rem;
+}
+
+.hall-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hall-badge-col {
+  flex-shrink: 0;
+}
+
+.hall-content-bar {
+  background-color: #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+}
+
+.hall-desc {
+  font-size: 0.98rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+.hall-xp {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   9. Footer
+   -------------------------------------------------------------------------- */
+footer {
+  margin-top: auto;
+  background-color: #ffffff !important;
+  border-top: 1px solid #e2e8f0;
+}
+
+.footer-top-stripe {
+  height: 6px;
+  background: linear-gradient(90deg, #0056d6 0%, #60a5fa 50%, #e2e8f0 100%);
+}
+
+/* --------------------------------------------------------------------------
+   10. Responsividade
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  body.ranking-body {
+    padding-top: 92px;
+  }
+
+  .ranking-hero-fullwidth {
+    padding-top: 1.25rem;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.70rem, 2.8vw, 0.82rem);
+    white-space: nowrap;
+    margin-bottom: 0.25rem;
+  }
+
+  .hero-title-pixel {
+    font-size: clamp(1.35rem, 6vw, 1.7rem);
+    letter-spacing: 0.08em;
+  }
+
+  .hero-trophy-img {
+    height: 80px;
+    max-width: 95px;
+  }
+
+  .hero-fullwidth-divider {
+    margin-top: 1.25rem;
+  }
+
+  .ranking-type-dropdown .btn-ranking-type {
+    font-size: 1.35rem;
+  }
+
+  .hall-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .hall-badge-col {
+    align-self: flex-start;
+  }
+
+  .hall-badge-col .banner-badge.hall-banner {
+    min-width: unset;
+  }
+
+  .hall-content-bar {
+    padding: 8px 14px;
+    min-height: 40px;
+  }
+
+  .hall-desc {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-subtitle {
+    font-size: 0.68rem;
+  }
+
+  .hero-trophy-img {
+    height: 70px;
+    max-width: 80px;
+  }
+}

@@ -3,6 +3,7 @@ import re
 from django import template
 from django.utils.html import escape, format_html
 from django.template.defaultfilters import linebreaksbr
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -15,14 +16,12 @@ def render_enunciado(questao):
         for imagem in questao.imagens.all()
     }
 
-    resultado = format_html("")
+    chunks = []
     indice_imagem = 1
 
     for parte in partes:
         if parte != "[IMG]":
-            resultado = format_html(
-                "{}{}", resultado, linebreaksbr(escape(parte))
-            )
+            chunks.append(linebreaksbr(escape(parte)))
             continue
 
         imagem = imagens.get(indice_imagem)
@@ -33,28 +32,27 @@ def render_enunciado(questao):
             and imagem.arquivo
             and imagem.arquivo.storage.exists(imagem.arquivo.name)
         ):
-            elemento = format_html(
-                '<div class="questao-imagem">'
-                '<img src="{}" alt="Imagem da questão" loading="lazy">'
-                '</div>',
-                imagem.arquivo.url,
+            chunks.append(
+                format_html(
+                    '<div class="questao-imagem">'
+                    '<img src="{}" alt="Imagem da questão" loading="lazy">'
+                    '</div>',
+                    imagem.arquivo.url,
+                )
             )
-            resultado = format_html("{}{}", resultado, elemento)
 
-    return resultado
+    return mark_safe("".join(chunks))
 
 
 @register.simple_tag
 def render_alternativa(alternativa):
     partes = re.split(r"(\[IMG\])", alternativa.texto or "")
-    resultado = format_html("")
+    chunks = []
     encontrou_marcador = False
 
     for parte in partes:
         if parte != "[IMG]":
-            resultado = format_html(
-                "{}{}", resultado, linebreaksbr(escape(parte))
-            )
+            chunks.append(linebreaksbr(escape(parte)))
             continue
 
         encontrou_marcador = True
@@ -65,22 +63,24 @@ def render_alternativa(alternativa):
                 alternativa.imagem.name
             )
         ):
-            elemento = format_html(
-                '<img src="{}" alt="Imagem da alternativa {}" '
-                'class="alternativa-imagem" loading="lazy">',
-                alternativa.imagem.url,
-                alternativa.letra,
+            chunks.append(
+                format_html(
+                    '<img src="{}" alt="Imagem da alternativa {}" '
+                    'class="alternativa-imagem" loading="lazy">',
+                    alternativa.imagem.url,
+                    alternativa.letra,
+                )
             )
-            resultado = format_html("{}{}", resultado, elemento)
 
     if not encontrou_marcador and alternativa.imagem:
         if alternativa.imagem.storage.exists(alternativa.imagem.name):
-            elemento = format_html(
-                '<img src="{}" alt="Imagem da alternativa {}" '
-                'class="alternativa-imagem" loading="lazy">',
-                alternativa.imagem.url,
-                alternativa.letra,
+            chunks.append(
+                format_html(
+                    '<img src="{}" alt="Imagem da alternativa {}" '
+                    'class="alternativa-imagem" loading="lazy">',
+                    alternativa.imagem.url,
+                    alternativa.letra,
+                )
             )
-            resultado = format_html("{}{}", resultado, elemento)
 
-    return resultado
+    return mark_safe("".join(chunks))

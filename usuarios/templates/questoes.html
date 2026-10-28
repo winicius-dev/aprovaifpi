@@ -14,7 +14,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{% static 'styles/questoes.css' %}?v=2.2">
+    <link rel="stylesheet" href="{% static 'styles/questoes.css' %}?v=2.4">
     <style>
         .btn-riscar-alternativa {
             background: #ffffff;
@@ -144,9 +144,11 @@
 
                 <div class="d-flex align-items-center gap-2">
                     <div class="dropdown">
-                        <button class="user-avatar-btn dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ perfil.nome|default:request.user.username }}">
+                        <button class="user-avatar-btn dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu de usuário">
                             <div class="avatar-circle">
-                                {% if perfil.nome %}
+                                {% if perfil.avatar %}
+                                    <img src="{{ perfil.avatar.url }}" alt="{{ perfil.nome }}" class="avatar-img-circle">
+                                {% elif perfil.nome %}
                                     {{ perfil.nome|slice:":1"|upper }}
                                 {% elif request.user.username %}
                                     {{ request.user.username|slice:":1"|upper }}
@@ -156,12 +158,17 @@
                             </div>
                             <i class="bi bi-chevron-down user-avatar-chevron d-none d-sm-inline"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="border-radius: 14px; min-width: 220px;">
                             <li class="px-3 py-2 border-bottom">
-                                <span class="fw-bold d-block text-truncate" style="font-size: 0.95rem;">{{ perfil.nome|default:request.user.username }}</span>
-                                <small class="text-muted d-block">{{ request.user.email }}</small>
-                                <span class="badge bg-primary text-white mt-1 badge-total-xp" style="font-size: 0.75rem;">{{ perfil.xp|default:0 }} XP</span>
+                                <a href="{% url 'perfil' %}" class="text-decoration-none text-dark d-block">
+                                    <span class="fw-bold d-block text-truncate" style="font-size: 0.95rem;">{{ perfil.nome|default:request.user.username }}</span>
+                                    <small class="text-muted d-block">{{ request.user.email }}</small>
+                                    <span class="badge bg-primary text-white mt-1 badge-total-xp" style="font-size: 0.75rem;">{{ perfil.xp|default:0 }} XP</span>
+                                </a>
                             </li>
+                            <li><a class="dropdown-item py-2 fw-semibold text-primary" href="{% url 'perfil' %}"><i class="bi bi-person-circle me-2"></i>Meu Perfil</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'configuracoes' %}"><i class="bi bi-gear-fill me-2 text-secondary"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
                             <li><a class="dropdown-item py-2" href="{% url 'questoes' %}"><i class="bi bi-journal-text me-2"></i>Minhas Questões</a></li>
                             <li><a class="dropdown-item py-2" href="{% url 'conteudos' %}"><i class="bi bi-play-circle me-2"></i>Conteúdos</a></li>
                             <li><a class="dropdown-item py-2" href="{% url 'ranking' %}"><i class="bi bi-trophy me-2"></i>Ranking</a></li>
@@ -218,16 +225,17 @@
         <div class="top-gradient-bar"></div>
     </header>
 
+    <!-- 2. Barra de Título e Breadcrumbs -->
     <div class="title-header-bar">
         <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Watermark" class="watermark-bg">
-        <div class="container d-flex align-items-center justify-content-between position-relative">
+        <div class="container-xl px-3 px-md-4 d-flex align-items-center justify-content-between position-relative" style="max-width: 1200px;">
             <h4 class="page-title">
                 Questões <span class="brand-accent">IFPI</span>
             </h4>
 
             <div class="breadcrumbs-nav d-none d-lg-block">
                 <a href="{% url 'questoes' %}">Início</a> &nbsp;/&nbsp;
-                <a href="{% url 'ranking' %}">Ranking</a> &nbsp;/&nbsp;
+                <a href="{% url 'questoes' %}">Questões</a> &nbsp;/&nbsp;
                 <a href="{% url 'conteudos' %}">conteúdo</a> &nbsp;/&nbsp;
                 <span class="active">Questões</span>
             </div>
@@ -1148,6 +1156,18 @@
                 });
             });
         });
+
+        // Ajuste dinâmico de compensação do cabeçalho fixo para nunca cortar conteúdo
+        function adjustHeaderOffset() {
+            const header = document.querySelector('.header-fixed-wrapper');
+            if (header) {
+                const height = Math.ceil(header.getBoundingClientRect().height);
+                document.body.style.paddingTop = Math.max(height + 12, 92) + 'px';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', adjustHeaderOffset);
+        window.addEventListener('load', adjustHeaderOffset);
+        window.addEventListener('resize', adjustHeaderOffset);
     </script>
 
 </body>

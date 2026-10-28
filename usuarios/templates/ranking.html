@@ -1,137 +1,748 @@
-<h1>Ranking</h1>
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
 
-<h2>Seu ranking</h2>
+<head>
+    <title>AprovaIFPI - Ranking</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-<p>
-    Sua posição:
-    {{ posicao_usuario|default:"-" }}º lugar
-</p>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 
-<p>XP: {{ perfil.xp }}</p>
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Ranking & Perfil CSS -->
+    <link rel="stylesheet" href="{% static 'styles/ranking.css' %}?v=2.5">
+    <link rel="stylesheet" href="{% static 'styles/perfil.css' %}?v=1.1">
+</head>
 
-<p>Ofensiva atual: {{ ofensiva_usuario }} dia(s)</p>
+<body class="ranking-body">
 
-<p>Posições conquistadas: -</p>
+    <!-- 1. Header / Navbar Fixa -->
+    <header class="fixed-top header-fixed-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-ranking">
+            <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between">
+                
+                <a class="navbar-brand me-3" href="{% url 'questoes' %}">
+                    <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Logo AprovaIFPI">
+                </a>
 
-<p>Faltam {{ xp_para_top1 }} XP para o Top 1</p>
+                <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarMenuDesktop">
+                    <ul class="navbar-nav gap-2 gap-xl-4 align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questoes' %}">INÍCIO</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questoes' %}">QUESTÕES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'conteudos' %}">CONTEÚDOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'ranking' %}">RANKING</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sobre' %}">SOBRE</a>
+                        </li>
+                    </ul>
+                </div>
 
-<h2>Ranking</h2>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="user-avatar-btn dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu de usuário">
+                            <div class="avatar-circle">
+                                {% if perfil.avatar %}
+                                    <img src="{{ perfil.avatar.url }}" alt="{{ perfil.nome }}" class="avatar-img-circle">
+                                {% elif perfil.nome %}
+                                    {{ perfil.nome|slice:":1"|upper }}
+                                {% elif request.user.username %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    U
+                                {% endif %}
+                            </div>
+                            <i class="bi bi-chevron-down user-avatar-chevron d-none d-sm-inline"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="border-radius: 14px; min-width: 220px;">
+                            <li class="px-3 py-2 border-bottom">
+                                <a href="{% url 'perfil' %}" class="text-decoration-none text-dark d-block">
+                                    <span class="fw-bold d-block text-truncate" style="font-size: 0.95rem;">{{ perfil.nome|default:request.user.username }}</span>
+                                    <small class="text-muted d-block">{{ request.user.email }}</small>
+                                    <span class="badge bg-primary text-white mt-1 badge-total-xp" style="font-size: 0.75rem;">{{ perfil.xp|default:0 }} XP</span>
+                                </a>
+                            </li>
+                            <li><a class="dropdown-item py-2 fw-semibold text-primary" href="{% url 'perfil' %}"><i class="bi bi-person-circle me-2"></i>Meu Perfil</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'configuracoes' %}"><i class="bi bi-gear-fill me-2 text-secondary"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'questoes' %}"><i class="bi bi-journal-text me-2"></i>Minhas Questões</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'conteudos' %}"><i class="bi bi-play-circle me-2"></i>Conteúdos</a></li>
+                            <li><a class="dropdown-item py-2 active" href="{% url 'ranking' %}"><i class="bi bi-trophy me-2"></i>Ranking</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
 
-<nav>
-    <a href="?tipo=geral">Ranking Geral</a> |
-    <a href="?tipo=semanal">Ranking Semanal</a> |
-    <a href="?tipo=escola">Ranking por Escola</a>
-</nav>
+                    <button class="navbar-toggler border-0 ms-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Abrir menu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
 
-<table border="1">
-    <thead>
-        <tr>
-            <th>Rank</th>
-            <th>
-                {% if modalidade == "escola" %}
-                    Escola
-                {% else %}
-                    Usuário
-                {% endif %}
-            </th>
+                <!-- Menu Mobile -->
+                <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar">
+                    <div class="offcanvas-header border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" style="width: 34px; height: 34px; font-size: 1rem;">
+                                {% if perfil.nome %}{{ perfil.nome|slice:":1"|upper }}{% else %}U{% endif %}
+                            </div>
+                            <span class="fw-bold text-dark">{{ perfil.nome|default:request.user.username }}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav gap-2">
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'questoes' %}">INÍCIO</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'questoes' %}">QUESTÕES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'conteudos' %}">CONTEÚDOS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active text-primary py-2" href="{% url 'ranking' %}">RANKING</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'sobre' %}">SOBRE</a>
+                            </li>
+                        </ul>
+                        <hr>
+                        <div class="mt-3">
+                            <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 rounded-pill py-2">
+                                <i class="bi bi-box-arrow-right me-2"></i>Sair
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
-            {% if modalidade != "escola" %}
-                <th>Ofensiva</th>
-                <th>Banners</th>
-            {% endif %}
+            </div>
+        </nav>
 
-            <th>XP</th>
-        </tr>
-    </thead>
+        <div class="top-gradient-bar"></div>
+    </header>
 
-    <tbody>
-        {% for p in perfis_ranking %}
-            <tr>
-                <td>{{ p.posicao }}º</td>
+    <!-- 2. Barra de Título e Breadcrumbs -->
+    <div class="title-header-bar">
+        <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Watermark" class="watermark-bg">
+        <div class="container-xl px-3 px-md-4 d-flex align-items-center justify-content-between position-relative" style="max-width: 1200px;">
+            <h4 class="page-title">
+                Ranking <span class="brand-accent">IFPI</span>
+            </h4>
 
-                <td>
-                    {{ p.nome }}
-                </td>
+            <div class="breadcrumbs-nav d-none d-lg-block">
+                <a href="{% url 'questoes' %}">Início</a> &nbsp;/&nbsp;
+                <a href="{% url 'questoes' %}">Questões</a> &nbsp;/&nbsp;
+                <a href="{% url 'conteudos' %}">conteúdo</a> &nbsp;/&nbsp;
+                <span class="active">Ranking</span>
+            </div>
 
-                {% if modalidade != "escola" %}
-                    <td>{{ p.ofensiva }} dia(s)</td>
-                    <td>
-                        {% for banner in p.banners %}
-                            <span class="banner banner-{{ banner.codigo }}">
-                                {{ banner.nome }}
-                            </span>
-                        {% empty %}
-                            -
-                        {% endfor %}
-                    </td>
-                {% endif %}
+            <img src="{% static 'img/logo_aprovaifpi 1.svg' %}" alt="Logo Mini" class="mobile-mini-logo">
+        </div>
+    </div>
 
-                <td>
-                    {% if modalidade == "semanal" or modalidade == "escola" %}
-                        {{ p.xp_ranking }}
+    <!-- 3. Hero Section do Ranking (100% da tela horizontalmente) -->
+    <section class="ranking-hero-fullwidth">
+        <div class="container-xl px-3 px-md-4">
+            <div class="row align-items-center justify-content-between flex-nowrap">
+                <div class="col flex-grow-1 overflow-hidden pe-2">
+                    <p class="hero-subtitle">Veja seu desempenho entre os estudantes</p>
+                    <h1 class="hero-title-pixel">RANKING</h1>
+                </div>
+                <div class="col-auto text-end ps-0">
+                    <img src="{% static 'img/trofeu_ranking.png' %}" alt="Troféu AprovaIFPI" class="hero-trophy-img img-fluid">
+                </div>
+            </div>
+        </div>
+        <div class="hero-fullwidth-divider"></div>
+    </section>
+
+    <!-- Conteúdo Principal com Container Centralizado -->
+    <main class="container-xl my-4 my-lg-5 px-3 px-md-4" style="max-width: 1200px;">
+
+        <!-- 3. Seção "Seu Ranking" -->
+        <section class="seu-ranking-section">
+            <div class="card card-seu-ranking">
+                <h6 class="seu-ranking-title">Seu Ranking</h6>
+                <div class="d-flex flex-wrap gap-2 gap-md-3 align-items-center">
+                    <div class="ranking-pill">
+                        <span>{{ posicao_usuario|default:"-" }}º Lugar</span>
+                        <span class="ms-1">
+                            {% if posicao_usuario == 1 %}🥇{% elif posicao_usuario == 2 %}🥈{% elif posicao_usuario == 3 %}🥉{% else %}🏅{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="ranking-pill ranking-pill-xp">
+                        <span class="text-xp-blue">XP</span>
+                        <strong>{{ perfil.xp }}</strong>
+                    </div>
+
+                    <div class="ranking-pill text-success">
+                        <span class="fw-bold">↑</span>
+                        <span>+5 posições</span>
+                    </div>
+
+                    <div class="ranking-pill">
+                        <span>Faltam <strong>{{ xp_para_top1 }} XP</strong> para o 1º</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Seletor de Tipo de Ranking (Dropdown) -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="dropdown ranking-type-dropdown">
+                <button class="btn btn-ranking-type dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if modalidade == "semanal" %}
+                        Ranking Semanal
+                    {% elif modalidade == "escola" %}
+                        Ranking por Escola
                     {% else %}
-                        {{ p.xp }}
+                        Ranking Geral
                     {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5">
-                    Nenhum resultado no ranking.
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                    <i class="bi bi-chevron-down ms-1"></i>
+                </button>
+                <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; min-width: 220px;">
+                    <li><a class="dropdown-item py-2 {% if modalidade == 'geral' %}active fw-bold{% endif %}" href="?tipo=geral"><i class="bi bi-globe me-2"></i>Ranking Geral</a></li>
+                    <li><a class="dropdown-item py-2 {% if modalidade == 'semanal' %}active fw-bold{% endif %}" href="?tipo=semanal"><i class="bi bi-calendar-week me-2"></i>Ranking Semanal</a></li>
+                    <li><a class="dropdown-item py-2 {% if modalidade == 'escola' %}active fw-bold{% endif %}" href="?tipo=escola"><i class="bi bi-building me-2"></i>Ranking por Escola</a></li>
+                </ul>
+            </div>
+        </div>
 
-<hr>
+        <!-- 5. Cards do Pódio (Top 3) -->
+        <section class="podio-section mb-4">
+            <div class="row g-3 g-lg-4">
+                {% for p in top_3 %}
+                    <div class="col-12 col-md-4">
+                        <div class="card card-podio">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                {% if modalidade != "escola" %}
+                                    <div class="d-flex align-items-center gap-2 ranking-user-trigger cursor-pointer" data-perfil-id="{{ p.id }}" role="button" title="Clique para analisar o perfil de {{ p.nome }}">
+                                        <div class="podio-avatar-wrapper">
+                                            <div class="avatar-circle" style="background-color: {{ p.cor_avatar }};">
+                                                {% if p.avatar %}
+                                                    <img src="{{ p.avatar.url }}" alt="{{ p.nome }}" class="avatar-img-circle">
+                                                {% else %}
+                                                    {{ p.inicial }}
+                                                {% endif %}
+                                            </div>
+                                            <span class="podio-medal-badge">
+                                                {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                                            </span>
+                                        </div>
+                                        <span class="podio-user-name ranking-user-click text-truncate" style="max-width: 140px;" title="{{ p.nome }}">
+                                            {{ p.nome }}
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="podio-avatar-wrapper">
+                                            <div class="avatar-circle" style="background-color: {{ p.cor_avatar }};">
+                                                {{ p.inicial }}
+                                            </div>
+                                            <span class="podio-medal-badge">
+                                                {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                                            </span>
+                                        </div>
+                                        <span class="podio-user-name text-truncate" style="max-width: 140px;" title="{{ p.nome }}">
+                                            {{ p.nome }}
+                                        </span>
+                                    </div>
+                                {% endif %}
 
-<h2>Hall da Fama</h2>
+                                <div class="podio-xp">
+                                    <span class="text-xp-blue">XP</span><strong>{% if modalidade == "semanal" or modalidade == "escola" %}{{ p.xp_ranking }}{% else %}{{ p.xp }}{% endif %}</strong>
+                                </div>
+                            </div>
 
-<p>
-    Acompanhe as conquistas disponíveis no AprovaIFPI
-    e veja quais você já desbloqueou.
-</p>
+                            <div class="podio-banners mb-3">
+                                {% if modalidade != "escola" %}
+                                    {% for banner in p.banners|slice:":2" %}
+                                        <span class="banner-badge banner-{{ banner.codigo }}" title="{{ banner.nome }}">
+                                            {{ banner.nome }}
+                                        </span>
+                                    {% empty %}
+                                        <span class="text-muted small">Sem conquistas</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted small">Escola participante</span>
+                                {% endif %}
+                            </div>
 
-<div class="hall-da-fama">
-    {% for conquista in conquistas %}
-        <article class="conquista"> 
+                            <div class="podio-ofensiva mt-auto pt-2 border-top">
+                                <span class="text-danger me-1">🔥</span>
+                                {% if modalidade != "escola" %}
+                                    {{ p.ofensiva }} Dias de Ofensiva
+                                {% else %}
+                                    Média ativa
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="card p-4 text-center text-muted">Nenhum participante no ranking ainda.</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
 
-            <h3>{{ conquista.nome }}</h3>
+        <!-- 6. Tabela do Ranking (4º em diante) -->
+        <section class="table-section mb-5">
+            <div class="card card-table-ranking">
+                <div class="table-responsive">
+                    <table class="table table-ranking align-middle">
+                        <thead>
+                            <tr>
+                                <th class="ps-4" style="width: 80px;">Rank</th>
+                                <th>{% if modalidade == "escola" %}Escola{% else %}Usuário{% endif %}</th>
+                                {% if modalidade != "escola" %}
+                                    <th style="width: 160px;">Ofensiva</th>
+                                    <th>Banners</th>
+                                {% endif %}
+                                <th class="text-end pe-4" style="width: 120px;">XP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in resto_perfis %}
+                                <tr>
+                                    <td class="ps-4 fw-bold text-muted">{{ p.posicao }}</td>
+                                    <td>
+                                        {% if modalidade != "escola" %}
+                                            <div class="d-flex align-items-center gap-2 ranking-user-trigger cursor-pointer" data-perfil-id="{{ p.id }}" role="button" title="Clique para analisar o perfil de {{ p.nome }}">
+                                                <div class="table-avatar-circle" style="background-color: {{ p.cor_avatar }};">
+                                                    {% if p.avatar %}
+                                                        <img src="{{ p.avatar.url }}" alt="{{ p.nome }}" class="avatar-img-circle">
+                                                    {% else %}
+                                                        {{ p.inicial }}
+                                                    {% endif %}
+                                                </div>
+                                                <span class="fw-semibold text-dark ranking-user-click">{{ p.nome }}</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="table-avatar-circle" style="background-color: {{ p.cor_avatar }};">
+                                                    {{ p.inicial }}
+                                                </div>
+                                                <span class="fw-semibold text-dark">{{ p.nome }}</span>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    {% if modalidade != "escola" %}
+                                        <td>
+                                            <span class="fw-medium text-dark">{{ p.ofensiva }} Dias</span> <span class="text-danger">🔥</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                {% for banner in p.banners|slice:":2" %}
+                                                    <span class="banner-badge banner-{{ banner.codigo }}">
+                                                        {{ banner.nome }}
+                                                    </span>
+                                                {% empty %}
+                                                    <span class="text-muted small">-</span>
+                                                {% endfor %}
+                                            </div>
+                                        </td>
+                                    {% endif %}
+                                    <td class="text-end pe-4">
+                                        <span class="text-xp-blue">XP</span><strong>{% if modalidade == "semanal" or modalidade == "escola" %}{{ p.xp_ranking }}{% else %}{{ p.xp }}{% endif %}</strong>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                {% if not top_3 %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            Nenhum participante encontrado.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-chevron-footer">
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+            </div>
+        </section>
 
-            <p>{{ conquista.descricao }}</p>
+        <!-- 7. Seção "Hall da Fama - Conquistas" -->
+        <section class="hall-da-fama-section mb-5">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div class="d-flex align-items-baseline gap-2">
+                    <h3 class="hall-title">Hall da Fama</h3>
+                    <span class="hall-subtitle">Conquistas</span>
+                </div>
+                <button class="btn btn-toggle-hall d-inline-flex align-items-center gap-2" 
+                        type="button" 
+                        id="btnToggleHall"
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#hallFamaCollapse" 
+                        aria-expanded="true" 
+                        aria-controls="hallFamaCollapse"
+                        title="Alternar exibição do Hall da Fama">
+                    <i class="bi bi-eye-slash" id="hallToggleIcon"></i>
+                    <span id="hallToggleText">Ocultar Hall da Fama</span>
+                </button>
+            </div>
 
-            <p>
-                <strong>Requisito:</strong>
-                {{ conquista.requisito }}
-            </p>
+            <div class="collapse show" id="hallFamaCollapse">
+                <div class="card card-hall-fama">
+                    <div class="d-flex flex-column gap-2">
+                        {% for conquista in conquistas %}
+                            <div class="hall-row">
+                                <div class="hall-badge-col">
+                                    <span class="banner-badge banner-{{ conquista.codigo }} hall-banner">
+                                        {{ conquista.nome }}
+                                    </span>
+                                </div>
+                                <div class="hall-content-bar flex-grow-1">
+                                    <span class="hall-desc">{{ conquista.descricao }}</span>
+                                    <div class="hall-xp ms-2 text-nowrap">
+                                        <span class="text-xp-blue">XP</span><strong>{{ conquista.xp_recompensa }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted text-center py-3 mb-0">Nenhuma conquista cadastrada no momento.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <p>
-                <strong>Recompensa:</strong>
-                {{ conquista.xp_recompensa }} XP
-            </p>
+    </main>
 
-            {% if conquista.desbloqueada %}
-                <p>
-                    <strong>Estado:</strong>
-                    Desbloqueada
-                </p>
+    <!-- 8. Footer -->
+    <div class="footer-top-stripe"></div>
+    <footer class="text-dark pt-5 pb-4">
+        <div class="container-xl px-3 px-md-4" style="max-width: 1200px;">
+            <div class="row">
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.9rem;">AprovaIFPI.com</h6>
+                    <ul class="list-unstyled" style="font-size: 0.88rem;">
+                        <li><a href="{% url 'login' %}" class="text-secondary text-decoration-none d-block py-1">Login</a></li>
+                        <li><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none d-block py-1">Questões</a></li>
+                        <li><a href="{% url 'conteudos' %}" class="text-secondary text-decoration-none d-block py-1">Conteúdos</a></li>
+                        <li><a href="{% url 'ranking' %}" class="text-secondary text-decoration-none d-block py-1">Rankings</a></li>
+                        <li><a href="{% url 'sobre' %}" class="text-secondary text-decoration-none d-block py-1">Sobre</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.9rem;">Colaboradores</h6>
+                    <ul class="list-unstyled text-secondary" style="font-size: 0.88rem;">
+                        <li class="py-1">Aluno João Gabriel Lopes</li>
+                        <li class="py-1">Aluno Marcos Winicius Gomes</li>
+                        <li class="py-1">Aluno Victor Daniel Castro</li>
+                        <li class="py-1">Prof. Alexandre Cajazeira</li>
+                        <li class="py-1">Prof. Alexandre Lages</li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.9rem;">Recursos Utilizados</h6>
+                    <ul class="list-unstyled text-secondary" style="font-size: 0.88rem;">
+                        <li class="py-1">Bootstrap 5</li>
+                        <li class="py-1">HTML</li>
+                        <li class="py-1">CSS</li>
+                        <li class="py-1">JavaScript</li>
+                        <li class="py-1">Django</li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.9rem;">Disciplinas</h6>
+                    <ul class="list-unstyled" style="font-size: 0.88rem;">
+                        <li class="py-1"><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none">Português</a></li>
+                        <li class="py-1"><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none">Matemática</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-light my-4">
+            <div class="d-flex align-items-center">
+                <img src="{% static 'img/logo_aprovaifpi 1.svg' %}" alt="Logo AprovaIFPI" height="32" class="me-2">
+                <small class="text-muted fw-semibold">© 2025 - Um produto AprovaIFPI.com</small>
+            </div>
+        </div>
+    </footer>
 
-                <p>
-                    <strong>Data:</strong>
-                    {{ conquista.data_desbloqueio|date:"d/m/Y" }}
-                </p>
-            {% else %}
-                <p>
-                    <strong>Estado:</strong>
-                    Bloqueada
-                </p>
-            {% endif %}
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hallCollapseEl = document.getElementById('hallFamaCollapse');
+            const toggleBtn = document.getElementById('btnToggleHall');
+            const toggleText = document.getElementById('hallToggleText');
+            const toggleIcon = document.getElementById('hallToggleIcon');
 
-        </article>
+            if (hallCollapseEl && toggleBtn) {
+                // Recupera preferência do usuário salva anteriormente
+                const isHidden = localStorage.getItem('aprovaifpi_hall_hidden') === 'true';
+                if (isHidden) {
+                    hallCollapseEl.classList.remove('show');
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                    if (toggleIcon) toggleIcon.className = 'bi bi-eye';
+                    if (toggleText) toggleText.textContent = 'Mostrar Hall da Fama';
+                }
 
-        <hr>
-    {% empty %}
-        <p>Nenhuma conquista cadastrada.</p>
-    {% endfor %}
-</div>
+                hallCollapseEl.addEventListener('hidden.bs.collapse', function () {
+                    if (toggleIcon) toggleIcon.className = 'bi bi-eye';
+                    if (toggleText) toggleText.textContent = 'Mostrar Hall da Fama';
+                    localStorage.setItem('aprovaifpi_hall_hidden', 'true');
+                });
+
+                hallCollapseEl.addEventListener('shown.bs.collapse', function () {
+                    if (toggleIcon) toggleIcon.className = 'bi bi-eye-slash';
+                    if (toggleText) toggleText.textContent = 'Ocultar Hall da Fama';
+                    localStorage.setItem('aprovaifpi_hall_hidden', 'false');
+                });
+            }
+        });
+
+        // Ajuste dinâmico de compensação do cabeçalho fixo para nunca cortar conteúdo
+        function adjustHeaderOffset() {
+            const header = document.querySelector('.header-fixed-wrapper');
+            if (header) {
+                const height = Math.ceil(header.getBoundingClientRect().height);
+                document.body.style.paddingTop = Math.max(height + 12, 92) + 'px';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', adjustHeaderOffset);
+        window.addEventListener('load', adjustHeaderOffset);
+        window.addEventListener('resize', adjustHeaderOffset);
+
+        // Abertura do Modal de Análise de Perfil ao clicar em participante
+        document.querySelectorAll('.ranking-user-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                const perfilId = this.getAttribute('data-perfil-id');
+                if (!perfilId) return;
+
+                const modalEl = document.getElementById('modalAnalisePerfil');
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+                // Mostra modal em estado de carregamento
+                document.getElementById('modalLoadingState').classList.remove('d-none');
+                document.getElementById('modalDataContent').classList.add('d-none');
+                modal.show();
+
+                fetch(`/auth/perfil/api/${perfilId}/`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erro ao carregar dados');
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Preenche dados do modal
+                        document.getElementById('modalUserName').textContent = data.nome;
+                        document.getElementById('modalUserSchool').textContent = data.escola;
+                        document.getElementById('modalUserXP').textContent = `${data.xp} XP`;
+                        document.getElementById('modalUserStreak').textContent = `${data.ofensiva} Dias`;
+
+                        if (data.posicao_ranking) {
+                            document.getElementById('modalUserRank').textContent = `#${data.posicao_ranking}`;
+                            document.getElementById('modalUserRankWrapper').classList.remove('d-none');
+                        } else {
+                            document.getElementById('modalUserRankWrapper').classList.add('d-none');
+                        }
+
+                        // Avatar
+                        const avatarContainer = document.getElementById('modalUserAvatar');
+                        if (data.avatar_url) {
+                            avatarContainer.innerHTML = `<img src="${data.avatar_url}" alt="${data.nome}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                        } else {
+                            avatarContainer.innerHTML = `<span style="font-size: 2.2rem; font-weight: 800; color: #fff;">${data.inicial}</span>`;
+                            avatarContainer.style.backgroundColor = data.cor_avatar || '#0056d6';
+                        }
+
+                        // Estatísticas
+                        document.getElementById('modalUserAnswered').textContent = data.questoes_respondidas;
+                        document.getElementById('modalUserCorrect').textContent = data.questoes_acertadas;
+                        document.getElementById('modalUserWrong').textContent = data.questoes_erradas;
+                        document.getElementById('modalUserAccuracy').textContent = `${data.taxa_acerto}%`;
+                        document.getElementById('modalUserAccuracyBar').style.width = `${data.taxa_acerto}%`;
+
+                        // Banners Equipados (Máximo 2)
+                        const bannersBox = document.getElementById('modalUserBanners');
+                        bannersBox.innerHTML = '';
+                        if (data.banners && data.banners.length > 0) {
+                            data.banners.slice(0, 2).forEach(b => {
+                                const badge = document.createElement('span');
+                                badge.className = `banner-badge banner-${b.codigo}`;
+                                badge.textContent = b.nome;
+                                bannersBox.appendChild(badge);
+                            });
+                        } else {
+                            bannersBox.innerHTML = '<span class="text-muted small fst-italic">Nenhum banner equipado</span>';
+                        }
+
+                        // Conquistas Desbloqueadas
+                        const achievementsBox = document.getElementById('modalUserAchievements');
+                        achievementsBox.innerHTML = '';
+                        if (data.conquistas && data.conquistas.length > 0) {
+                            data.conquistas.forEach(c => {
+                                const badge = document.createElement('span');
+                                badge.className = `banner-badge banner-${c.codigo}`;
+                                badge.textContent = c.nome;
+                                achievementsBox.appendChild(badge);
+                            });
+                        } else {
+                            achievementsBox.innerHTML = '<span class="text-muted small">Nenhuma conquista desbloqueada ainda.</span>';
+                        }
+
+                        // Link para página completa
+                        document.getElementById('btnVerPerfilCompleto').href = `/auth/perfil/${data.id}/`;
+
+                        document.getElementById('modalLoadingState').classList.add('d-none');
+                        document.getElementById('modalDataContent').classList.remove('d-none');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        document.getElementById('modalLoadingState').innerHTML = `
+                            <div class="text-danger py-4">
+                                <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+                                <p class="mt-2 mb-0">Não foi possível carregar o perfil deste usuário.</p>
+                            </div>
+                        `;
+                    });
+            });
+        });
+    </script>
+
+    <!-- MODAL DE ANÁLISE DE PERFIL DE OUTRO USUÁRIO -->
+    <div class="modal fade" id="modalAnalisePerfil" tabindex="-1" aria-labelledby="modalAnalisePerfilLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-perfil-content">
+                
+                <div class="modal-perfil-header">
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-bounding-box fs-4"></i>
+                            <h5 class="modal-title fw-bold text-white mb-0" id="modalAnalisePerfilLabel">Análise de Estudante</h5>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                </div>
+
+                <div class="modal-body p-4">
+                    
+                    <!-- Loading Spinner -->
+                    <div id="modalLoadingState" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p class="text-muted mt-3 mb-0 fw-semibold">Carregando estatísticas do perfil...</p>
+                    </div>
+
+                    <!-- Conteúdo Dinâmico -->
+                    <div id="modalDataContent" class="d-none">
+                        
+                        <!-- Cabeçalho do Perfil -->
+                        <div class="d-flex flex-column flex-sm-row align-items-center gap-3 pb-3 mb-3 border-bottom">
+                            <div id="modalUserAvatar" class="avatar-circle shadow" style="width: 80px; height: 80px; font-size: 2.2rem; flex-shrink: 0;">
+                                U
+                            </div>
+                            <div class="text-center text-sm-start flex-grow-1">
+                                <h4 class="fw-bold text-dark mb-1" id="modalUserName">Nome do Aluno</h4>
+                                <div class="text-muted small mb-2 d-flex align-items-center justify-content-center justify-content-sm-start gap-1">
+                                    <i class="bi bi-building"></i>
+                                    <span id="modalUserSchool">Escola</span>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-sm-start">
+                                    <span class="profile-pill profile-pill-xp">
+                                        <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                        <strong id="modalUserXP">0 XP</strong>
+                                    </span>
+                                    <span class="profile-pill profile-pill-fire">
+                                        <span>🔥</span>
+                                        <strong id="modalUserStreak">0 Dias</strong>
+                                    </span>
+                                    <span class="profile-pill profile-pill-school" id="modalUserRankWrapper">
+                                        <i class="bi bi-trophy-fill text-primary"></i>
+                                        <strong id="modalUserRank">#1</strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Banners em Destaque (Máximo 2) -->
+                        <div class="mb-4">
+                            <label class="form-label-custom d-block mb-2">
+                                <i class="bi bi-award-fill text-warning me-1"></i>Banners em Destaque (Máximo 2)
+                            </label>
+                            <div id="modalUserBanners" class="d-flex flex-wrap gap-2">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Métricas de Desempenho (Questões, Acertos, Erros, Taxa) -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-6 col-md-3">
+                                <div class="stat-metric-card p-3 text-center">
+                                    <div class="stat-metric-label mb-1">Respondidas</div>
+                                    <div class="stat-metric-value text-dark fs-4 mb-0" id="modalUserAnswered">0</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-metric-card p-3 text-center">
+                                    <div class="stat-metric-label mb-1">Acertos</div>
+                                    <div class="stat-metric-value text-success fs-4 mb-0" id="modalUserCorrect">0</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-metric-card p-3 text-center">
+                                    <div class="stat-metric-label mb-1">Erros</div>
+                                    <div class="stat-metric-value text-danger fs-4 mb-0" id="modalUserWrong">0</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-metric-card p-3 text-center">
+                                    <div class="stat-metric-label mb-1">Taxa de Acerto</div>
+                                    <div class="stat-metric-value text-primary fs-4 mb-0" id="modalUserAccuracy">0%</div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <div class="progress-thin">
+                                    <div class="progress-bar progress-bar-accuracy" id="modalUserAccuracyBar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Galeria de Conquistas Desbloqueadas -->
+                        <div class="mb-2">
+                            <label class="form-label-custom d-block mb-2">
+                                <i class="bi bi-patch-check-fill text-success me-1"></i>Conquistas Desbloqueadas por Mérito
+                            </label>
+                            <div id="modalUserAchievements" class="d-flex flex-wrap gap-1">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer bg-light p-3 border-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
+                    <a href="#" id="btnVerPerfilCompleto" class="btn btn-primary rounded-pill px-4 fw-bold">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Ver Perfil Completo
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

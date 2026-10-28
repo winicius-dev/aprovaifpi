@@ -1,0 +1,704 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <title>AprovaIFPI - {% if is_proprio_perfil %}Meu Perfil{% else %}Perfil de {{ perfil.nome }}{% endif %}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Perfil & Ranking CSS -->
+    <link rel="stylesheet" href="{% static 'styles/perfil.css' %}?v=1.1">
+</head>
+
+<body class="perfil-body">
+
+    <!-- 1. Header / Navbar Fixa -->
+    <header class="fixed-top header-fixed-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-perfil">
+            <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between">
+                
+                <a class="navbar-brand me-3" href="{% url 'questoes' %}">
+                    <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Logo AprovaIFPI">
+                </a>
+
+                <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarMenuDesktop">
+                    <ul class="navbar-nav gap-2 gap-xl-4 align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questoes' %}">INÍCIO</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questoes' %}">QUESTÕES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'conteudos' %}">CONTEÚDOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ranking' %}">RANKING</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sobre' %}">SOBRE</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="user-avatar-btn dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu de usuário">
+                            <div class="avatar-circle">
+                                {% if request.user.perfil.avatar %}
+                                    <img src="{{ request.user.perfil.avatar.url }}" alt="Avatar" class="avatar-img-circle">
+                                {% elif request.user.perfil.nome %}
+                                    {{ request.user.perfil.nome|slice:":1"|upper }}
+                                {% else %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% endif %}
+                            </div>
+                            <i class="bi bi-chevron-down d-none d-sm-inline text-muted" style="font-size: 0.85rem;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="border-radius: 14px; min-width: 230px;">
+                            <li class="px-3 py-2 border-bottom">
+                                <a href="{% url 'perfil' %}" class="text-decoration-none text-dark d-block">
+                                    <span class="fw-bold d-block text-truncate" style="font-size: 0.95rem;">{{ request.user.perfil.nome|default:request.user.username }}</span>
+                                    <small class="text-muted d-block">{{ request.user.email }}</small>
+                                    <span class="badge bg-primary text-white mt-1" style="font-size: 0.75rem;">{{ request.user.perfil.xp|default:0 }} XP</span>
+                                </a>
+                            </li>
+                            <li><a class="dropdown-item py-2 fw-semibold text-primary" href="{% url 'perfil' %}"><i class="bi bi-person-circle me-2"></i>Meu Perfil</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'configuracoes' %}"><i class="bi bi-gear-fill me-2 text-secondary"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'questoes' %}"><i class="bi bi-journal-text me-2"></i>Minhas Questões</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'ranking' %}"><i class="bi bi-trophy me-2"></i>Ranking</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+
+                    <button class="navbar-toggler border-0 ms-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Abrir menu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <!-- Menu Mobile -->
+                <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar">
+                    <div class="offcanvas-header border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" style="width: 36px; height: 36px;">
+                                {% if request.user.perfil.avatar %}
+                                    <img src="{{ request.user.perfil.avatar.url }}" alt="Avatar" class="avatar-img-circle">
+                                {% else %}
+                                    {{ request.user.perfil.nome|slice:":1"|upper|default:"U" }}
+                                {% endif %}
+                            </div>
+                            <span class="fw-bold text-dark">{{ request.user.perfil.nome|default:request.user.username }}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav gap-2">
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'questoes' %}">INÍCIO</a></li>
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'questoes' %}">QUESTÕES</a></li>
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'conteudos' %}">CONTEÚDOS</a></li>
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'ranking' %}">RANKING</a></li>
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'perfil' %}">MEU PERFIL</a></li>
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'configuracoes' %}">CONFIGURAÇÕES</a></li>
+                        </ul>
+                        <hr>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 rounded-pill py-2">
+                            <i class="bi bi-box-arrow-right me-2"></i>Sair
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+        <div class="top-gradient-bar"></div>
+    </header>
+
+    <!-- 2. Conteúdo Principal -->
+    <main class="container py-4">
+
+        <!-- Mensagens de Alerta (Flash Messages) -->
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags %}alert-{{ message.tags }}{% else %}alert-primary{% endif %} alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert" style="border-radius: 12px;">
+                        <i class="bi {% if message.tags == 'error' %}bi-exclamation-triangle-fill{% elif message.tags == 'success' %}bi-check-circle-fill{% else %}bi-info-circle-fill{% endif %} me-2 fs-5"></i>
+                        <div>{{ message }}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Capa Decorativa -->
+        <div class="profile-cover-banner">
+            <div class="profile-cover-pattern"></div>
+        </div>
+
+        <!-- Card de Informações Principais do Usuário -->
+        <div class="profile-header-card">
+            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="profile-avatar-large-wrapper">
+                        <div class="profile-avatar-large">
+                            {% if perfil.avatar %}
+                                <img src="{{ perfil.avatar.url }}" alt="{{ perfil.nome }}">
+                            {% else %}
+                                {{ perfil.nome|slice:":1"|upper|default:"U" }}
+                            {% endif %}
+                        </div>
+                        {% if is_proprio_perfil %}
+                            <button type="button" class="btn-edit-avatar-badge" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" title="Alterar foto ou nome">
+                                <i class="bi bi-camera-fill" style="font-size: 0.95rem;"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <h1 class="profile-user-name mb-0">{{ perfil.nome }}</h1>
+                            {% if not is_proprio_perfil %}
+                                <span class="badge bg-secondary-subtle text-secondary border px-2 py-1" style="font-size: 0.75rem; border-radius: 8px;">Estudante</span>
+                            {% endif %}
+                        </div>
+                        <div class="profile-user-email">{{ perfil.usuario.email }}</div>
+                        
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <span class="profile-pill profile-pill-xp">
+                                <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                <span><strong>{{ perfil.xp }}</strong> XP</span>
+                            </span>
+
+                            <span class="profile-pill profile-pill-fire">
+                                <span>🔥</span>
+                                <span><strong>{{ stats.ofensiva }}</strong> Dias de Ofensiva</span>
+                            </span>
+
+                            {% if stats.posicao_ranking %}
+                                <span class="profile-pill profile-pill-school">
+                                    <i class="bi bi-trophy-fill text-primary"></i>
+                                    <span>Rank #<strong>{{ stats.posicao_ranking }}</strong></span>
+                                </span>
+                            {% endif %}
+
+                            <span class="profile-pill profile-pill-school" title="{{ perfil.escola.nome }}">
+                                <i class="bi bi-building"></i>
+                                <span class="text-truncate" style="max-width: 220px;">{{ perfil.escola.nome }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column align-items-start align-items-md-end gap-2 w-100 w-md-auto">
+                    <!-- Banners Atualmente Equipados (Máximo 2) -->
+                    <div class="d-flex flex-column align-items-start align-items-md-end">
+                        <span class="text-muted fw-bold small text-uppercase mb-1" style="letter-spacing: 0.05em; font-size: 0.72rem;">
+                            Banners em Destaque ({{ stats.banners_equipados|length }}/2)
+                        </span>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for banner in stats.banners_equipados %}
+                                <span class="banner-badge banner-{{ banner.codigo }}" title="{{ banner.nome }}: {{ banner.descricao }}">
+                                    {{ banner.nome }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small fst-italic">Nenhum banner equipado</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if is_proprio_perfil %}
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
+                                <i class="bi bi-pencil-square me-1"></i>Editar Perfil
+                            </button>
+                            <a href="{% url 'configuracoes' %}" class="btn btn-light btn-sm rounded-pill px-3 fw-semibold border">
+                                <i class="bi bi-gear-fill me-1"></i>Configurações
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'ranking' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold mt-2">
+                            <i class="bi bi-arrow-left me-1"></i>Voltar ao Ranking
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if is_proprio_perfil %}
+            <!-- Abas de Navegação Interna -->
+            <ul class="nav nav-pills-perfil" id="perfilTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if aba_ativa == 'perfil' %}active{% endif %}" id="visao-geral-tab" data-bs-toggle="pill" data-bs-target="#visao-geral" type="button" role="tab">
+                        <i class="bi bi-pie-chart-fill"></i>Visão Geral & Estatísticas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if aba_ativa == 'banners' %}active{% endif %}" id="banners-tab" data-bs-toggle="pill" data-bs-target="#banners" type="button" role="tab">
+                        <i class="bi bi-award-fill"></i>Gerenciar Banners ({{ stats.banners_equipados|length }}/2)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link text-decoration-none" href="{% url 'configuracoes' %}">
+                        <i class="bi bi-gear-fill"></i>Configurações da Conta
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+
+        <div class="tab-content" id="perfilTabsContent">
+
+            <!-- ABA 1: VISÃO GERAL & ESTATÍSTICAS -->
+            <div class="tab-pane fade {% if aba_ativa == 'perfil' or not is_proprio_perfil %}show active{% endif %}" id="visao-geral" role="tabpanel">
+                
+                <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-bar-chart-line-fill text-primary"></i>Desempenho Geral
+                </h4>
+
+                <!-- Grade de Cards Métricos -->
+                <div class="row g-3 mb-4">
+                    <!-- Questões Respondidas -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-metric-card">
+                            <div>
+                                <div class="stat-metric-icon stat-icon-blue">
+                                    <i class="bi bi-ui-checks"></i>
+                                </div>
+                                <div class="stat-metric-value">{{ stats.questoes_respondidas }}</div>
+                                <div class="stat-metric-label">Questões Respondidas</div>
+                            </div>
+                            <small class="text-muted mt-2 d-block">{{ stats.total_tentativas }} tentativas totais</small>
+                        </div>
+                    </div>
+
+                    <!-- Acertos -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-metric-card">
+                            <div>
+                                <div class="stat-metric-icon stat-icon-green">
+                                    <i class="bi bi-check2-circle"></i>
+                                </div>
+                                <div class="stat-metric-value text-success">{{ stats.questoes_acertadas }}</div>
+                                <div class="stat-metric-label">Acertos</div>
+                            </div>
+                            <div class="progress-thin">
+                                <div class="progress-bar progress-bar-accuracy" style="width: {{ stats.taxa_acerto }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Erros -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-metric-card">
+                            <div>
+                                <div class="stat-metric-icon stat-icon-red">
+                                    <i class="bi bi-x-circle"></i>
+                                </div>
+                                <div class="stat-metric-value text-danger">{{ stats.questoes_erradas }}</div>
+                                <div class="stat-metric-label">Erros</div>
+                            </div>
+                            <small class="text-muted mt-2 d-block">{{ stats.tentativas_erradas }} erros em tentativas</small>
+                        </div>
+                    </div>
+
+                    <!-- Taxa de Precisão / Acerto -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-metric-card">
+                            <div>
+                                <div class="stat-metric-icon stat-icon-purple">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                </div>
+                                <div class="stat-metric-value text-primary">{{ stats.taxa_acerto }}%</div>
+                                <div class="stat-metric-label">Taxa de Acerto</div>
+                            </div>
+                            <small class="text-muted mt-2 d-block">Aproveitamento médio</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Galeria de Conquistas do Estudante -->
+                <div class="settings-section-card mt-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                        <div>
+                            <h5 class="settings-card-title mb-1">
+                                <i class="bi bi-trophy-fill text-warning"></i>Galeria de Conquistas
+                            </h5>
+                            <p class="settings-card-subtitle mb-0">
+                                {% if is_proprio_perfil %}
+                                    Conquistas desbloqueadas através do seu esforço e dedicação.
+                                {% else %}
+                                    Conquistas desbloqueadas por {{ perfil.nome }}.
+                                {% endif %}
+                            </p>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary border px-3 py-2 fw-bold" style="border-radius: 10px;">
+                            {{ stats.conquistas_desbloqueadas|length }} Conquistas
+                        </span>
+                    </div>
+
+                    <div class="achievements-gallery-grid">
+                        {% for c in stats.conquistas_desbloqueadas %}
+                            <div class="achievement-card-equip">
+                                <div>
+                                    <div class="achievement-title-row">
+                                        <span class="banner-badge banner-{{ c.codigo }}">
+                                            {{ c.nome }}
+                                        </span>
+                                        <span class="badge bg-light text-primary border" style="font-size: 0.78rem;">
+                                            +{{ c.xp_recompensa }} XP
+                                        </span>
+                                    </div>
+                                    <p class="achievement-desc mt-2">{{ c.descricao }}</p>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                                    <small class="text-success fw-bold d-flex align-items-center gap-1">
+                                        <i class="bi bi-patch-check-fill"></i> Desbloqueada por mérito
+                                    </small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12 text-center py-4 text-muted">
+                                <i class="bi bi-award fs-1 text-muted d-block mb-2"></i>
+                                Nenhuma conquista desbloqueada até o momento.
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+            {% if is_proprio_perfil %}
+                <!-- ABA 2: GERENCIAMENTO DE BANNERS -->
+                <div class="tab-pane fade {% if aba_ativa == 'banners' %}show active{% endif %}" id="banners" role="tabpanel">
+                    
+                    <div class="settings-section-card">
+                        <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
+                            <div>
+                                <h4 class="settings-card-title mb-1">
+                                    <i class="bi bi-stars text-warning"></i>Seus Banners em Destaque
+                                </h4>
+                                <p class="settings-card-subtitle mb-0">
+                                    Personalize quais banners serão exibidos no seu <strong>perfil</strong> e no <strong>ranking</strong>. 
+                                    Você pode escolher no <strong>máximo 2 banners</strong> entre os que desbloqueou por mérito.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Slots Visuais de Banners Atuais -->
+                        <div class="equipped-banners-box mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="fw-bold text-dark d-flex align-items-center gap-2">
+                                    <i class="bi bi-display text-primary"></i>Visualização Atual no Ranking & Perfil
+                                </span>
+                                <small class="text-muted">Limite: 2 banners simultâneos</small>
+                            </div>
+
+                            <div class="equipped-slots-grid">
+                                <!-- Slot 1 -->
+                                <div class="banner-slot-card {% if not perfil.banner_1 %}empty-slot{% endif %}" id="previewSlot1">
+                                    <span class="banner-slot-header">Slot 1 (Principal)</span>
+                                    {% if perfil.banner_1 %}
+                                        <span class="banner-badge banner-{{ perfil.banner_1.codigo }}" id="slot1Badge">
+                                            {{ perfil.banner_1.nome }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted small" id="slot1Badge"><i class="bi bi-plus-circle me-1"></i>Vazio (Selecione abaixo)</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Slot 2 -->
+                                <div class="banner-slot-card {% if not perfil.banner_2 %}empty-slot{% endif %}" id="previewSlot2">
+                                    <span class="banner-slot-header">Slot 2 (Secundário)</span>
+                                    {% if perfil.banner_2 %}
+                                        <span class="banner-badge banner-{{ perfil.banner_2.codigo }}" id="slot2Badge">
+                                            {{ perfil.banner_2.nome }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted small" id="slot2Badge"><i class="bi bi-plus-circle me-1"></i>Vazio (Selecione abaixo)</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formulário de Seleção e Salvamento dos Banners -->
+                        <form method="POST" action="{% url 'perfil' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="atualizar_banners">
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label-custom">Escolha o Banner do Slot 1:</label>
+                                    <select name="banner_1" id="selectBanner1" class="form-select form-control-custom" onchange="atualizarSlotsPreview()">
+                                        <option value="">-- Nenhum (Deixar Vazio) --</option>
+                                        {% for c in conquistas_desbloqueadas %}
+                                            <option value="{{ c.id }}" {% if perfil.banner_1_id == c.id %}selected{% endif %} data-codigo="{{ c.codigo }}" data-nome="{{ c.nome }}">
+                                                {{ c.nome }} (+{{ c.xp_recompensa }} XP)
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Apenas conquistas desbloqueadas aparecem na lista.</small>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label-custom">Escolha o Banner do Slot 2:</label>
+                                    <select name="banner_2" id="selectBanner2" class="form-select form-control-custom" onchange="atualizarSlotsPreview()">
+                                        <option value="">-- Nenhum (Deixar Vazio) --</option>
+                                        {% for c in conquistas_desbloqueadas %}
+                                            <option value="{{ c.id }}" {% if perfil.banner_2_id == c.id %}selected{% endif %} data-codigo="{{ c.codigo }}" data-nome="{{ c.nome }}">
+                                                {{ c.nome }} (+{{ c.xp_recompensa }} XP)
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Selecione um banner diferente do Slot 1.</small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 mb-4">
+                                <button type="submit" class="btn-primary-custom">
+                                    <i class="bi bi-check-lg"></i>Salvar Banners em Destaque
+                                </button>
+                            </div>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <!-- Catálogo Completo de Banners / Conquistas -->
+                        <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-grid-fill text-primary"></i>Catálogo de Banners & Conquistas
+                        </h5>
+                        <p class="text-muted small mb-4">
+                            <i class="bi bi-shield-check text-success me-1"></i>
+                            <strong>Regra de Mérito:</strong> Somente conquistas que você já desbloqueou resolvendo questões ou conquistando posições no ranking podem ser equipadas.
+                        </p>
+
+                        <div class="achievements-gallery-grid">
+                            {% for c in todas_conquistas %}
+                                <div class="achievement-card-equip {% if c.equipado_slot1 or c.equipado_slot2 %}is-equipped{% elif not c.desbloqueada %}is-locked{% endif %}">
+                                    {% if c.equipado_slot1 %}
+                                        <span class="achievement-badge-equipped-indicator">Equipado no Slot 1</span>
+                                    {% elif c.equipado_slot2 %}
+                                        <span class="achievement-badge-equipped-indicator">Equipado no Slot 2</span>
+                                    {% endif %}
+
+                                    <div>
+                                        <div class="achievement-title-row">
+                                            <span class="banner-badge banner-{{ c.codigo }}">
+                                                {{ c.nome }}
+                                            </span>
+                                            <span class="badge bg-light text-primary border" style="font-size: 0.75rem;">
+                                                +{{ c.xp_recompensa }} XP
+                                            </span>
+                                        </div>
+                                        <p class="achievement-desc mt-2">{{ c.descricao }}</p>
+                                    </div>
+
+                                    <div class="pt-2 border-top mt-auto">
+                                        {% if c.desbloqueada %}
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <small class="text-success fw-bold d-flex align-items-center gap-1">
+                                                    <i class="bi bi-patch-check-fill"></i> Desbloqueada
+                                                </small>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="equiparNoSlot(1, '{{ c.id }}')">Slot 1</button>
+                                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="equiparNoSlot(2, '{{ c.id }}')">Slot 2</button>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="d-flex align-items-center gap-1 text-muted small">
+                                                <i class="bi bi-lock-fill text-secondary"></i>
+                                                <span>Bloqueada: alcance o requisito para liberar</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                </div>
+            {% endif %}
+
+        </div>
+
+    </main>
+
+    {% if is_proprio_perfil %}
+        <!-- MODAL DE EDIÇÃO DE PERFIL (FOTO E NOME) -->
+        <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalEditarPerfilLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-perfil-content">
+                    <div class="modal-perfil-header">
+                        <div class="d-flex align-items-center justify-content-between w-100">
+                            <h5 class="modal-title fw-bold text-white mb-0" id="modalEditarPerfilLabel">
+                                <i class="bi bi-pencil-square me-2"></i>Editar Foto e Nome
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="acao" value="atualizar_perfil">
+
+                        <div class="modal-body p-4">
+                            
+                            <!-- Foto e Preview -->
+                            <div class="text-center mb-4">
+                                <div class="profile-avatar-large mx-auto mb-2" id="avatarPreviewContainer">
+                                    {% if perfil.avatar %}
+                                        <img src="{{ perfil.avatar.url }}" alt="Avatar Preview" id="avatarPreviewImg">
+                                    {% else %}
+                                        <span id="avatarPreviewInitial">{{ perfil.nome|slice:":1"|upper|default:"U" }}</span>
+                                        <img src="" alt="Avatar Preview" id="avatarPreviewImg" class="d-none">
+                                    {% endif %}
+                                </div>
+
+                                <div class="mt-2">
+                                    <label for="inputAvatarFile" class="btn btn-sm btn-outline-primary rounded-pill px-3 cursor-pointer">
+                                        <i class="bi bi-upload me-1"></i>Escolher Nova Foto
+                                    </label>
+                                    <input type="file" name="avatar" id="inputAvatarFile" class="d-none" accept="image/*" onchange="previewImage(event)">
+
+                                    {% if perfil.avatar %}
+                                        <div class="form-check d-inline-block ms-2 mt-2">
+                                            <input class="form-check-input" type="checkbox" name="remover_avatar" value="true" id="checkRemoverAvatar">
+                                            <label class="form-check-label text-danger small" for="checkRemoverAvatar">
+                                                Remover foto atual
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted d-block mt-1">Formatos aceitos: JPG, PNG, WEBP. Máximo 5MB.</small>
+                            </div>
+
+                            <!-- Nome Completo -->
+                            <div class="mb-3">
+                                <label class="form-label-custom">Nome Completo</label>
+                                <input type="text" name="nome" class="form-control form-control-custom" value="{{ perfil.nome }}" required placeholder="Seu nome completo">
+                                <small class="text-muted">Insira ao menos nome e sobrenome.</small>
+                            </div>
+
+                            <!-- Escola (Apenas Leitura com Informativo) -->
+                            <div class="mb-3">
+                                <label class="form-label-custom">Escola Vinculada</label>
+                                <input type="text" class="form-control form-control-custom bg-light" value="{{ perfil.escola.nome }}" readonly>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer bg-light p-3 border-0">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Preview da imagem do avatar ao selecionar arquivo
+        function previewImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('avatarPreviewImg');
+                    const initial = document.getElementById('avatarPreviewInitial');
+                    if (img) {
+                        img.src = e.target.result;
+                        img.classList.remove('d-none');
+                    }
+                    if (initial) {
+                        initial.classList.add('d-none');
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Atualizar preview visual dos slots selecionados nos selects
+        function atualizarSlotsPreview() {
+            const select1 = document.getElementById('selectBanner1');
+            const select2 = document.getElementById('selectBanner2');
+
+            if (!select1 || !select2) return;
+
+            // Slot 1
+            const opt1 = select1.options[select1.selectedIndex];
+            const slot1Card = document.getElementById('previewSlot1');
+            const slot1Badge = document.getElementById('slot1Badge');
+
+            if (opt1 && opt1.value) {
+                const codigo1 = opt1.getAttribute('data-codigo');
+                const nome1 = opt1.getAttribute('data-nome');
+                slot1Card.className = 'banner-slot-card';
+                slot1Badge.className = 'banner-badge banner-' + codigo1;
+                slot1Badge.innerText = nome1;
+            } else {
+                slot1Card.className = 'banner-slot-card empty-slot';
+                slot1Badge.className = 'text-muted small';
+                slot1Badge.innerHTML = '<i class="bi bi-plus-circle me-1"></i>Vazio (Selecione abaixo)';
+            }
+
+            // Slot 2
+            const opt2 = select2.options[select2.selectedIndex];
+            const slot2Card = document.getElementById('previewSlot2');
+            const slot2Badge = document.getElementById('slot2Badge');
+
+            if (opt2 && opt2.value) {
+                const codigo2 = opt2.getAttribute('data-codigo');
+                const nome2 = opt2.getAttribute('data-nome');
+                slot2Card.className = 'banner-slot-card';
+                slot2Badge.className = 'banner-badge banner-' + codigo2;
+                slot2Badge.innerText = nome2;
+            } else {
+                slot2Card.className = 'banner-slot-card empty-slot';
+                slot2Badge.className = 'text-muted small';
+                slot2Badge.innerHTML = '<i class="bi bi-plus-circle me-1"></i>Vazio (Selecione abaixo)';
+            }
+        }
+
+        // Função rápida para botões "Slot 1" ou "Slot 2" na galeria
+        function equiparNoSlot(slotNum, conquistaId) {
+            const select = document.getElementById('selectBanner' + slotNum);
+            if (select) {
+                select.value = conquistaId;
+                atualizarSlotsPreview();
+
+                // Feedback visual sutil
+                const card = document.getElementById('previewSlot' + slotNum);
+                if (card) {
+                    card.style.transform = 'scale(1.05)';
+                    setTimeout(() => card.style.transform = 'scale(1)', 300);
+                }
+            }
+        }
+
+        // Ajuste dinâmico de compensação do cabeçalho fixo com a barra gradiente
+        function adjustHeaderOffset() {
+            const header = document.querySelector('.header-fixed-wrapper');
+            if (header) {
+                const height = Math.ceil(header.getBoundingClientRect().height);
+                document.body.style.paddingTop = Math.max(height + 16, 96) + 'px';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', adjustHeaderOffset);
+        window.addEventListener('load', adjustHeaderOffset);
+        window.addEventListener('resize', adjustHeaderOffset);
+    </script>
+</body>
+</html>

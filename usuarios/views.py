@@ -25,7 +25,6 @@ from django.db.models.functions import Coalesce
 
 
 
-
 def cadastro(request):
     escolas = Escola.objects.all().order_by("nome")
 
@@ -94,6 +93,24 @@ def login(request):
         
         messages.error(request, "E-mail ou senha incorretos")
     return render(request, "login.html")
+
+
+@login_required
+def inicio(request):
+    perfil = Perfil.objects.select_related("usuario").get(usuario=request.user)
+    stats = obter_estatisticas_perfil(perfil)
+    total_questoes = Questao.objects.count()
+    top_10 = Perfil.objects.select_related("usuario", "escola").order_by("-xp", "nome", "id")[:10]
+
+    return render(request, "inicio.html", {
+        "perfil": perfil,
+        "total_questoes": total_questoes,
+        "respondidas": stats["questoes_respondidas"],
+        "acertos": stats["questoes_acertadas"],
+        "erros": stats["questoes_erradas"],
+        "taxa_acerto": stats["taxa_acerto"],
+        "top_10": top_10,
+    })
 
 
 def calcular_taxa_acerto(questao):

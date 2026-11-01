@@ -1,0 +1,52 @@
+<main>
+
+    <section>
+        <h1>Olá, {{ request.user.first_name|default:request.user.username }}!</h1>
+        <p>Acompanhe seu desempenho.</p>
+    </section>
+
+    <section>
+        <h2>Seu desempenho</h2>
+
+        <div>
+            <h3>Questões disponíveis</h3>
+            <p>{{ total_questoes }} questões</p>
+        </div>
+
+        <div>
+            <h3>Respondidas</h3>
+            <p>{{ respondidas }} questões</p>
+        </div>
+
+        <div>
+            <h3>Acertos</h3>
+            <p>{{ acertos }} questões</p>
+        </div>
+
+        <div>
+            <h3>Erros</h3>
+            <p>{{ erros }} questões</p>
+        </div>
+
+        <div>
+            <h3>Taxa de acerto</h3>
+            <p>{{ taxa_acerto }}%</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Ranking geral</h2>
+
+        {% for usuario in top_10 %}
+            <div>
+                <p>{{ forloop.counter }}º - {{ usuario.username }}</p>
+                <p>{{ usuario.xp }} XP</p>
+            </div>
+        {% empty %}
+            <p>Nenhum participante no ranking.</p>
+        {% endfor %}
+
+        <a href="{% url 'ranking' %}">Ver completo</a>
+    </section>
+
+</main>

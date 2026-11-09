@@ -18,6 +18,22 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
+    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('aprovaifpi_theme');
+            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
+            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
+            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
+            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
+            {% endif %}
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
 </head>
 
 <body style="margin:0; padding:0; width:100%; height:100%;">
@@ -149,6 +165,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
+    <!-- Dark Mode Controller -->
+    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
 </body>
 
 </html>

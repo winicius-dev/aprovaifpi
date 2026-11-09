@@ -1,52 +1,589 @@
-<main>
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
 
-    <section>
-        <h1>Olá, {{ request.user.first_name|default:request.user.username }}!</h1>
-        <p>Acompanhe seu desempenho.</p>
-    </section>
+<head>
+    <title>AprovaIFPI - Início</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <section>
-        <h2>Seu desempenho</h2>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 
-        <div>
-            <h3>Questões disponíveis</h3>
-            <p>{{ total_questoes }} questões</p>
-        </div>
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- CSS Base do Sistema (Navbar, Footer, Design System) -->
+    <link rel="stylesheet" href="{% static 'styles/ranking.css' %}?v=2.9">
+    <link rel="stylesheet" href="{% static 'styles/inicio.css' %}?v=2.9">
+    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('aprovaifpi_theme');
+            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
+            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
+            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
+            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
+            {% endif %}
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
+</head>
 
-        <div>
-            <h3>Respondidas</h3>
-            <p>{{ respondidas }} questões</p>
-        </div>
+<body class="inicio-body">
 
-        <div>
-            <h3>Acertos</h3>
-            <p>{{ acertos }} questões</p>
-        </div>
+    <!-- 1. Header / Navbar 100% Idêntico às Outras Páginas -->
+    <header class="fixed-top header-fixed-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-ranking">
+            <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between">
+                
+                <a class="navbar-brand me-3" href="{% url 'inicio' %}">
+                    <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Logo AprovaIFPI">
+                </a>
 
-        <div>
-            <h3>Erros</h3>
-            <p>{{ erros }} questões</p>
-        </div>
+                <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarMenuDesktop">
+                    <ul class="navbar-nav gap-2 gap-xl-4 align-items-center mb-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'inicio' %}">INÍCIO</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questoes' %}">QUESTÕES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'conteudos' %}">CONTEÚDOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ranking' %}">RANKING</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
+                        </li>
+                    </ul>
+                </div>
 
-        <div>
-            <h3>Taxa de acerto</h3>
-            <p>{{ taxa_acerto }}%</p>
-        </div>
-    </section>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="user-avatar-btn dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu de usuário">
+                            <div class="avatar-circle">
+                                {% if perfil.avatar %}
+                                    <img src="{{ perfil.avatar.url }}" alt="{{ perfil.nome }}" class="avatar-img-circle">
+                                {% elif perfil.nome %}
+                                    {{ perfil.nome|slice:":1"|upper }}
+                                {% elif request.user.username %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    U
+                                {% endif %}
+                            </div>
+                            <i class="bi bi-chevron-down user-avatar-chevron d-none d-sm-inline"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="border-radius: 14px; min-width: 220px;">
+                            <li class="px-3 py-2 border-bottom">
+                                <a href="{% url 'perfil' %}" class="text-decoration-none text-dark d-block">
+                                    <span class="fw-bold d-block text-truncate" style="font-size: 0.95rem;">{{ perfil.nome|default:request.user.username }}</span>
+                                    <small class="text-muted d-block">{{ request.user.email }}</small>
+                                    <span class="badge bg-primary text-white mt-1 badge-total-xp" style="font-size: 0.75rem;">{{ perfil.xp|default:0 }} XP</span>
+                                </a>
+                            </li>
+                            <li><a class="dropdown-item py-2 fw-semibold text-primary" href="{% url 'perfil' %}"><i class="bi bi-person-circle me-2"></i>Meu Perfil</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'configuracoes' %}"><i class="bi bi-gear-fill me-2 text-secondary"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'questoes' %}"><i class="bi bi-journal-text me-2"></i>Minhas Questões</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'conteudos' %}"><i class="bi bi-play-circle me-2"></i>Conteúdos</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'ranking' %}"><i class="bi bi-trophy me-2"></i>Ranking</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
 
-    <section>
-        <h2>Ranking geral</h2>
+                    <!-- Botão Toggle Mobile -->
+                    <button class="navbar-toggler border-0 ms-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Abrir menu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
 
-        {% for usuario in top_10 %}
-            <div>
-                <p>{{ forloop.counter }}º - {{ usuario.username }}</p>
-                <p>{{ usuario.xp }} XP</p>
+                <!-- Menu Offcanvas Mobile -->
+                <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar">
+                    <div class="offcanvas-header border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" style="width: 34px; height: 34px; font-size: 1rem;">
+                                {% if perfil.nome %}{{ perfil.nome|slice:":1"|upper }}{% else %}U{% endif %}
+                            </div>
+                            <span class="fw-bold text-dark">{{ perfil.nome|default:request.user.username }}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav gap-2">
+                            <li class="nav-item">
+                                <a class="nav-link active text-primary py-2" href="{% url 'inicio' %}">INÍCIO</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'questoes' %}">QUESTÕES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'conteudos' %}">CONTEÚDOS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'ranking' %}">RANKING</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
+                            </li>
+                        </ul>
+                        <hr>
+                        <div class="mt-3">
+                            <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 rounded-pill py-2">
+                                <i class="bi bi-box-arrow-right me-2"></i>Sair
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        {% empty %}
-            <p>Nenhum participante no ranking.</p>
-        {% endfor %}
+        </nav>
 
-        <a href="{% url 'ranking' %}">Ver completo</a>
-    </section>
+        <div class="top-gradient-bar"></div>
+    </header>
 
-</main>
+    <!-- Conteúdo Principal -->
+    <main class="flex-grow-1">
+
+        <!-- 2. Carrossel de Banners Ampliado e Proporcional -->
+        <section class="banner-carousel-section">
+            <div id="inicioBannerCarousel" class="carousel slide banner-carousel-wrapper" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="carousel-banner-item">
+                            <img src="{% static 'img/banner 1.svg' %}?v=2.5" alt="AprovaIFPI Banner 1" class="carousel-banner-img">
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="carousel-banner-item">
+                            <img src="{% static 'img/banner 2.svg' %}?v=2.5" alt="AprovaIFPI Banner 2" class="carousel-banner-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicadores (Dots) Centralizados abaixo do carrossel -->
+            <div class="carousel-indicators-custom">
+                <button type="button" data-bs-target="#inicioBannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Banner 1"></button>
+                <button type="button" data-bs-target="#inicioBannerCarousel" data-bs-slide-to="1" aria-label="Banner 2"></button>
+            </div>
+        </section>
+
+        <!-- 3. Linha 100% Horizontal de Ponta a Ponta (Edge-to-Edge) com Cor Azul Forte Marcante -->
+        <div class="full-bleed-blue-line"></div>
+
+        <!-- 4. Container de Conteúdo Equilibrado e Amplo (Cards, Gráficos e Rankings) -->
+        <div class="inicio-content-container">
+            
+            <!-- Cards de Estatísticas com Background Watermark 'logo transparente.svg' -->
+            <section class="stats-cards-row">
+                <div class="row g-3 g-md-4">
+                    <!-- Card 1: Questões -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-box-card">
+                            <span class="stat-box-label">Questões</span>
+                            <span class="stat-box-number text-accent-blue">{{ total_questoes }}</span>
+                            <img src="{% static 'img/logo transparente.svg' %}" alt="Watermark" class="stat-watermark">
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Respondidas -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-box-card">
+                            <span class="stat-box-label">Respondidas</span>
+                            <span class="stat-box-number">{{ stats.questoes_respondidas }}</span>
+                            <img src="{% static 'img/logo transparente.svg' %}" alt="Watermark" class="stat-watermark">
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Acertos -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-box-card">
+                            <span class="stat-box-label">Acertos</span>
+                            <span class="stat-box-number">{{ stats.questoes_acertadas }}</span>
+                            <img src="{% static 'img/logo transparente.svg' %}" alt="Watermark" class="stat-watermark">
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Erros -->
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-box-card">
+                            <span class="stat-box-label">Erros</span>
+                            <span class="stat-box-number">{{ stats.questoes_erradas }}</span>
+                            <img src="{% static 'img/logo transparente.svg' %}" alt="Watermark" class="stat-watermark">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Dupla: Taxa de Acertos e Ranking com Alternador Interativo Geral / Semanal -->
+            <section class="dashboard-grid-row">
+                <div class="row g-3 g-lg-4 align-items-stretch">
+                    
+                    <!-- Coluna Esquerda: Taxa de Acertos % & Posições de Ranking -->
+                    <div class="col-12 col-lg-4">
+                        <div class="card-taxa-performance">
+                            
+                            <!-- Versão Mobile: Layout Horizontal Integrado -->
+                            <div class="d-lg-none">
+                                <div class="mobile-taxa-wrapper">
+                                    <!-- Gráfico Circular com Animação -->
+                                    <div class="mobile-circle-col text-center">
+                                        <span class="stat-box-label d-block mb-1 fw-semibold">Taxa de Acertos %</span>
+                                        <div class="circle-progress-wrapper">
+                                            <svg class="circle-progress-svg" viewBox="0 0 100 100">
+                                                <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                                                <circle class="circle-bar" cx="50" cy="50" r="42" 
+                                                        pathLength="100"
+                                                        stroke-dasharray="100" 
+                                                        stroke-dashoffset="100">
+                                                </circle>
+                                            </svg>
+                                            <div class="circle-progress-text">0%</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Badges Escola e Geral -->
+                                    <div class="mobile-ranks-col">
+                                        <div class="rank-badge-item">
+                                            <div class="rank-badge-label">Ranking Escolar</div>
+                                            <div class="rank-pill-box">
+                                                <span class="rank-number">{{ posicao_escolar|default:1 }}</span>
+                                                <span class="rank-arrow">↑</span>
+                                                <span class="rank-scope">escolar</span>
+                                            </div>
+                                        </div>
+                                        <div class="rank-badge-item">
+                                            <div class="rank-badge-label">Ranking Geral</div>
+                                            <div class="rank-pill-box">
+                                                <span class="rank-number">{{ posicao_geral|default:1 }}</span>
+                                                <span class="rank-arrow">↑</span>
+                                                <span class="rank-scope">geral</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Versão Desktop: Layout Vertical -->
+                            <div class="d-none d-lg-block w-100">
+                                <h6 class="section-card-title">Taxa de Acertos %</h6>
+                                
+                                <!-- Gráfico Circular SVG com Animação -->
+                                <div class="circle-progress-wrapper">
+                                    <svg class="circle-progress-svg" viewBox="0 0 100 100">
+                                        <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                                        <circle class="circle-bar" cx="50" cy="50" r="42" 
+                                                pathLength="100"
+                                                stroke-dasharray="100" 
+                                                stroke-dashoffset="100">
+                                        </circle>
+                                    </svg>
+                                    <div class="circle-progress-text">0%</div>
+                                </div>
+
+                                <!-- Posições no Ranking -->
+                                <div class="rank-badge-item mt-4">
+                                    <div class="rank-badge-label">Ranking Escolar</div>
+                                    <div class="rank-pill-box">
+                                        <span class="rank-number">{{ posicao_escolar|default:1 }}</span>
+                                        <span class="rank-arrow">↑</span>
+                                        <span class="rank-scope">escolar</span>
+                                    </div>
+                                </div>
+
+                                <div class="rank-badge-item mt-3">
+                                    <div class="rank-badge-label">Ranking Geral</div>
+                                    <div class="rank-pill-box">
+                                        <span class="rank-number">{{ posicao_geral|default:1 }}</span>
+                                        <span class="rank-arrow">↑</span>
+                                        <span class="rank-scope">geral</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Ranking com Dropdown para Alternar Geral / Semanal -->
+                    <div class="col-12 col-lg-8">
+                        <div class="card-ranking-board">
+                            
+                            <!-- Cabeçalho do Card: Título com Seta para Baixo (Dropdown) -->
+                            <div class="d-flex align-items-center justify-content-center mb-3">
+                                <div class="dropdown">
+                                    <button class="ranking-type-dropdown-btn dropdown-toggle no-arrow" type="button" id="rankingDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Clique para alternar entre Ranking Geral e Semanal">
+                                        <span id="currentRankingTitle">Ranking Geral</span>
+                                        <i class="bi bi-chevron-down ms-1" id="rankingChevronIcon"></i>
+                                    </button>
+                                    <ul class="dropdown-menu shadow border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                                        <li>
+                                            <button class="dropdown-item py-2 fw-semibold active" type="button" id="btnOptGeral" onclick="alternarRankingTipo('geral')">
+                                                <i class="bi bi-globe me-2 text-primary"></i>Ranking Geral
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item py-2 fw-semibold" type="button" id="btnOptSemanal" onclick="alternarRankingTipo('semanal')">
+                                                <i class="bi bi-calendar-week me-2 text-success"></i>Ranking Semanal
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Lista do Ranking Geral (Visível por Padrão) -->
+                            <div class="ranking-board-table" id="rankingGeralList">
+                                {% for p in top_10_geral %}
+                                    <div class="ranking-board-row {% if forloop.counter > 5 %}d-none d-lg-flex{% endif %}">
+                                        <div class="rank-pos-col">
+                                            {% if p.posicao == 1 %}
+                                                <span title="1º Lugar">🥇</span>
+                                            {% elif p.posicao == 2 %}
+                                                <span title="2º Lugar">🥈</span>
+                                            {% elif p.posicao == 3 %}
+                                                <span title="3º Lugar">🥉</span>
+                                            {% else %}
+                                                <span>{{ p.posicao }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="rank-user-col text-center">
+                                            {{ p.nome }}
+                                        </div>
+                                        <div class="rank-xp-col">
+                                            <span class="xp-tag-blue">XP</span><span class="xp-val-dark">{{ p.xp }}</span>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="text-center py-4 text-muted">Nenhum participante no ranking ainda.</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Lista do Ranking Semanal (Alternância instantânea sem duplicidade) -->
+                            <div class="ranking-board-table" id="rankingSemanalList" style="display: none;">
+                                {% for p in top_10_semanal %}
+                                    <div class="ranking-board-row {% if forloop.counter > 5 %}d-none d-lg-flex{% endif %}">
+                                        <div class="rank-pos-col">
+                                            {% if p.posicao == 1 %}
+                                                <span title="1º Lugar">🥇</span>
+                                            {% elif p.posicao == 2 %}
+                                                <span title="2º Lugar">🥈</span>
+                                            {% elif p.posicao == 3 %}
+                                                <span title="3º Lugar">🥉</span>
+                                            {% else %}
+                                                <span>{{ p.posicao }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="rank-user-col text-center">
+                                            {{ p.nome }}
+                                        </div>
+                                        <div class="rank-xp-col">
+                                            <span class="xp-tag-blue">XP</span><span class="xp-val-dark">{{ p.xp_ranking }}</span>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="text-center py-4 text-muted">Nenhum participante pontuou esta semana.</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Seta Chevron de Expansão / Link para o Ranking Completo -->
+                            <a href="{% url 'ranking' %}" class="ranking-board-footer-link" title="Ver ranking completo">
+                                <i class="bi bi-chevron-down"></i>
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 5. Datas Importantes do Processo Seletivo (Visível no Desktop) -->
+            <div class="desktop-datas-row d-none d-lg-flex">
+                <span>Data Edital</span>
+                <span>Data Inscrições</span>
+                <span>Data Prova</span>
+                <span>Data Resultado</span>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- 6. Footer Idêntico às Outras Páginas -->
+    <div class="footer-top-stripe"></div>
+    <footer class="text-dark pt-5 pb-4">
+        <div class="inicio-content-container">
+            <div class="row">
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.95rem;">APROVAIFPI.COM</h6>
+                    <ul class="list-unstyled text-secondary" style="font-size: 0.9rem;">
+                        <li class="py-1"><a href="{% url 'login' %}" class="text-secondary text-decoration-none">Login</a></li>
+                        <li class="py-1"><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none">Questões</a></li>
+                        <li class="py-1"><a href="{% url 'conteudos' %}" class="text-secondary text-decoration-none">Conteúdos</a></li>
+                        <li class="py-1"><a href="{% url 'ranking' %}" class="text-secondary text-decoration-none">Rankings</a></li>
+                        <li class="py-1"><a href="{% url 'recuperaifpi' %}" class="text-secondary text-decoration-none">RecuperaIFPI</a></li>
+                        <li class="py-1"><a href="{% url 'perfil' %}" class="text-secondary text-decoration-none">Perfil</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.95rem;">COLABORADORES</h6>
+                    <ul class="list-unstyled text-secondary" style="font-size: 0.9rem;">
+                        <li class="py-1">Aluno João Gabriel Lopes</li>
+                        <li class="py-1">Aluno Marcos Vinicius Gomes</li>
+                        <li class="py-1">Aluno Victor Daniel Castro</li>
+                        <li class="py-1">Prof. Alexandre Cajazeira</li>
+                        <li class="py-1">Prof. Alexandre Lages</li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.95rem;">RECURSOS UTILIZADOS</h6>
+                    <ul class="list-unstyled text-secondary" style="font-size: 0.9rem;">
+                        <li class="py-1">Bootstrap 5</li>
+                        <li class="py-1">HTML</li>
+                        <li class="py-1">CSS</li>
+                        <li class="py-1">JAVASCRIPT</li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 0.95rem;">DISCIPLINAS</h6>
+                    <ul class="list-unstyled text-secondary" style="font-size: 0.9rem;">
+                        <li class="py-1"><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none">Português</a></li>
+                        <li class="py-1"><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none">Matemática</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-light my-4">
+            <div class="d-flex align-items-center">
+                <img src="{% static 'img/logo_aprovaifpi 1.svg' %}" alt="Logo AprovaIFPI" height="34" class="me-2">
+                <small class="text-muted fw-semibold">&copy; 2025 - Um produto AprovaIFPI.com</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sincroniza os pontinhos (indicators) com a rotação do carousel
+        document.addEventListener('DOMContentLoaded', function () {
+            const carouselEl = document.getElementById('inicioBannerCarousel');
+            if (carouselEl) {
+                const indicatorButtons = document.querySelectorAll('.carousel-indicators-custom button');
+                carouselEl.addEventListener('slide.bs.carousel', function (e) {
+                    indicatorButtons.forEach((btn, idx) => {
+                        if (idx === e.to) {
+                            btn.classList.add('active');
+                            btn.setAttribute('aria-current', 'true');
+                        } else {
+                            btn.classList.remove('active');
+                            btn.removeAttribute('aria-current');
+                        }
+                    });
+                });
+            }
+
+            // Inicia animação fluida da taxa de acertos
+            animarTaxaAcertos();
+        });
+
+        // Animação de preenchimento do círculo e contagem numérica da porcentagem ao carregar a página
+        function animarTaxaAcertos() {
+            const targetPct = Math.max(0, Math.min(100, parseInt('{{ taxa_acerto_int|default:0 }}', 10) || 0));
+            const targetOffset = 100 - targetPct;
+
+            const circleBars = document.querySelectorAll('.circle-bar');
+            const textEls = document.querySelectorAll('.circle-progress-text');
+
+            // Garante início em 0%
+            circleBars.forEach(bar => {
+                bar.style.strokeDashoffset = '100';
+            });
+            textEls.forEach(el => {
+                el.textContent = '0%';
+            });
+
+            // Dispara após um curto intervalo para transição suave de carregamento
+            setTimeout(() => {
+                // Anima o círculo SVG
+                circleBars.forEach(bar => {
+                    bar.style.strokeDashoffset = targetOffset.toString();
+                });
+
+                // Anima o número de 0% até targetPct%
+                const duration = 1400; // ms
+                const startTime = performance.now();
+
+                function step(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // Curva de desaceleração suave (ease-out cubic)
+                    const ease = 1 - Math.pow(1 - progress, 3);
+                    const currentVal = Math.round(ease * targetPct);
+
+                    textEls.forEach(el => {
+                        el.textContent = currentVal + '%';
+                    });
+
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        textEls.forEach(el => {
+                            el.textContent = targetPct + '%';
+                        });
+                    }
+                }
+
+                requestAnimationFrame(step);
+            }, 150);
+        }
+
+        // Alternância instantânea do tipo de Ranking (Geral vs Semanal)
+        function alternarRankingTipo(tipo) {
+            const titleEl = document.getElementById('currentRankingTitle');
+            const listGeral = document.getElementById('rankingGeralList');
+            const listSemanal = document.getElementById('rankingSemanalList');
+            const btnGeral = document.getElementById('btnOptGeral');
+            const btnSemanal = document.getElementById('btnOptSemanal');
+
+            if (tipo === 'semanal') {
+                if (titleEl) titleEl.textContent = 'Ranking Semanal';
+                if (btnSemanal) btnSemanal.classList.add('active');
+                if (btnGeral) btnGeral.classList.remove('active');
+
+                if (listGeral) listGeral.style.display = 'none';
+                if (listSemanal) listSemanal.style.display = 'block';
+            } else {
+                if (titleEl) titleEl.textContent = 'Ranking Geral';
+                if (btnGeral) btnGeral.classList.add('active');
+                if (btnSemanal) btnSemanal.classList.remove('active');
+
+                if (listGeral) listGeral.style.display = 'block';
+                if (listSemanal) listSemanal.style.display = 'none';
+            }
+        }
+
+        // Ajuste dinâmico de compensação do cabeçalho fixo idêntico ao ranking
+        function adjustHeaderOffset() {
+            const header = document.querySelector('.header-fixed-wrapper');
+            if (header) {
+                const height = Math.ceil(header.getBoundingClientRect().height);
+                document.body.style.paddingTop = Math.max(height + 12, 92) + 'px';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', adjustHeaderOffset);
+        window.addEventListener('load', adjustHeaderOffset);
+        window.addEventListener('resize', adjustHeaderOffset);
+    </script>
+    <!-- Dark Mode Controller -->
+    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
+</body>
+</html>

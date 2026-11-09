@@ -10,6 +10,7 @@ from .models import (
     TentativaQuestao,
     Conquista,
     ConquistaPerfil,
+    SessaoRecuperacao,
 )
 
 admin.site.register(Escola)
@@ -22,3 +23,4 @@ admin.site.register(Alternativa)
 admin.site.register(TentativaQuestao)
 admin.site.register(Conquista)
 admin.site.register(ConquistaPerfil)
+admin.site.register(SessaoRecuperacao)

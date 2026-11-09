@@ -1,0 +1,1395 @@
+/* ==========================================================================
+   RecuperaIFPI – Estilos Adicionais
+   Complementa questoes.css com componentes específicos do RecuperaIFPI.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Hero / Intro Card
+   -------------------------------------------------------------------------- */
+.recupera-intro-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 28px 32px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.recupera-intro-card h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.recupera-intro-card .recupera-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
+  line-height: 1.55;
+}
+
+/* --------------------------------------------------------------------------
+   2. Seleção de Disciplina / Conteúdo
+   -------------------------------------------------------------------------- */
+.recupera-selecao-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 24px 28px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.recupera-select-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.recupera-select-group > div {
+  flex: 1 1 200px;
+}
+
+.recupera-select-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.recupera-select {
+  background-color: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #334155;
+  width: 100%;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23334155' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 14px 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.recupera-select:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 86, 214, 0.15);
+  outline: none;
+  background-color: #fff;
+}
+
+.recupera-btn-iniciar {
+  background-color: var(--primary-blue);
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 32px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.recupera-btn-iniciar:hover {
+  background-color: var(--primary-blue-hover);
+  box-shadow: 0 4px 12px rgba(0, 86, 214, 0.25);
+  transform: translateY(-1px);
+}
+
+.recupera-btn-iniciar:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   3. Progress Bar
+   -------------------------------------------------------------------------- */
+.recupera-progress-wrapper {
+  margin-bottom: 1.25rem;
+}
+
+.recupera-progress-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.recupera-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--bg-input);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.recupera-progress-fill {
+  height: 100%;
+  background-color: var(--primary-blue);
+  border-radius: 99px;
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   4. Resultado / Summary
+   -------------------------------------------------------------------------- */
+.recupera-resultado-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 28px 32px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  animation: slideUpCard 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.recupera-resultado-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1.25rem;
+}
+
+.recupera-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 1.25rem;
+}
+
+.recupera-stat-item {
+  text-align: center;
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  padding: 18px 12px;
+  border: 1px solid var(--border-light);
+}
+
+.recupera-stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.recupera-stat-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Color variants */
+.recupera-stat-item.stat-acertos .recupera-stat-value {
+  color: #16a34a;
+}
+
+.recupera-stat-item.stat-erros .recupera-stat-value {
+  color: #ef4444;
+}
+
+.recupera-stat-item.stat-percentual .recupera-stat-value {
+  color: var(--primary-blue);
+}
+
+.recupera-stat-item.stat-total .recupera-stat-value {
+  color: var(--text-dark);
+}
+
+/* Disclaimer */
+.recupera-disclaimer {
+  background-color: #fefce8;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.84rem;
+  color: #854d0e;
+  line-height: 1.55;
+  margin-top: 1rem;
+}
+
+.recupera-disclaimer i {
+  margin-right: 6px;
+  color: #ca8a04;
+}
+
+/* Evolução / Comparison */
+.recupera-evolucao-card {
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  padding: 18px 22px;
+  margin-top: 1rem;
+}
+
+.recupera-evolucao-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+.recupera-evolucao-card .evolucao-comparacao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.recupera-evolucao-card .evolucao-anterior {
+  color: var(--text-muted);
+}
+
+.recupera-evolucao-card .evolucao-arrow {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.recupera-evolucao-card .evolucao-atual {
+  color: var(--primary-blue);
+}
+
+.recupera-evolucao-card .evolucao-melhora {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.recupera-evolucao-card .evolucao-piora {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   5. Histórico Table
+   -------------------------------------------------------------------------- */
+.recupera-historico-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 24px 28px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.recupera-historico-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.recupera-historico-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.recupera-historico-table thead th {
+  background-color: var(--bg-card);
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.recupera-historico-table tbody td {
+  padding: 10px 14px;
+  color: #334155;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.recupera-historico-table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.recupera-historico-table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Percentual color badges */
+.recupera-historico-table .percent-high {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.recupera-historico-table .percent-mid {
+  color: #ca8a04;
+  font-weight: 700;
+}
+
+.recupera-historico-table .percent-low {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   6. Action Buttons
+   -------------------------------------------------------------------------- */
+.recupera-btn-nova {
+  background-color: var(--primary-blue);
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recupera-btn-nova:hover {
+  background-color: var(--primary-blue-hover);
+  box-shadow: 0 4px 12px rgba(0, 86, 214, 0.25);
+  transform: translateY(-1px);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.recupera-btn-questoes {
+  background-color: #ffffff;
+  border: 1.5px solid var(--primary-blue);
+  color: var(--primary-blue);
+  border-radius: 8px;
+  padding: 9px 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.recupera-btn-questoes:hover {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 86, 214, 0.25);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.recupera-btn-proxima {
+  background-color: var(--primary-blue);
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 8px 30px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recupera-btn-proxima:hover {
+  background-color: var(--primary-blue-hover);
+  box-shadow: 0 4px 12px rgba(0, 86, 214, 0.25);
+  transform: translateY(-1px);
+}
+
+.recupera-btn-proxima:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   7. Feedback Section (Activity Mode)
+   -------------------------------------------------------------------------- */
+.recupera-feedback-section {
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  padding: 18px 22px;
+  margin-top: 14px;
+  animation: slideUpCard 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.recupera-correta-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #dcfce7;
+  border: 1.5px solid #86efac;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #166534;
+  margin-bottom: 10px;
+}
+
+.recupera-correta-info .correta-letra {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #16a34a;
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsividade
+   -------------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+  .recupera-intro-card {
+    padding: 22px 18px;
+  }
+
+  .recupera-selecao-card {
+    padding: 20px 18px;
+  }
+
+  .recupera-select-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .recupera-select-group > div {
+    flex: 1 1 auto;
+  }
+
+  .recupera-resultado-card {
+    padding: 22px 18px;
+  }
+
+  .recupera-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .recupera-historico-card {
+    padding: 20px 16px;
+    overflow-x: auto;
+  }
+
+  .recupera-historico-table {
+    min-width: 480px;
+  }
+
+  .recupera-evolucao-card {
+    padding: 14px 16px;
+  }
+
+  .recupera-evolucao-card .evolucao-comparacao {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .recupera-intro-card h2 {
+    font-size: 1.15rem;
+  }
+
+  .recupera-stat-value {
+    font-size: 1.4rem;
+  }
+
+  .recupera-stat-item {
+    padding: 14px 8px;
+  }
+
+  .recupera-btn-nova,
+  .recupera-btn-questoes,
+  .recupera-btn-proxima,
+  .recupera-btn-iniciar {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* ==========================================================================
+   2. Novas Funcionalidades: Cronograma de Estudos & Agenda Acadêmica
+   ========================================================================== */
+
+/* --- 2.1 Navegação em Abas Principais do Recupera IF --- */
+.recupera-nav-tabs-wrapper {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.recupera-tabs-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.recupera-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #475569;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.recupera-tab-btn i {
+  font-size: 1.15rem;
+}
+
+.recupera-tab-btn:hover {
+  background-color: #f1f5f9;
+  color: #0056d6;
+}
+
+.recupera-tab-btn.active {
+  background: linear-gradient(135deg, #0056d6 0%, #0040a8 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 86, 214, 0.3);
+}
+
+.badge-aviso-prova {
+  background-color: #ef4444;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -4px;
+}
+
+/* --- 2.2 Cronograma de Estudos Interativo (Drag & Drop) --- */
+.cronograma-header-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  margin-bottom: 24px;
+}
+
+.cronograma-header-card h4 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.cronograma-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.cronograma-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 991.98px) {
+  .cronograma-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cronograma-palette-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 90px;
+}
+
+.cronograma-palette-card h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.palette-instruction {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.palette-disciplinas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.disciplina-draggable {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: grab;
+  user-select: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.disciplina-draggable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.disciplina-draggable:active {
+  cursor: grabbing;
+}
+
+.disciplina-draggable i.drag-handle {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.cronograma-grid-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  overflow-x: auto;
+}
+
+.cronograma-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+  min-width: 720px;
+}
+
+.cronograma-table th {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 10px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.cronograma-table th.col-horario {
+  background-color: #f1f5f9;
+  color: #475569;
+  width: 100px;
+}
+
+.cronograma-cell-horario {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.cronograma-cell-slot {
+  background-color: #fbfcfe;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  min-height: 68px;
+  padding: 6px;
+  vertical-align: top;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.cronograma-cell-slot:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.cronograma-cell-slot.drag-over {
+  background-color: #eff6ff !important;
+  border: 2px dashed #0056d6 !important;
+  transform: scale(1.02);
+}
+
+.cronograma-cell-slot.occupied {
+  border-style: solid;
+  border-color: #e2e8f0;
+  background-color: #ffffff;
+}
+
+.cronograma-slot-item {
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: grab;
+  position: relative;
+  transition: transform 0.15s ease;
+}
+
+.cronograma-slot-item:hover {
+  transform: scale(1.02);
+}
+
+.cronograma-slot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.cronograma-slot-title {
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.cronograma-slot-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.cronograma-btn-icon {
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  border-radius: 4px;
+  color: #ffffff;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s ease;
+}
+
+.cronograma-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.cronograma-slot-obs {
+  font-size: 0.72rem;
+  opacity: 0.9;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cronograma-empty-hint {
+  height: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  font-size: 0.76rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* --- 2.3 Agenda Acadêmica & Calendário --- */
+.agenda-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 991.98px) {
+  .agenda-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.agenda-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  margin-bottom: 24px;
+}
+
+.calendar-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.calendar-month-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: #1e293b;
+}
+
+.calendar-nav-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendar-nav-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+  background-color: #e2e8f0;
+  color: #0056d6;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #64748b;
+  padding: 8px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.calendar-day-cell {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  min-height: 80px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.calendar-day-cell:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-day-cell.other-month {
+  opacity: 0.35;
+  background: #fcfcfc;
+}
+
+.calendar-day-cell.today {
+  border: 2px solid #0056d6;
+  background: #f0f7ff;
+}
+
+.calendar-day-cell.today .day-number {
+  background: #0056d6;
+  color: #ffffff;
+  border-radius: 9999px;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day-cell.selected {
+  outline: 2.5px solid #2563eb;
+  background: #eff6ff;
+}
+
+.day-number {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.day-events-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.event-mini-pill {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.event-dot-cluster {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.event-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+}
+
+/* --- 2.4 Compromissos da Agenda --- */
+.evento-item-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.evento-item-card:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.evento-item-card.concluido {
+  opacity: 0.55;
+  background: #f1f5f9;
+}
+
+.evento-item-card.concluido .evento-title {
+  text-decoration: line-through;
+}
+
+.categoria-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.categoria-provas { background: #fee2e2; color: #dc2626; }
+.categoria-trabalhos { background: #e0e7ff; color: #4338ca; }
+.categoria-atividades { background: #dcfce7; color: #15803d; }
+.categoria-eventos { background: #f3e8ff; color: #7e22ce; }
+.categoria-palestras { background: #fae8ff; color: #a21caf; }
+.categoria-lembretes { background: #fef9c3; color: #a16207; }
+.categoria-outros { background: #f1f5f9; color: #475569; }
+
+/* --- 2.5 Semanas de Provas --- */
+.proxima-prova-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  border-radius: 18px;
+  padding: 24px 28px;
+  color: #ffffff;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.proxima-prova-hero::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.proxima-prova-hero .hero-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #93c5fd;
+  margin-bottom: 4px;
+}
+
+.proxima-prova-hero .hero-disciplina {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.countdown-badge {
+  background: #f59e0b;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.countdown-badge.urgente {
+  background: #ef4444;
+  animation: pulse-countdown 1.5s infinite;
+}
+
+@keyframes pulse-countdown {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.semana-periodo-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.semana-periodo-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.semana-periodo-header h5 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.avaliacao-row-item {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  transition: background 0.15s ease;
+}
+
+.avaliacao-row-item:last-child {
+  border-bottom: none;
+}
+
+.avaliacao-row-item:hover {
+  background: #fbfcfe;
+}
+
+
+/* =========================================================
+   RECUPERA IF — CRONOGRAMA & AGENDA  (appended)
+   ========================================================= */
+
+/* --- Tab Navigation --- */
+.recupera-nav-tabs-wrapper {
+  overflow-x: auto;
+}
+.recupera-tabs-nav {
+  display: flex;
+  gap: .5rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0;
+}
+.recupera-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 1.2rem;
+  border-radius: 8px 8px 0 0;
+  font-weight: 600;
+  font-size: .92rem;
+  color: #495057;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-bottom: none;
+  transition: background .18s, color .18s;
+  white-space: nowrap;
+}
+.recupera-tab-btn:hover {
+  background: #f0f4ff;
+  color: #0056d6;
+}
+.recupera-tab-btn.active {
+  background: #fff;
+  color: #0056d6;
+  border-color: #dee2e6 #dee2e6 #fff;
+  margin-bottom: -2px;
+}
+
+/* --- Cronograma --- */
+.cronograma-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+.cronograma-table th,
+.cronograma-table td {
+  border: 1px solid #dee2e6;
+  padding: 4px;
+  vertical-align: top;
+  font-size: .82rem;
+}
+.cronograma-table th {
+  background: #f8f9fa;
+  text-align: center;
+  font-weight: 600;
+  color: #495057;
+}
+.hora-col {
+  width: 70px;
+  text-align: center;
+  background: #f8f9fa;
+}
+.cronograma-cell-slot {
+  min-height: 48px;
+  transition: background .15s;
+}
+.cronograma-cell-slot.drag-over {
+  background: #e8f0ff !important;
+  outline: 2px dashed #0056d6;
+}
+.cronograma-slot-item {
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: .78rem;
+  position: relative;
+}
+.slot-actions {
+  display: none;
+}
+.cronograma-slot-item:hover .slot-actions {
+  display: flex !important;
+}
+.btn-xs {
+  font-size: .7rem;
+  line-height: 1.2;
+}
+.disciplina-palette-card {
+  border-radius: 6px;
+  transition: opacity .15s, transform .12s;
+  user-select: none;
+}
+.disciplina-palette-card:hover {
+  opacity: .85;
+  transform: translateX(2px);
+}
+
+/* --- Calendário --- */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal-header-cell {
+  text-align: center;
+  font-weight: 700;
+  font-size: .75rem;
+  color: #6c757d;
+  padding: 4px 0;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+.cal-day-blank {
+  min-height: 52px;
+}
+.calendar-day-cell {
+  min-height: 52px;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s;
+  font-size: .8rem;
+}
+.calendar-day-cell:hover {
+  background: #f0f4ff;
+  border-color: #b3c8ff;
+}
+.calendar-day-cell.hoje {
+  background: #e8f4fd;
+  border-color: #0056d6;
+}
+.calendar-day-cell.hoje .cal-num {
+  color: #0056d6;
+  font-weight: 700;
+}
+.calendar-day-cell.tem-eventos {
+  background: #f8f0ff;
+}
+.calendar-day-cell.ativo {
+  background: #dde8ff;
+  border-color: #0056d6;
+}
+.cal-num {
+  font-weight: 600;
+  display: block;
+  text-align: right;
+  font-size: .82rem;
+}
+.event-mini-pills {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.event-mini-pill {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* --- Evento cards --- */
+.evento-item-card {
+  border-radius: 8px;
+  padding: .6rem .8rem;
+  border-left: 4px solid #6c757d;
+  background: #f8f9fa;
+}
+.categoria-prova       { border-left-color: #e05c4b; background: #fff5f4; }
+.categoria-trabalho    { border-left-color: #f5a623; background: #fffaf0; }
+.categoria-atividade   { border-left-color: #4e9af1; background: #f0f6ff; }
+.categoria-evento_escolar { border-left-color: #9b59b6; background: #faf0ff; }
+.categoria-palestra    { border-left-color: #27ae60; background: #f0fff6; }
+.categoria-lembrete    { border-left-color: #1abc9c; background: #f0fffc; }
+.categoria-avaliacao   { border-left-color: #e74c3c; background: #fff0f0; }
+.categoria-outro       { border-left-color: #7f8c8d; background: #f8f9fa; }
+
+.categoria-pill {
+  display: inline-block;
+  border-radius: 20px;
+  padding: .15rem .6rem;
+  font-size: .7rem;
+  font-weight: 600;
+  color: #fff;
+  margin-top: .25rem;
+}
+.categoria-pill.categoria-prova       { background: #e05c4b; }
+.categoria-pill.categoria-trabalho    { background: #f5a623; }
+.categoria-pill.categoria-atividade   { background: #4e9af1; }
+.categoria-pill.categoria-evento_escolar { background: #9b59b6; }
+.categoria-pill.categoria-palestra    { background: #27ae60; }
+.categoria-pill.categoria-lembrete    { background: #1abc9c; }
+.categoria-pill.categoria-avaliacao   { background: #e74c3c; }
+.categoria-pill.categoria-outro       { background: #7f8c8d; }
+
+/* --- Semanas de Provas --- */
+.proxima-prova-hero {
+  background: linear-gradient(135deg, #0056d6 0%, #1976d2 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: .8rem 1rem;
+}
+.proxima-prova-hero .text-muted { color: rgba(255,255,255,.75) !important; }
+.proxima-prova-hero .small { color: rgba(255,255,255,.9); }
+.dias-faltam {
+  display: inline-block;
+  background: rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: .15rem .7rem;
+  font-size: .8rem;
+  font-weight: 700;
+}
+.semana-periodo-card {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: .7rem;
+  background: #fff;
+}
+.avaliacao-row-item {
+  border-radius: 6px;
+  padding: .4rem .6rem;
+  border-left: 3px solid #e05c4b;
+  background: #fff5f4;
+  font-size: .82rem;
+}
+
+/* --- Responsivo --- */
+@media (max-width: 768px) {
+  .recupera-tabs-nav { gap: .25rem; }
+  .recupera-tab-btn { padding: .45rem .75rem; font-size: .82rem; }
+  .cronograma-table { font-size: .72rem; }
+}

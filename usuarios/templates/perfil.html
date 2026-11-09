@@ -18,6 +18,22 @@
 
     <!-- Perfil & Ranking CSS -->
     <link rel="stylesheet" href="{% static 'styles/perfil.css' %}?v=1.1">
+    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('aprovaifpi_theme');
+            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
+            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
+            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
+            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
+            {% endif %}
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
 </head>
 
 <body class="perfil-body">
@@ -34,7 +50,7 @@
                 <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarMenuDesktop">
                     <ul class="navbar-nav gap-2 gap-xl-4 align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'questoes' %}">INÍCIO</a>
+                            <a class="nav-link" href="{% url 'inicio' %}">INÍCIO</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'questoes' %}">QUESTÕES</a>
@@ -46,7 +62,7 @@
                             <a class="nav-link" href="{% url 'ranking' %}">RANKING</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sobre' %}">SOBRE</a>
+                            <a class="nav-link" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
                         </li>
                     </ul>
                 </div>
@@ -105,7 +121,7 @@
                     </div>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav gap-2">
-                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'questoes' %}">INÍCIO</a></li>
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'inicio' %}">INÍCIO</a></li>
                             <li class="nav-item"><a class="nav-link py-2" href="{% url 'questoes' %}">QUESTÕES</a></li>
                             <li class="nav-item"><a class="nav-link py-2" href="{% url 'conteudos' %}">CONTEÚDOS</a></li>
                             <li class="nav-item"><a class="nav-link py-2" href="{% url 'ranking' %}">RANKING</a></li>
@@ -700,5 +716,7 @@
         window.addEventListener('load', adjustHeaderOffset);
         window.addEventListener('resize', adjustHeaderOffset);
     </script>
+    <!-- Dark Mode Controller -->
+    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
 </body>
 </html>

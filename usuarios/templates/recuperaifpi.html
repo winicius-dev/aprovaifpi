@@ -1,0 +1,2508 @@
+{% load static %}
+{% load questoes_tags %}
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <title>AprovaIFPI - RecuperaIFPI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'styles/questoes.css' %}?v=2.4">
+    <link rel="stylesheet" href="{% static 'styles/recuperaifpi.css' %}?v=1.0">
+    <style>
+        .questao-enunciado {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+        .alternativa-text {
+            text-align: justify;
+            text-justify: inter-word;
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+        .questao-imagem {
+            margin: 16px 0;
+            text-align: center;
+        }
+        .questao-imagem img {
+            display: inline-block;
+            max-width: 100%;
+            max-height: 500px;
+            height: auto;
+            object-fit: contain;
+        }
+        .alternativa-imagem {
+            display: block;
+            max-width: 100%;
+            max-height: 300px;
+            height: auto;
+            object-fit: contain;
+            margin-top: 10px;
+        }
+
+        /* RecuperaIFPI specific styles */
+        .recupera-subtitle-card {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+            border: 1px solid #d0daf0;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+        }
+        .recupera-subtitle-card h5 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        .recupera-subtitle-card p {
+            font-family: 'Inter', sans-serif;
+            color: #475569;
+            margin-bottom: 0;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .recupera-selecao-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 24px;
+        }
+        .recupera-selecao-card .filtro-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #d0d5dd;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            color: #344054;
+            background: #fff;
+            transition: all 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 12px;
+        }
+        .recupera-selecao-card .filtro-select:focus {
+            border-color: #0056d6;
+            box-shadow: 0 0 0 3px rgba(0, 86, 214, 0.12);
+            outline: none;
+        }
+        .recupera-selecao-card label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #344054;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .btn-iniciar-atividade {
+            background: linear-gradient(135deg, #0056d6 0%, #003fa3 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 32px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(0, 86, 214, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-iniciar-atividade:hover {
+            background: linear-gradient(135deg, #003fa3 0%, #002b73 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 86, 214, 0.35);
+            color: #fff;
+        }
+        .btn-iniciar-atividade:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Progress bar */
+        .recupera-progress-wrapper {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+        .recupera-progress-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        .recupera-progress-bar-bg {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+        .recupera-progress-bar-fill {
+            background: linear-gradient(90deg, #0056d6, #3b82f6);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Histórico table */
+        .historico-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+        .historico-card h5 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 1.05rem;
+            margin-bottom: 16px;
+        }
+        .historico-table {
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+        }
+        .historico-table thead th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .historico-table tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+        .historico-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .historico-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .historico-percentual {
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        .historico-percentual.bom {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .historico-percentual.medio {
+            background: #fef9c3;
+            color: #a16207;
+        }
+        .historico-percentual.ruim {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Resultado summary */
+        .recupera-resultado-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 36px 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .recupera-resultado-card h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            color: #1a1a2e;
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+        }
+        .resultado-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .resultado-stat-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px 16px;
+            text-align: center;
+        }
+        .resultado-stat-item .stat-value {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+            line-height: 1.1;
+        }
+        .resultado-stat-item .stat-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-top: 4px;
+        }
+        .resultado-stat-item.stat-total .stat-value { color: #0056d6; }
+        .resultado-stat-item.stat-acertos .stat-value { color: #15803d; }
+        .resultado-stat-item.stat-erros .stat-value { color: #dc2626; }
+        .resultado-stat-item.stat-percentual .stat-value { color: #7c3aed; }
+
+        .resultado-info-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .resultado-info-badge {
+            background: #f0f4ff;
+            border: 1px solid #d0daf0;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            color: #334155;
+            font-weight: 500;
+        }
+        .resultado-info-badge i {
+            color: #0056d6;
+            margin-right: 6px;
+        }
+
+        .resultado-xp-earned {
+            background: linear-gradient(135deg, #fef9c3 0%, #fde68a 100%);
+            border: 1px solid #fbbf24;
+            border-radius: 14px;
+            padding: 16px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #92400e;
+            margin-bottom: 20px;
+        }
+
+        .resultado-disclaimer {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            line-height: 1.5;
+            max-width: 600px;
+            margin: 16px auto 24px;
+            font-style: italic;
+        }
+
+        .resultado-evolucao {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-top: 20px;
+            margin-bottom: 24px;
+        }
+        .resultado-evolucao h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .resultado-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-nova-atividade {
+            background: linear-gradient(135deg, #0056d6 0%, #003fa3 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 28px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(0, 86, 214, 0.25);
+        }
+        .btn-nova-atividade:hover {
+            background: linear-gradient(135deg, #003fa3 0%, #002b73 100%);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 86, 214, 0.35);
+        }
+        .btn-ver-questoes {
+            background: #ffffff;
+            color: #0056d6;
+            border: 2px solid #0056d6;
+            border-radius: 12px;
+            padding: 12px 28px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+        }
+        .btn-ver-questoes:hover {
+            background: #f0f4ff;
+            color: #003fa3;
+            border-color: #003fa3;
+            transform: translateY(-2px);
+        }
+
+        /* Feedback next question button */
+        .btn-proxima-questao {
+            background: linear-gradient(135deg, #0056d6 0%, #003fa3 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 28px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(0, 86, 214, 0.25);
+            margin-top: 16px;
+        }
+        .btn-proxima-questao:hover {
+            background: linear-gradient(135deg, #003fa3 0%, #002b73 100%);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 86, 214, 0.35);
+        }
+
+        /* Alternative states for feedback */
+        .alternativa-card.alternativa-correta {
+            border-color: #22c55e !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+        }
+        .alternativa-card.alternativa-incorreta {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        }
+        /* Cortar alternativa */
+        .btn-riscar-alternativa {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            color: #64748b;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: auto;
+            flex-shrink: 0;
+            padding: 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .btn-riscar-alternativa i {
+            font-size: 1.1rem;
+            transition: transform 0.2s ease;
+        }
+        .btn-riscar-alternativa:hover {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #dc2626;
+            transform: scale(1.1);
+        }
+        .btn-riscar-alternativa:hover i {
+            transform: rotate(-15deg);
+        }
+        .alternativa-card.cortada {
+            background-color: #f1f5f9 !important;
+            border: 1.5px dashed #94a3b8 !important;
+            opacity: 0.45 !important;
+            box-shadow: none !important;
+        }
+        .alternativa-card.cortada,
+        .alternativa-card.cortada strong,
+        .alternativa-card.cortada .alternativa-text,
+        .alternativa-card.cortada .alternativa-text strong,
+        .alternativa-card.cortada .alternativa-text span {
+            text-decoration: line-through !important;
+            text-decoration-thickness: 2.5px !important;
+            text-decoration-color: #475569 !important;
+            color: #94a3b8 !important;
+        }
+        .alternativa-card.cortada .btn-riscar-alternativa {
+            text-decoration: none !important;
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+            color: #334155;
+            box-shadow: none;
+        }
+        .alternativa-card.cortada .btn-riscar-alternativa:hover {
+            background-color: #dbeafe;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+        .alternativa-card.cortada .custom-radio-wrap {
+            opacity: 0.35;
+        }
+
+        /* Badge de treino no resultado */
+        .resultado-treino-pill {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            padding: 12px 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1d4ed8;
+            margin-bottom: 20px;
+        }
+        .resultado-treino-pill i {
+            font-size: 1.2rem;
+            color: #2563eb;
+        }
+    </style>
+    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('aprovaifpi_theme');
+            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
+            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
+            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
+            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
+            {% endif %}
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
+</head>
+
+<body class="questoes-body">
+
+    <header class="fixed-top header-fixed-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-questoes">
+            <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between">
+                
+                <a class="navbar-brand me-3" href="{% url 'inicio' %}">
+                    <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Logo AprovaIFPI">
+                </a>
+
+                <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarMenuDesktop">
+                    <ul class="navbar-nav gap-2 gap-xl-4 align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'inicio' %}">INÍCIO</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questoes' %}">QUESTÕES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'conteudos' %}">CONTEÚDOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ranking' %}">RANKING</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="user-avatar-btn dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu de usuário">
+                            <div class="avatar-circle">
+                                {% if perfil.avatar %}
+                                    <img src="{{ perfil.avatar.url }}" alt="{{ perfil.nome }}" class="avatar-img-circle">
+                                {% elif perfil.nome %}
+                                    {{ perfil.nome|slice:":1"|upper }}
+                                {% elif request.user.username %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    U
+                                {% endif %}
+                            </div>
+                            <i class="bi bi-chevron-down user-avatar-chevron d-none d-sm-inline"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="border-radius: 14px; min-width: 220px;">
+                            <li class="px-3 py-2 border-bottom">
+                                <a href="{% url 'perfil' %}" class="text-decoration-none text-dark d-block">
+                                    <span class="fw-bold d-block text-truncate" style="font-size: 0.95rem;">{{ perfil.nome|default:request.user.username }}</span>
+                                    <small class="text-muted d-block">{{ request.user.email }}</small>
+                                    <span class="badge bg-primary text-white mt-1 badge-total-xp" style="font-size: 0.75rem;">{{ perfil.xp|default:0 }} XP</span>
+                                </a>
+                            </li>
+                            <li><a class="dropdown-item py-2 fw-semibold text-primary" href="{% url 'perfil' %}"><i class="bi bi-person-circle me-2"></i>Meu Perfil</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'configuracoes' %}"><i class="bi bi-gear-fill me-2 text-secondary"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'questoes' %}"><i class="bi bi-journal-text me-2"></i>Minhas Questões</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'conteudos' %}"><i class="bi bi-play-circle me-2"></i>Conteúdos</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'ranking' %}"><i class="bi bi-trophy me-2"></i>Ranking</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+
+                    <button class="navbar-toggler border-0 ms-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Abrir menu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar">
+                    <div class="offcanvas-header border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 1rem;">
+                                {% if perfil.nome %}{{ perfil.nome|slice:":1"|upper }}{% else %}U{% endif %}
+                            </div>
+                            <span class="fw-bold text-dark">{{ perfil.nome|default:request.user.username }}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav gap-2">
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'inicio' %}">INÍCIO</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'questoes' %}">QUESTÕES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'conteudos' %}">CONTEÚDOS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-2" href="{% url 'ranking' %}">RANKING</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active text-primary py-2" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
+                            </li>
+
+                        </ul>
+                        <hr>
+                        <div class="mt-3">
+                            <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 rounded-pill py-2">
+                                <i class="bi bi-box-arrow-right me-2"></i>Sair
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+
+        <div class="top-gradient-bar"></div>
+    </header>
+
+    <!-- 2. Barra de Título e Breadcrumbs -->
+    <div class="title-header-bar">
+        <img src="{% static 'img/logo_aprovaifpi.svg' %}" alt="Watermark" class="watermark-bg">
+        <div class="container-xl px-3 px-md-4 d-flex align-items-center justify-content-between position-relative" style="max-width: 1200px;">
+            <h4 class="page-title">
+                Recupera <span class="brand-accent">IFPI</span>
+            </h4>
+
+            <div class="breadcrumbs-nav d-none d-lg-block">
+                <a href="{% url 'inicio' %}">Início</a> &nbsp;/&nbsp;
+                <span class="active">RecuperaIFPI</span>
+            </div>
+
+            <img src="{% static 'img/logo_aprovaifpi 1.svg' %}" alt="Logo Mini" class="mobile-mini-logo">
+        </div>
+    </div>
+
+        <main class="container py-4">
+
+        {% if acesso_negado %}
+        <!-- ==================== ACESSO RESTRITO ==================== -->
+        <section class="row justify-content-center my-4 my-md-5">
+            <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                <div class="card border-0 shadow-sm text-center p-4 p-md-5" style="border-radius: 24px; background-color: #ffffff;">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 86px; height: 86px; background-color: #fef2f2; color: #dc2626;">
+                            <i class="bi bi-shield-lock-fill" style="font-size: 2.75rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-2">Acesso Exclusivo para Alunos do IFPI</h3>
+                    <p class="text-secondary mb-4" style="font-size: 0.98rem; line-height: 1.6;">
+                        O módulo <strong>RecuperaIFPI</strong> é uma funcionalidade pedagógica de reforço destinada exclusivamente a estudantes cadastrados em uma unidade do <strong>IFPI</strong> (Instituto Federal do Piauí).
+                    </p>
+                    <div class="p-3 rounded-4 mb-4 text-start" style="background-color: #f8fafc; border: 1.5px solid #e2e8f0;">
+                        <div class="small text-muted mb-1 fw-semibold">Sua escola cadastrada no perfil:</div>
+                        <div class="fw-bold text-dark fs-6"><i class="bi bi-building me-2 text-primary"></i>{{ escola_aluno }}</div>
+                    </div>
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                        <a href="{% url 'inicio' %}" class="btn btn-primary px-4 py-2 rounded-pill fw-semibold shadow-sm">
+                            <i class="bi bi-house-door me-2"></i>Voltar ao Início
+                        </a>
+                        <a href="{% url 'questoes' %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-semibold">
+                            <i class="bi bi-journal-text me-2"></i>Ir para Questões
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% else %}
+
+        
+<style>
+/* =========================================================
+   RECUPERA IF — TABS, CRONOGRAMA & AGENDA STYLES
+   ========================================================= */
+.recupera-nav-tabs-wrapper {
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0;
+}
+.recupera-tabs-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.recupera-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 10px 10px 0 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #64748b;
+  text-decoration: none;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+.recupera-tab-btn:hover {
+  background: #eff6ff;
+  color: #0056d6;
+  border-color: #bfdbfe;
+}
+.recupera-tab-btn.active {
+  background: #ffffff;
+  color: #0056d6;
+  border-color: #cbd5e1 #cbd5e1 #ffffff;
+  border-bottom: 2px solid #ffffff;
+  margin-bottom: -2px;
+  font-weight: 700;
+  box-shadow: 0 -2px 6px rgba(0, 86, 214, 0.08);
+}
+
+/* Cronograma */
+.cronograma-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+}
+.cronograma-table th,
+.cronograma-table td {
+  border: 1px solid #e2e8f0;
+  padding: 6px;
+  vertical-align: top;
+}
+.cronograma-table th {
+  background: #f8fafc;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #334155;
+  padding: 8px 4px;
+}
+.hora-col {
+  width: 75px;
+  text-align: center;
+  background: #f1f5f9;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+.cronograma-cell-slot {
+  min-height: 52px;
+  height: 52px;
+  transition: background 0.15s;
+  background: #ffffff;
+}
+.cronograma-cell-slot.drag-over {
+  background: #dbeafe !important;
+  outline: 2px dashed #0056d6;
+}
+.cronograma-slot-item {
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.78rem;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.cronograma-slot-item .slot-actions {
+  display: none;
+}
+.cronograma-slot-item:hover .slot-actions {
+  display: flex !important;
+}
+.disciplina-palette-card {
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.disciplina-palette-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.disciplina-palette-card:active {
+  cursor: grabbing;
+}
+
+/* Agenda / Calendário */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cal-header-cell {
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #64748b;
+  padding: 6px 0;
+  background: #f8fafc;
+  border-radius: 6px;
+}
+.cal-day-blank {
+  min-height: 60px;
+  background: transparent;
+}
+.calendar-day-cell {
+  min-height: 60px;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+.calendar-day-cell:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+.calendar-day-cell.hoje {
+  border: 2px solid #0056d6;
+  background: #f0f7ff;
+}
+.calendar-day-cell.hoje .cal-num {
+  color: #0056d6;
+  font-weight: 800;
+}
+.calendar-day-cell.ativo {
+  background: #dbeafe;
+  border-color: #0056d6;
+}
+.cal-num {
+  font-weight: 600;
+  text-align: right;
+  font-size: 0.82rem;
+  color: #334155;
+}
+.event-mini-pills {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.event-mini-pill {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Cards de Eventos */
+.evento-item-card {
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #64748b;
+}
+.categoria-prova       { border-left-color: #ef4444; background: #fef2f2; }
+.categoria-trabalho    { border-left-color: #f59e0b; background: #fffbeb; }
+.categoria-atividade   { border-left-color: #3b82f6; background: #eff6ff; }
+.categoria-evento_escolar { border-left-color: #8b5cf6; background: #f5f3ff; }
+.categoria-palestra    { border-left-color: #10b981; background: #ecfdf5; }
+.categoria-lembrete    { border-left-color: #06b6d4; background: #ecfeff; }
+.categoria-avaliacao   { border-left-color: #dc2626; background: #fef2f2; }
+.categoria-outro       { border-left-color: #64748b; background: #f8fafc; }
+
+.categoria-pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+.categoria-pill.categoria-prova       { background: #ef4444; }
+.categoria-pill.categoria-trabalho    { background: #f59e0b; }
+.categoria-pill.categoria-atividade   { background: #3b82f6; }
+.categoria-pill.categoria-evento_escolar { background: #8b5cf6; }
+.categoria-pill.categoria-palestra    { background: #10b981; }
+.categoria-pill.categoria-lembrete    { background: #06b6d4; }
+.categoria-pill.categoria-avaliacao   { background: #dc2626; }
+.categoria-pill.categoria-outro       { background: #64748b; }
+
+.proxima-prova-hero {
+  background: linear-gradient(135deg, #0056d6 0%, #2563eb 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 86, 214, 0.2);
+}
+.semana-periodo-card {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 0.85rem;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.avaliacao-row-item {
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid #ef4444;
+  background: #fef2f2;
+  font-size: 0.85rem;
+}
+.btn-xs {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.4rem;
+  line-height: 1.2;
+}
+</style>
+
+        <!-- ===================== TAB NAVIGATION ===================== -->
+        <div class="recupera-nav-tabs-wrapper mb-4">
+          <div class="recupera-tabs-nav">
+            <a href="{% url 'recuperaifpi' %}?secao=atividades" class="recupera-tab-btn {% if secao == 'atividades' %}active{% endif %}">
+              <i class="bi bi-arrow-repeat"></i> Atividades
+            </a>
+            <a href="{% url 'recuperaifpi' %}?secao=cronograma" class="recupera-tab-btn {% if secao == 'cronograma' %}active{% endif %}">
+              <i class="bi bi-calendar-week"></i> Cronograma
+            </a>
+            <a href="{% url 'recuperaifpi' %}?secao=agenda" class="recupera-tab-btn {% if secao == 'agenda' %}active{% endif %}">
+              <i class="bi bi-calendar-event"></i> Agenda
+            </a>
+          </div>
+        </div>
+
+        {% if secao == "atividades" %}
+
+{% if modo == "selecao" or not modo %}
+        <!-- ==================== MODO SELEÇÃO ==================== -->
+        <section class="mb-4">
+            <div class="recupera-subtitle-card">
+                <h5><i class="bi bi-arrow-repeat me-2"></i>Atividade de Recuperação</h5>
+                <p>Reforce conteúdos em que você tem dificuldades. Selecione a disciplina e o conteúdo para iniciar uma atividade de recuperação.</p>
+            </div>
+
+            <div class="recupera-selecao-card">
+                <form method="GET" action="{% url 'recuperaifpi' %}" id="form-selecao">
+                    <input type="hidden" name="modo" value="atividade">
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label for="select-disciplina"><i class="bi bi-book me-1"></i>Disciplina</label>
+                            <select name="disciplina" class="filtro-select" id="select-disciplina">
+                                <option value="">Selecione a disciplina</option>
+                                {% for disc in disciplinas %}
+                                    <option value="{{ disc.id }}" {% if disciplina_selecionada == disc.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ disc.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="select-conteudo"><i class="bi bi-tag me-1"></i>Conteúdo</label>
+                            <select name="conteudo" class="filtro-select" id="select-conteudo">
+                                <option value="">Selecione o conteúdo</option>
+                                {% for c in conteudos %}
+                                    <option value="{{ c.id }}" data-disciplina="{{ c.disciplina_id }}" {% if conteudo_selecionado and conteudo_selecionado.id == c.id %}selected{% endif %}>
+                                        {{ c.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn-iniciar-atividade" id="btn-iniciar">
+                            <i class="bi bi-play-fill"></i>
+                            Iniciar Atividade
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {% if historico %}
+            <div class="historico-card">
+                <h5><i class="bi bi-clock-history me-2"></i>Histórico de Atividades</h5>
+                <div class="table-responsive">
+                    <table class="historico-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Acertos</th>
+                                <th>Total</th>
+                                <th>Percentual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in historico %}
+                            <tr>
+                                <td>{{ entry.data }}</td>
+                                <td>{{ entry.acertos }}</td>
+                                <td>{{ entry.total }}</td>
+                                <td>
+                                    <span class="historico-percentual {% if entry.percentual >= 70 %}bom{% elif entry.percentual >= 40 %}medio{% else %}ruim{% endif %}">
+                                        {{ entry.percentual }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </section>
+
+        {% elif modo == "atividade" %}
+        <!-- ==================== MODO ATIVIDADE ==================== -->
+        <section class="mb-4">
+            <!-- Progress bar -->
+            <div class="recupera-progress-wrapper">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="recupera-progress-text">
+                        Questão {{ questao_index|add:1 }} de {{ total_questoes }}
+                    </span>
+                    <span class="recupera-progress-text" style="color: #64748b; font-weight: 600; font-size: 0.85rem;">
+                        {% widthratio questao_index|add:1 total_questoes 100 %}% concluído
+                    </span>
+                </div>
+                <div class="recupera-progress-bar-bg">
+                    <div class="recupera-progress-bar-fill" id="progress-fill"
+                         style="width: {% widthratio questao_index|add:1 total_questoes 100 %}%;"></div>
+                </div>
+            </div>
+
+            <!-- Question card -->
+            {% if questao_atual %}
+            <article class="questao-card" id="questao-{{ questao_atual.id }}">
+                <div class="questao-header">
+                    <div class="questao-header-left">
+                        <h5 class="questao-id-text">
+                            Q{{ questao_index|add:1|stringformat:"03d" }}
+                        </h5>
+                        <span class="dificuldade-pill {% if questao_atual.dificuldade == 'Fácil' %}facil{% elif questao_atual.dificuldade == 'Médio' %}medio{% else %}dificil{% endif %}">
+                            {{ questao_atual.dificuldade }}
+                        </span>
+                        {% if questao_atual.conteudo %}
+                            <span class="badge-disciplina">
+                                {{ questao_atual.conteudo.disciplina.nome }}
+                            </span>
+                            <span class="badge-disciplina">
+                                {{ questao_atual.conteudo.nome }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="questao-enunciado">
+                    {% render_enunciado questao_atual %}
+                </div>
+
+                <form method="POST" action="{% url 'recuperaifpi_responder' %}" id="form-responder">
+                    {% csrf_token %}
+                    <input type="hidden" name="questao_id" value="{{ questao_atual.id }}">
+                    <input type="hidden" name="sessao_id" value="{{ sessao_id }}">
+                    <input type="hidden" name="conteudo_id" value="{{ conteudo_selecionado.id }}">
+                    <input type="hidden" name="disciplina_id" value="{{ disciplina_selecionada }}">
+                    <input type="hidden" name="questao_index" value="{{ questao_index }}">
+
+                    <div class="alternativas-list" id="alternativas-list">
+                        {% for alternativa in questao_atual.alternativa_set.all %}
+                            <label class="alternativa-card" id="alt-card-{{ alternativa.id }}" for="alt-{{ alternativa.id }}" data-letra="{{ alternativa.letra }}" data-correta="{{ alternativa.e_correta|yesno:'true,false' }}">
+                                <div class="custom-radio-wrap">
+                                    <input
+                                        type="radio"
+                                        name="alternativa"
+                                        id="alt-{{ alternativa.id }}"
+                                        value="{{ alternativa.id }}"
+                                        required
+                                        {% if feedback %}disabled{% endif %}
+                                    >
+                                    <div class="radio-check-circle"></div>
+                                </div>
+
+                                <strong>{{ alternativa.letra }})&nbsp;</strong>
+                                {% render_alternativa alternativa %}
+
+                                {% if not feedback %}
+                                <button
+                                    type="button"
+                                    class="btn-riscar-alternativa"
+                                    data-alt-id="{{ alternativa.id }}"
+                                    title="Cortar alternativa que você acha incorreta"
+                                    aria-label="Cortar alternativa"
+                                >
+                                    <i class="bi bi-scissors"></i>
+                                </button>
+                                {% endif %}
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    {% if not feedback %}
+                    <button type="submit" class="btn-responder" id="btn-responder">
+                        Responder
+                    </button>
+                    {% endif %}
+                </form>
+
+                {% if feedback %}
+                <!-- Feedback card -->
+                <div class="mt-3">
+                    {% if feedback.acertou %}
+                        <div class="feedback-badge feedback-acerto">
+                            <div class="feedback-badge-icon"><i class="bi bi-check-circle-fill"></i></div>
+                            <div>
+                                <div class="feedback-title">Parabéns! Resposta Correta! 🎉</div>
+                                <div class="feedback-subtitle">
+                                    Excelente! Continue praticando para dominar o conteúdo.
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="feedback-badge feedback-erro">
+                            <div class="feedback-badge-icon"><i class="bi bi-x-circle-fill"></i></div>
+                            <div>
+                                <div class="feedback-title">Resposta Incorreta!</div>
+                                <div class="feedback-subtitle">
+                                    A alternativa correta é a letra <strong>{{ feedback.alternativa_correta_letra }}</strong>.
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if questao_index|add:1 < total_questoes %}
+                        <a href="{% url 'recuperaifpi' %}?modo=atividade&disciplina={{ disciplina_selecionada }}&conteudo={{ conteudo_selecionado.id }}&sessao_id={{ sessao_id }}&questao_index={{ questao_index|add:1 }}"
+                           class="btn-proxima-questao">
+                            <i class="bi bi-arrow-right"></i>
+                            Próxima Questão
+                        </a>
+                    {% else %}
+                        <a href="{% url 'recuperaifpi' %}?modo=resultado&sessao_id={{ sessao_id }}&disciplina={{ disciplina_selecionada }}&conteudo={{ conteudo_selecionado.id }}"
+                           class="btn-proxima-questao">
+                            <i class="bi bi-flag-fill"></i>
+                            Ver Resultado
+                        </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </article>
+            {% else %}
+            <div class="empty-state-card">
+                <i class="bi bi-exclamation-triangle"></i>
+                <h5>Nenhuma questão disponível</h5>
+                <p>Não foram encontradas questões para o conteúdo selecionado. Tente selecionar outro conteúdo.</p>
+                <a href="{% url 'recuperaifpi' %}" class="btn-filtrar text-decoration-none d-inline-block mt-2">
+                    Voltar para seleção
+                </a>
+            </div>
+            {% endif %}
+        </section>
+
+        {% elif modo == "resultado" %}
+        <!-- ==================== MODO RESULTADO ==================== -->
+        <section class="mb-4">
+            <div class="recupera-resultado-card">
+                <div class="mb-3">
+                    <i class="bi bi-trophy-fill" style="font-size: 3rem; color: #fbbf24;"></i>
+                </div>
+                <h4>Atividade Concluída!</h4>
+
+                <div class="resultado-stats-grid">
+                    <div class="resultado-stat-item stat-total">
+                        <div class="stat-value">{{ resultado.total }}</div>
+                        <div class="stat-label">Total Questões</div>
+                    </div>
+                    <div class="resultado-stat-item stat-acertos">
+                        <div class="stat-value">{{ resultado.acertos }}</div>
+                        <div class="stat-label">Acertos</div>
+                    </div>
+                    <div class="resultado-stat-item stat-erros">
+                        <div class="stat-value">{{ resultado.erros }}</div>
+                        <div class="stat-label">Erros</div>
+                    </div>
+                    <div class="resultado-stat-item stat-percentual">
+                        <div class="stat-value" id="resultado-percentual">{{ resultado.percentual }}%</div>
+                        <div class="stat-label">Percentual</div>
+                    </div>
+                </div>
+
+                <div class="resultado-info-row">
+                    <span class="resultado-info-badge">
+                        <i class="bi bi-book"></i>{{ resultado.disciplina_nome }}
+                    </span>
+                    <span class="resultado-info-badge">
+                        <i class="bi bi-tag"></i>{{ resultado.conteudo_nome }}
+                    </span>
+                </div>
+
+                <div class="resultado-treino-pill">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    Atividade de Treino &bull; Sem pontuação de XP
+                </div>
+
+                <p class="resultado-disclaimer">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Este percentual representa seu desempenho nas questões respondidas dentro do AprovaIFPI e não constitui uma nota oficial do IFPI.
+                </p>
+
+                {% if historico and historico|length > 1 %}
+                <div class="resultado-evolucao">
+                    <h6><i class="bi bi-graph-up me-2"></i>Evolução</h6>
+                    <div class="table-responsive">
+                        <table class="historico-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Acertos</th>
+                                    <th>Total</th>
+                                    <th>Percentual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in historico %}
+                                <tr>
+                                    <td>{{ entry.data }}</td>
+                                    <td>{{ entry.acertos }}</td>
+                                    <td>{{ entry.total }}</td>
+                                    <td>
+                                        <span class="historico-percentual {% if entry.percentual >= 70 %}bom{% elif entry.percentual >= 40 %}medio{% else %}ruim{% endif %}">
+                                            {{ entry.percentual }}%
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="resultado-actions">
+                    <a href="{% url 'recuperaifpi' %}" class="btn-nova-atividade">
+                        <i class="bi bi-arrow-repeat"></i>
+                        Nova Atividade
+                    </a>
+                    <a href="{% url 'questoes' %}" class="btn-ver-questoes">
+                        <i class="bi bi-journal-text"></i>
+                        Ver Questões
+                    </a>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        {% elif secao == "cronograma" %}
+        <!-- ==================== CRONOGRAMA DE ESTUDOS ==================== -->
+        <section class="mb-4">
+          <div class="recupera-subtitle-card d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <h5 class="mb-1"><i class="bi bi-calendar-week me-2 text-primary"></i>Cronograma de Estudos</h5>
+              <p class="mb-0 text-muted">Monte seu cronograma semanal arrastando as disciplinas para os horários desejados na grade.</p>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary btn-sm px-3 shadow-sm" id="btn-salvar-cronograma"><i class="bi bi-save me-1"></i>Salvar Cronograma</button>
+              <button class="btn btn-outline-danger btn-sm px-3" id="btn-limpar-cronograma"><i class="bi bi-trash me-1"></i>Limpar Tudo</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="row g-3">
+          <div class="col-12 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-header bg-primary text-white fw-semibold d-flex align-items-center gap-2">
+                <i class="bi bi-book"></i> Disciplinas Disponíveis
+              </div>
+              <div class="card-body p-2" id="disciplinas-palette" style="max-height: 600px; overflow-y: auto;">
+                <!-- cards gerados via JS -->
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-9">
+            <div class="card shadow-sm border-0">
+              <div class="card-body p-2 overflow-auto">
+                <table class="cronograma-table" id="cronograma-grid">
+                  <thead>
+                    <tr>
+                      <th class="hora-col">Horário</th>
+                      <th>Segunda</th>
+                      <th>Terça</th>
+                      <th>Quarta</th>
+                      <th>Quinta</th>
+                      <th>Sexta</th>
+                      <th>Sábado</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cronograma-body">
+                    <!-- linhas geradas via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Editar Slot -->
+        <div class="modal fade" id="modal-editar-slot" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2 text-primary"></i>Editar Sessão de Estudo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="edit-slot-key">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Disciplina</label>
+                  <input type="text" class="form-control" id="edit-slot-disciplina" readonly>
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Início</label>
+                    <select class="form-select" id="edit-slot-inicio"></select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Término</label>
+                    <select class="form-select" id="edit-slot-fim"></select>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Observações / Tópicos</label>
+                  <input type="text" class="form-control" id="edit-slot-obs" placeholder="Ex: Exercícios do cap. 3...">
+                </div>
+              </div>
+              <div class="modal-footer bg-light">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" id="btn-confirmar-edit-slot">Salvar Alterações</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var DIAS_NOMES = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+          var HORAS = [];
+          for (var h = 6; h <= 22; h++) {
+            HORAS.push((h < 10 ? '0' : '') + h + ':00');
+          }
+          var COR_MAP = {
+            'Português':'#3b82f6','Matemática':'#ef4444','Física':'#f59e0b',
+            'Química':'#10b981','Biologia':'#8b5cf6','História':'#ea580c',
+            'Geografia':'#06b6d4','Filosofia':'#d97706','Sociologia':'#2563eb',
+            'Inglês':'#059669','Redação':'#7c3aed','Educação Física':'#0d9488',
+            'Artes':'#b91c1c'
+          };
+          function getCor(nome) {
+            if (COR_MAP[nome]) return COR_MAP[nome];
+            var hash = 0;
+            for (var i = 0; i < nome.length; i++) {
+              hash = (hash << 5) - hash + nome.charCodeAt(i);
+            }
+            return 'hsl(' + (Math.abs(hash) % 360) + ', 65%, 45%)';
+          }
+
+          var estado = {};
+          var itensIniciais = {{ cronograma_itens_json|safe }};
+          if (Array.isArray(itensIniciais)) {
+            itensIniciais.forEach(function(item) {
+              var key = item.dia_semana + '-' + item.horario_inicio;
+              estado[key] = {
+                dia: item.dia_semana,
+                hora: item.horario_inicio,
+                fim: item.horario_fim,
+                disciplina: item.disciplina_nome,
+                obs: item.observacoes || ''
+              };
+            });
+          }
+
+          var disciplinasList = {{ disciplinas_json|safe }};
+          if (!Array.isArray(disciplinasList) || disciplinasList.length === 0) {
+            disciplinasList = ['Português', 'Matemática', 'Física', 'Química', 'Biologia', 'História', 'Geografia', 'Filosofia', 'Sociologia', 'Inglês', 'Redação', 'Educação Física', 'Artes'];
+          }
+
+          function buildPalette() {
+            var container = document.getElementById('disciplinas-palette');
+            if (!container) return;
+            container.innerHTML = '';
+            disciplinasList.forEach(function(d) {
+              var cor = getCor(d);
+              var card = document.createElement('div');
+              card.className = 'disciplina-palette-card mb-2 d-flex align-items-center justify-content-between';
+              card.style.background = cor + '18';
+              card.style.borderLeft = '4px solid ' + cor;
+              card.draggable = true;
+              card.dataset.disciplina = d;
+              card.innerHTML = '<span class="fw-semibold" style="color:' + cor + '">' + d + '</span><i class="bi bi-grip-vertical text-muted"></i>';
+              card.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', d);
+              });
+              container.appendChild(card);
+            });
+          }
+
+          function buildGrid() {
+            var tbody = document.getElementById('cronograma-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            HORAS.forEach(function(hora, hIdx) {
+              var tr = document.createElement('tr');
+              var tdH = document.createElement('td');
+              tdH.className = 'hora-col';
+              tdH.textContent = hora;
+              tr.appendChild(tdH);
+
+              DIAS_NOMES.forEach(function(dia, di) {
+                var td = document.createElement('td');
+                td.className = 'cronograma-cell-slot';
+                td.dataset.dia = di;
+                td.dataset.hora = hora;
+
+                td.addEventListener('dragover', function(e) {
+                  e.preventDefault();
+                  td.classList.add('drag-over');
+                });
+                td.addEventListener('dragleave', function() {
+                  td.classList.remove('drag-over');
+                });
+                td.addEventListener('drop', function(e) {
+                  e.preventDefault();
+                  td.classList.remove('drag-over');
+                  var disc = e.dataTransfer.getData('text/plain');
+                  if (!disc) return;
+                  var fim = HORAS[hIdx + 1] || '23:00';
+                  var key = di + '-' + hora;
+                  estado[key] = { dia: di, hora: hora, fim: fim, disciplina: disc, obs: '' };
+                  renderSlot(td, key);
+                });
+
+                var key = di + '-' + hora;
+                if (estado[key]) {
+                  renderSlot(td, key);
+                }
+                tr.appendChild(td);
+              });
+              tbody.appendChild(tr);
+            });
+          }
+
+          function renderSlot(td, key) {
+            var item = estado[key];
+            if (!item) {
+              td.innerHTML = '';
+              return;
+            }
+            var cor = getCor(item.disciplina);
+            td.innerHTML = '';
+
+            var box = document.createElement('div');
+            box.className = 'cronograma-slot-item';
+            box.style.background = cor + '18';
+            box.style.borderLeft = '3px solid ' + cor;
+
+            var title = document.createElement('div');
+            title.className = 'slot-nome fw-bold';
+            title.style.color = cor;
+            title.textContent = item.disciplina;
+            box.appendChild(title);
+
+            var time = document.createElement('div');
+            time.className = 'slot-hora text-muted';
+            time.textContent = item.hora + ' – ' + item.fim;
+            box.appendChild(time);
+
+            if (item.obs) {
+              var obsEl = document.createElement('div');
+              obsEl.className = 'text-muted small mt-1';
+              obsEl.style.fontSize = '0.7rem';
+              obsEl.textContent = item.obs;
+              box.appendChild(obsEl);
+            }
+
+            var actions = document.createElement('div');
+            actions.className = 'slot-actions d-flex gap-1 mt-1';
+
+            var editBtn = document.createElement('button');
+            editBtn.className = 'btn btn-xs btn-light p-0 px-1 border';
+            editBtn.title = 'Editar';
+            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+            editBtn.onclick = function(e) {
+              e.stopPropagation();
+              abrirEditarSlot(key);
+            };
+            actions.appendChild(editBtn);
+
+            var delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-xs btn-light p-0 px-1 border text-danger';
+            delBtn.title = 'Remover';
+            delBtn.innerHTML = '<i class="bi bi-x"></i>';
+            delBtn.onclick = function(e) {
+              e.stopPropagation();
+              delete estado[key];
+              td.innerHTML = '';
+            };
+            actions.appendChild(delBtn);
+
+            box.appendChild(actions);
+            td.appendChild(box);
+          }
+
+          function abrirEditarSlot(key) {
+            var item = estado[key];
+            if (!item) return;
+            document.getElementById('edit-slot-key').value = key;
+            document.getElementById('edit-slot-disciplina').value = item.disciplina;
+            document.getElementById('edit-slot-obs').value = item.obs || '';
+
+            var selIni = document.getElementById('edit-slot-inicio');
+            var selFim = document.getElementById('edit-slot-fim');
+            selIni.innerHTML = '';
+            selFim.innerHTML = '';
+
+            HORAS.forEach(function(h) {
+              var opt1 = document.createElement('option');
+              opt1.value = h;
+              opt1.textContent = h;
+              if (h === item.hora) opt1.selected = true;
+              selIni.appendChild(opt1);
+
+              var opt2 = document.createElement('option');
+              opt2.value = h;
+              opt2.textContent = h;
+              if (h === item.fim) opt2.selected = true;
+              selFim.appendChild(opt2);
+            });
+
+            var modalEl = document.getElementById('modal-editar-slot');
+            var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+          }
+
+          var btnSalvarSlot = document.getElementById('btn-confirmar-edit-slot');
+          if (btnSalvarSlot) {
+            btnSalvarSlot.onclick = function() {
+              var key = document.getElementById('edit-slot-key').value;
+              if (estado[key]) {
+                estado[key].hora = document.getElementById('edit-slot-inicio').value;
+                estado[key].fim = document.getElementById('edit-slot-fim').value;
+                estado[key].obs = document.getElementById('edit-slot-obs').value;
+                buildGrid();
+              }
+              var modalEl = document.getElementById('modal-editar-slot');
+              var modal = bootstrap.Modal.getInstance(modalEl);
+              if (modal) modal.hide();
+            };
+          }
+
+          function CSRF() {
+            var m = document.cookie.match(/csrftoken=([^;]+)/);
+            return m ? m[1] : '';
+          }
+
+          function toast(msg, type) {
+            type = type || 'success';
+            var c = document.getElementById('toast-container');
+            if (!c) {
+              c = document.createElement('div');
+              c.id = 'toast-container';
+              c.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem';
+              document.body.appendChild(c);
+            }
+            var t = document.createElement('div');
+            t.className = 'alert alert-' + type + ' shadow py-2 px-3 mb-0';
+            t.style.minWidth = '220px';
+            t.innerHTML = '<i class="bi bi-info-circle me-1"></i> ' + msg;
+            c.appendChild(t);
+            setTimeout(function() { t.remove(); }, 3500);
+          }
+
+          var btnSalvar = document.getElementById('btn-salvar-cronograma');
+          if (btnSalvar) {
+            btnSalvar.onclick = function() {
+              var itens = Object.values(estado).map(function(item) {
+                return {
+                  dia_semana: item.dia,
+                  horario_inicio: item.hora,
+                  horario_fim: item.fim,
+                  disciplina_nome: item.disciplina,
+                  observacoes: item.obs || ''
+                };
+              });
+              fetch('/auth/recuperaifpi/cronograma/salvar/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF() },
+                body: JSON.stringify({ itens: itens })
+              })
+              .then(function(r) { return r.json(); })
+              .then(function(data) {
+                if (data.ok || data.sucesso) {
+                  toast('Cronograma salvo com sucesso!', 'success');
+                } else {
+                  toast('Erro: ' + (data.erro || ''), 'danger');
+                }
+              })
+              .catch(function() {
+                toast('Erro de comunicação com o servidor.', 'danger');
+              });
+            };
+          }
+
+          var btnLimpar = document.getElementById('btn-limpar-cronograma');
+          if (btnLimpar) {
+            btnLimpar.onclick = function() {
+              if (!confirm('Deseja realmente limpar todo o seu cronograma?')) return;
+              fetch('/auth/recuperaifpi/cronograma/limpar/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': CSRF() }
+              })
+              .then(function(r) { return r.json(); })
+              .then(function(data) {
+                if (data.ok || data.sucesso) {
+                  estado = {};
+                  buildGrid();
+                  toast('Cronograma limpo com sucesso!', 'info');
+                }
+              });
+            };
+          }
+
+          buildPalette();
+          buildGrid();
+        });
+        </script>
+
+
+        {% elif secao == "agenda" %}
+        <!-- ==================== AGENDA ACADÊMICA ==================== -->
+        <div class="row g-4" id="agenda-root">
+          <div class="col-12 col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                <button class="btn btn-sm btn-link text-white p-0 fs-5" id="btn-prev-mes"><i class="bi bi-chevron-left"></i></button>
+                <span class="fw-bold fs-6" id="calendario-titulo">Calendário</span>
+                <button class="btn btn-sm btn-link text-white p-0 fs-5" id="btn-next-mes"><i class="bi bi-chevron-right"></i></button>
+              </div>
+              <div class="card-body p-3">
+                <div class="calendar-grid" id="calendar-grid">
+                  <!-- gerado via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Card do Dia Selecionado -->
+            <div class="card shadow-sm border-0 mb-4" id="card-dia-eventos" style="display:none">
+              <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                <span class="fw-bold text-primary" id="titulo-dia-selecionado"><i class="bi bi-calendar-event me-2"></i>Eventos do Dia</span>
+                <button class="btn btn-primary btn-sm" id="btn-novo-evento-dia"><i class="bi bi-plus me-1"></i>Novo Compromisso</button>
+              </div>
+              <div class="card-body p-3" id="lista-eventos-dia"></div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <!-- Próximos compromissos -->
+            <div class="card shadow-sm border-0 mb-4">
+              <div class="card-header bg-white fw-bold border-bottom d-flex align-items-center gap-2">
+                <i class="bi bi-clock-history text-primary"></i> Próximos Compromissos
+              </div>
+              <div class="card-body p-3">
+                {% if eventos_proximos %}
+                  {% for ev in eventos_proximos %}
+                  <div class="evento-item-card categoria-{{ ev.categoria }} mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <span class="fw-bold small">{{ ev.titulo }}</span>
+                      <span class="categoria-pill categoria-{{ ev.categoria }}">{{ ev.get_categoria_display }}</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                      <i class="bi bi-calendar3 me-1"></i>{{ ev.data|date:"d/m/Y" }}{% if ev.horario %} às {{ ev.horario|time:"H:i" }}{% endif %}
+                    </div>
+                    {% if ev.descricao %}
+                      <div class="text-muted small mt-1">{{ ev.descricao|truncatechars:60 }}</div>
+                    {% endif %}
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <p class="text-muted small text-center py-3 mb-0">Nenhum compromisso próximo.</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Semanas de Provas -->
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-journal-check text-danger me-1"></i> Semanas de Provas</span>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-nova-semana"><i class="bi bi-plus"></i> Nova Semana</button>
+              </div>
+              <div class="card-body p-3">
+                {% if proxima_avaliacao %}
+                <div class="proxima-prova-hero mb-3">
+                  <div class="text-white-50 small mb-1"><i class="bi bi-bell-fill me-1"></i> Próxima Avaliação</div>
+                  <div class="fw-bold fs-5">{{ proxima_avaliacao.disciplina_nome }}</div>
+                  <div class="small text-white-50">{{ proxima_avaliacao.data|date:"d/m/Y" }}{% if proxima_avaliacao.horario %} às {{ proxima_avaliacao.horario|time:"H:i" }}{% endif %}</div>
+                  <div class="small mt-1">{{ proxima_avaliacao.conteudo }}</div>
+                  <div class="mt-2">
+                    <span class="badge bg-white text-primary fw-bold px-2 py-1">
+                      {% if proxima_avaliacao.dias_faltam == 0 %}Hoje!
+                      {% elif proxima_avaliacao.dias_faltam == 1 %}Amanhã!
+                      {% else %}Faltam {{ proxima_avaliacao.dias_faltam }} dias
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+                {% endif %}
+
+                {% for semana in semanas_provas %}
+                <div class="semana-periodo-card mb-3">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <div class="fw-bold text-dark">{{ semana.nome }}</div>
+                      <div class="text-muted small">{{ semana.data_inicio|date:"d/m" }} a {{ semana.data_fim|date:"d/m/Y" }}</div>
+                    </div>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-xs btn-outline-primary btn-add-av-semana" data-semana-id="{{ semana.id }}" title="Adicionar Prova"><i class="bi bi-plus"></i> Prova</button>
+                      <button class="btn btn-xs btn-outline-danger btn-del-semana" data-semana-id="{{ semana.id }}" title="Excluir Semana"><i class="bi bi-trash"></i></button>
+                    </div>
+                  </div>
+
+                  {% for av in semana.avaliacoes_processadas %}
+                  <div class="avaliacao-row-item mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fw-bold text-danger">{{ av.disciplina_nome }}</span>
+                      <div class="d-flex gap-1 align-items-center">
+                        {% if av.dias_faltam is not None %}
+                          <span class="badge bg-danger text-white" style="font-size:0.65rem">
+                            {% if av.dias_faltam == 0 %}Hoje{% elif av.dias_faltam == 1 %}Amanhã{% else %}{{ av.dias_faltam }}d{% endif %}
+                          </span>
+                        {% endif %}
+                        <button class="btn btn-xs btn-outline-secondary p-0 px-1 btn-edit-av"
+                          data-id="{{ av.id }}"
+                          data-semana="{{ semana.id }}"
+                          data-disc="{{ av.disciplina_nome }}"
+                          data-data="{{ av.data|date:'Y-m-d' }}"
+                          data-hora="{{ av.horario|time:'H:i'|default:'' }}"
+                          data-conteudo="{{ av.conteudo }}"
+                          data-obs="{{ av.observacoes|default:'' }}">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-xs btn-outline-danger p-0 px-1 btn-del-av" data-id="{{ av.id }}"><i class="bi bi-x"></i></button>
+                      </div>
+                    </div>
+                    <div class="text-muted small mt-1">{{ av.data|date:"d/m" }}{% if av.horario %} às {{ av.horario|time:"H:i" }}{% endif %} — {{ av.conteudo|truncatechars:50 }}</div>
+                  </div>
+                  {% empty %}
+                  <p class="text-muted small mb-0">Nenhuma avaliação cadastrada nesta semana.</p>
+                  {% endfor %}
+                </div>
+                {% empty %}
+                <p class="text-muted small text-center py-3 mb-0">Nenhuma semana de provas cadastrada.</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAIS DA AGENDA -->
+        <div class="modal fade" id="modal-evento" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="modal-evento-titulo">Novo Compromisso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="evento-id">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Título *</label>
+                  <input type="text" class="form-control" id="evento-titulo" placeholder="Ex: Prova de Matemática">
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Data *</label>
+                    <input type="date" class="form-control" id="evento-data">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Horário</label>
+                    <input type="time" class="form-control" id="evento-horario">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Categoria</label>
+                  <select class="form-select" id="evento-categoria">
+                    <option value="prova">Prova</option>
+                    <option value="trabalho">Trabalho</option>
+                    <option value="atividade">Atividade</option>
+                    <option value="evento_escolar">Evento Escolar</option>
+                    <option value="palestra">Palestra</option>
+                    <option value="lembrete" selected>Lembrete</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Descrição</label>
+                  <textarea class="form-control" id="evento-descricao" rows="2" placeholder="Detalhes do compromisso..."></textarea>
+                </div>
+              </div>
+              <div class="modal-footer bg-light">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" id="btn-salvar-evento"><i class="bi bi-save me-1"></i>Salvar Compromisso</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="modal-nova-semana" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold">Nova Semana de Provas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Nome do Período *</label>
+                  <input type="text" class="form-control" id="semana-nome" placeholder="Ex: Provas do 1º Bimestre">
+                </div>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Data de Início *</label>
+                    <input type="date" class="form-control" id="semana-inicio">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Data de Término *</label>
+                    <input type="date" class="form-control" id="semana-fim">
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer bg-light">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" id="btn-criar-semana">Criar Semana</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="modal-avaliacao" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="modal-av-titulo">Nova Avaliação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="av-semana-id">
+                <input type="hidden" id="av-id">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Disciplina *</label>
+                  <input type="text" class="form-control" id="av-disciplina" placeholder="Ex: Matemática">
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Data da Prova *</label>
+                    <input type="date" class="form-control" id="av-data">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-semibold">Horário</label>
+                    <input type="time" class="form-control" id="av-horario">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Conteúdo Cobrado *</label>
+                  <input type="text" class="form-control" id="av-conteudo" placeholder="Ex: Equações do 2º grau...">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Observações</label>
+                  <textarea class="form-control" id="av-obs" rows="2" placeholder="Ex: Permitido uso de calculadora..."></textarea>
+                </div>
+              </div>
+              <div class="modal-footer bg-light">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" id="btn-salvar-avaliacao">Salvar Avaliação</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          function CSRF() {
+            var m = document.cookie.match(/csrftoken=([^;]+)/);
+            return m ? m[1] : '';
+          }
+          function POST(url, data) {
+            return fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF() },
+              body: JSON.stringify(data)
+            }).then(function(r) { return r.json(); });
+          }
+          function toast(msg, type) {
+            type = type || 'success';
+            var c = document.getElementById('toast-container');
+            if (!c) {
+              c = document.createElement('div');
+              c.id = 'toast-container';
+              c.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem';
+              document.body.appendChild(c);
+            }
+            var t = document.createElement('div');
+            t.className = 'alert alert-' + type + ' shadow py-2 px-3 mb-0';
+            t.style.minWidth = '220px';
+            t.innerHTML = '<i class="bi bi-info-circle me-1"></i> ' + msg;
+            c.appendChild(t);
+            setTimeout(function() { t.remove(); }, 3500);
+          }
+
+          var calAno = new Date().getFullYear();
+          var calMes = new Date().getMonth() + 1;
+          var eventosCalendario = {};
+          var diaAtivo = null;
+          var MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+          var CAT_COR = {
+            prova: '#ef4444',
+            trabalho: '#f59e0b',
+            atividade: '#3b82f6',
+            evento_escolar: '#8b5cf6',
+            palestra: '#10b981',
+            lembrete: '#06b6d4',
+            avaliacao: '#dc2626',
+            outro: '#64748b'
+          };
+
+          function renderCalendario() {
+            var tit = document.getElementById('calendario-titulo');
+            if (tit) tit.textContent = MESES[calMes - 1] + ' de ' + calAno;
+
+            var grid = document.getElementById('calendar-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            var headers = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            headers.forEach(function(d) {
+              var h = document.createElement('div');
+              h.className = 'cal-header-cell';
+              h.textContent = d;
+              grid.appendChild(h);
+            });
+
+            var primeiroDia = new Date(calAno, calMes - 1, 1).getDay();
+            var totalDias = new Date(calAno, calMes, 0).getDate();
+            var hoje = new Date();
+            var hojeStr = hoje.getFullYear() + '-' + (hoje.getMonth() + 1 < 10 ? '0' : '') + (hoje.getMonth() + 1) + '-' + (hoje.getDate() < 10 ? '0' : '') + hoje.getDate();
+
+            for (var i = 0; i < primeiroDia; i++) {
+              var b = document.createElement('div');
+              b.className = 'cal-day-blank';
+              grid.appendChild(b);
+            }
+
+            for (var d = 1; d <= totalDias; d++) {
+              var ds = calAno + '-' + (calMes < 10 ? '0' : '') + calMes + '-' + (d < 10 ? '0' : '') + d;
+              var cell = document.createElement('div');
+              cell.className = 'calendar-day-cell';
+              if (ds === hojeStr) cell.classList.add('hoje');
+              if (eventosCalendario[ds] && eventosCalendario[ds].length) cell.classList.add('tem-eventos');
+              if (diaAtivo === ds) cell.classList.add('ativo');
+              cell.dataset.date = ds;
+
+              var num = document.createElement('span');
+              num.className = 'cal-num';
+              num.textContent = d;
+              cell.appendChild(num);
+
+              if (eventosCalendario[ds]) {
+                var pills = document.createElement('div');
+                pills.className = 'event-mini-pills';
+                eventosCalendario[ds].slice(0, 4).forEach(function(ev) {
+                  var p = document.createElement('span');
+                  p.className = 'event-mini-pill';
+                  p.style.background = CAT_COR[ev.categoria] || '#3b82f6';
+                  p.title = ev.titulo;
+                  pills.appendChild(p);
+                });
+                cell.appendChild(pills);
+              }
+
+              (function(dataStr) {
+                cell.addEventListener('click', function() {
+                  abrirDia(dataStr);
+                });
+              })(ds);
+
+              grid.appendChild(cell);
+            }
+          }
+
+          function carregarEventos(ano, mes, cb) {
+            fetch('/auth/recuperaifpi/agenda/eventos/?ano=' + ano + '&mes=' + mes)
+              .then(function(r) { return r.json(); })
+              .then(function(data) {
+                eventosCalendario = {};
+                if (data && data.eventos) {
+                  data.eventos.forEach(function(ev) {
+                    if (!eventosCalendario[ev.data]) eventosCalendario[ev.data] = [];
+                    eventosCalendario[ev.data].push(ev);
+                  });
+                }
+                renderCalendario();
+                if (cb) cb();
+              })
+              .catch(function(err) {
+                console.error(err);
+                renderCalendario();
+              });
+          }
+
+          function abrirDia(ds) {
+            diaAtivo = ds;
+            renderCalendario();
+            var card = document.getElementById('card-dia-eventos');
+            if (card) card.style.display = '';
+
+            var parts = ds.split('-');
+            var tit = document.getElementById('titulo-dia-selecionado');
+            if (tit) tit.innerHTML = '<i class="bi bi-calendar-event me-2"></i>Compromissos de ' + parts[2] + '/' + parts[1] + '/' + parts[0];
+
+            renderEventosDia(ds);
+
+            var btnNovo = document.getElementById('btn-novo-evento-dia');
+            if (btnNovo) {
+              btnNovo.onclick = function() {
+                abrirModalEvento(null, ds);
+              };
+            }
+          }
+
+          function renderEventosDia(ds) {
+            var lista = document.getElementById('lista-eventos-dia');
+            if (!lista) return;
+            var evs = eventosCalendario[ds] || [];
+            if (!evs.length) {
+              lista.innerHTML = '<p class="text-muted small text-center py-2 mb-0">Nenhum evento agendado para este dia.</p>';
+              return;
+            }
+            lista.innerHTML = '';
+            evs.forEach(function(ev) {
+              var el = document.createElement('div');
+              el.className = 'evento-item-card categoria-' + ev.categoria + ' mb-2';
+
+              var head = document.createElement('div');
+              head.className = 'd-flex justify-content-between align-items-start';
+
+              var tSpan = document.createElement('span');
+              tSpan.className = 'fw-bold';
+              tSpan.textContent = ev.titulo;
+              head.appendChild(tSpan);
+
+              if (ev.tipo !== 'avaliacao') {
+                var actDiv = document.createElement('div');
+                actDiv.className = 'd-flex gap-1';
+
+                var editB = document.createElement('button');
+                editB.className = 'btn btn-xs btn-outline-secondary p-0 px-1';
+                editB.innerHTML = '<i class="bi bi-pencil"></i>';
+                editB.onclick = function() { abrirModalEvento(ev.id); };
+                actDiv.appendChild(editB);
+
+                var delB = document.createElement('button');
+                delB.className = 'btn btn-xs btn-outline-danger p-0 px-1';
+                delB.innerHTML = '<i class="bi bi-trash"></i>';
+                delB.onclick = function() { excluirEvento(ev.id, ds); };
+                actDiv.appendChild(delB);
+
+                head.appendChild(actDiv);
+              }
+              el.appendChild(head);
+
+              if (ev.horario || ev.descricao) {
+                var descDiv = document.createElement('div');
+                descDiv.className = 'text-muted small mt-1';
+                descDiv.textContent = (ev.horario ? ev.horario + ' — ' : '') + (ev.descricao || '');
+                el.appendChild(descDiv);
+              }
+
+              var tag = document.createElement('span');
+              tag.className = 'categoria-pill categoria-' + ev.categoria + ' mt-2';
+              tag.textContent = ev.categoria_label || ev.categoria_display || ev.categoria;
+              el.appendChild(tag);
+
+              lista.appendChild(el);
+            });
+          }
+
+          function abrirModalEvento(id, dataPadrao) {
+            document.getElementById('evento-id').value = id || '';
+            document.getElementById('modal-evento-titulo').textContent = id ? 'Editar Compromisso' : 'Novo Compromisso';
+            if (!id) {
+              document.getElementById('evento-titulo').value = '';
+              document.getElementById('evento-data').value = dataPadrao || '';
+              document.getElementById('evento-horario').value = '';
+              document.getElementById('evento-categoria').value = 'lembrete';
+              document.getElementById('evento-descricao').value = '';
+            } else {
+              var ev = null;
+              Object.values(eventosCalendario).forEach(function(list) {
+                list.forEach(function(e) { if (e.id == id) ev = e; });
+              });
+              if (ev) {
+                document.getElementById('evento-titulo').value = ev.titulo;
+                document.getElementById('evento-data').value = ev.data;
+                document.getElementById('evento-horario').value = ev.horario || '';
+                document.getElementById('evento-categoria').value = ev.categoria;
+                document.getElementById('evento-descricao').value = ev.descricao || '';
+              }
+            }
+            var modalEl = document.getElementById('modal-evento');
+            var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+          }
+
+          var btnSalvarEv = document.getElementById('btn-salvar-evento');
+          if (btnSalvarEv) {
+            btnSalvarEv.onclick = function() {
+              var id = document.getElementById('evento-id').value;
+              var data = {
+                titulo: document.getElementById('evento-titulo').value.trim(),
+                data: document.getElementById('evento-data').value,
+                horario: document.getElementById('evento-horario').value,
+                categoria: document.getElementById('evento-categoria').value,
+                descricao: document.getElementById('evento-descricao').value.trim()
+              };
+              if (!data.titulo || !data.data) {
+                toast('Por favor, preencha o título e a data do compromisso.', 'warning');
+                return;
+              }
+              var url = id ? '/auth/recuperaifpi/agenda/evento/editar/' : '/auth/recuperaifpi/agenda/evento/criar/';
+              if (id) data.evento_id = id;
+
+              POST(url, data).then(function(r) {
+                if (r.ok || r.sucesso) {
+                  var modalEl = document.getElementById('modal-evento');
+                  var modal = bootstrap.Modal.getInstance(modalEl);
+                  if (modal) modal.hide();
+                  carregarEventos(calAno, calMes, function() {
+                    if (diaAtivo) renderEventosDia(diaAtivo);
+                  });
+                  toast('Compromisso salvo com sucesso!', 'success');
+                } else {
+                  toast('Erro: ' + (r.erro || 'Erro ao salvar'), 'danger');
+                }
+              });
+            };
+          }
+
+          function excluirEvento(id, ds) {
+            if (!confirm('Deseja realmente excluir este compromisso?')) return;
+            POST('/auth/recuperaifpi/agenda/evento/excluir/', { evento_id: id }).then(function(r) {
+              if (r.ok || r.sucesso) {
+                carregarEventos(calAno, calMes, function() {
+                  if (diaAtivo) renderEventosDia(ds || diaAtivo);
+                });
+                toast('Compromisso excluído com sucesso.', 'info');
+              }
+            });
+          }
+
+          var btnPrev = document.getElementById('btn-prev-mes');
+          if (btnPrev) {
+            btnPrev.onclick = function() {
+              calMes--;
+              if (calMes < 1) { calMes = 12; calAno--; }
+              carregarEventos(calAno, calMes);
+            };
+          }
+          var btnNext = document.getElementById('btn-next-mes');
+          if (btnNext) {
+            btnNext.onclick = function() {
+              calMes++;
+              if (calMes > 12) { calMes = 1; calAno++; }
+              carregarEventos(calAno, calMes);
+            };
+          }
+
+          // Semanas de Provas
+          var btnCriarSemana = document.getElementById('btn-criar-semana');
+          if (btnCriarSemana) {
+            btnCriarSemana.onclick = function() {
+              var nome = document.getElementById('semana-nome').value.trim();
+              var inicio = document.getElementById('semana-inicio').value;
+              var fim = document.getElementById('semana-fim').value;
+              if (!nome || !inicio || !fim) {
+                toast('Preencha o nome, data de início e de término.', 'warning');
+                return;
+              }
+              POST('/auth/recuperaifpi/agenda/semana/criar/', { nome: nome, data_inicio: inicio, data_fim: fim }).then(function(r) {
+                if (r.ok || r.sucesso) {
+                  location.reload();
+                } else {
+                  toast('Erro: ' + (r.erro || 'Erro ao criar semana'), 'danger');
+                }
+              });
+            };
+          }
+
+          document.querySelectorAll('.btn-del-semana').forEach(function(btn) {
+            btn.onclick = function() {
+              var id = btn.dataset.semanaId;
+              if (!confirm('Excluir esta semana de provas e todas as suas avaliações?')) return;
+              POST('/auth/recuperaifpi/agenda/semana/excluir/', { semana_id: id }).then(function(r) {
+                if (r.ok || r.sucesso) location.reload();
+                else toast('Erro: ' + (r.erro || 'Erro ao excluir'), 'danger');
+              });
+            };
+          });
+
+          document.querySelectorAll('.btn-add-av-semana').forEach(function(btn) {
+            btn.onclick = function() {
+              var semanaId = btn.dataset.semanaId;
+              document.getElementById('av-semana-id').value = semanaId;
+              document.getElementById('av-id').value = '';
+              document.getElementById('modal-av-titulo').textContent = 'Nova Avaliação';
+              document.getElementById('av-disciplina').value = '';
+              document.getElementById('av-data').value = '';
+              document.getElementById('av-horario').value = '';
+              document.getElementById('av-conteudo').value = '';
+              document.getElementById('av-obs').value = '';
+              var modalEl = document.getElementById('modal-avaliacao');
+              var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+              modal.show();
+            };
+          });
+
+          document.querySelectorAll('.btn-edit-av').forEach(function(btn) {
+            btn.onclick = function() {
+              document.getElementById('av-semana-id').value = btn.dataset.semana || '';
+              document.getElementById('av-id').value = btn.dataset.id || '';
+              document.getElementById('modal-av-titulo').textContent = 'Editar Avaliação';
+              document.getElementById('av-disciplina').value = btn.dataset.disc || '';
+              document.getElementById('av-data').value = btn.dataset.data || '';
+              document.getElementById('av-horario').value = btn.dataset.hora || '';
+              document.getElementById('av-conteudo').value = btn.dataset.conteudo || '';
+              document.getElementById('av-obs').value = btn.dataset.obs || '';
+              var modalEl = document.getElementById('modal-avaliacao');
+              var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+              modal.show();
+            };
+          });
+
+          document.querySelectorAll('.btn-del-av').forEach(function(btn) {
+            btn.onclick = function() {
+              var id = btn.dataset.id;
+              if (!confirm('Deseja excluir esta avaliação?')) return;
+              POST('/auth/recuperaifpi/agenda/avaliacao/excluir/', { avaliacao_id: id }).then(function(r) {
+                if (r.ok || r.sucesso) location.reload();
+                else toast('Erro: ' + (r.erro || 'Erro ao excluir'), 'danger');
+              });
+            };
+          });
+
+          var btnSalvarAv = document.getElementById('btn-salvar-avaliacao');
+          if (btnSalvarAv) {
+            btnSalvarAv.onclick = function() {
+              var avId = document.getElementById('av-id').value;
+              var semanaId = document.getElementById('av-semana-id').value;
+              var data = {
+                disciplina_nome: document.getElementById('av-disciplina').value.trim(),
+                data: document.getElementById('av-data').value,
+                horario: document.getElementById('av-horario').value,
+                conteudo: document.getElementById('av-conteudo').value.trim(),
+                observacoes: document.getElementById('av-obs').value.trim()
+              };
+              if (!data.disciplina_nome || !data.data || !data.conteudo) {
+                toast('Preencha os campos obrigatórios (Disciplina, Data e Conteúdo).', 'warning');
+                return;
+              }
+              if (avId) {
+                data.avaliacao_id = avId;
+                POST('/auth/recuperaifpi/agenda/avaliacao/editar/', data).then(function(r) {
+                  if (r.ok || r.sucesso) location.reload();
+                  else toast('Erro: ' + (r.erro || 'Erro ao salvar'), 'danger');
+                });
+              } else {
+                data.semana_prova_id = semanaId;
+                POST('/auth/recuperaifpi/agenda/avaliacao/criar/', data).then(function(r) {
+                  if (r.ok || r.sucesso) location.reload();
+                  else toast('Erro: ' + (r.erro || 'Erro ao salvar'), 'danger');
+                });
+              }
+            };
+          }
+
+          // Iniciar imediatamente renderizando calendário e buscando eventos
+          renderCalendario();
+          carregarEventos(calAno, calMes);
+        });
+        </script>
+
+        {% endif %}{# fim secao #}
+
+
+    {% endif %}
+
+    </main>
+
+
+    <footer class="bg-light text-dark pt-5 pb-4 mt-5 border-top">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <h6 class="text-uppercase fw-bold text-dark mb-3">APROVAIFPI.COM</h6>
+                    <ul class="list-unstyled mb-0" style="font-size: 0.9rem;">
+                        <li><a href="{% url 'logout' %}" class="text-secondary text-decoration-none d-block py-1">Login</a></li>
+                        <li><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none d-block py-1">Questões</a></li>
+                        <li><a href="{% url 'conteudos' %}" class="text-secondary text-decoration-none d-block py-1">Conteúdos</a></li>
+                        <li><a href="{% url 'ranking' %}" class="text-secondary text-decoration-none d-block py-1">Rankings</a></li>
+                        <li><a href="{% url 'recuperaifpi' %}" class="text-secondary text-decoration-none d-block py-1">RecuperaIFPI</a></li>
+                        
+                    </ul>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <h6 class="text-uppercase fw-bold text-dark mb-3">COLABORADORES</h6>
+                    <ul class="list-unstyled mb-0 text-secondary" style="font-size: 0.88rem; line-height: 1.8;">
+                        <li>Aluno João Gabriel Lopes</li>
+                        <li>Aluno Marcos Winicius Gomes</li>
+                        <li>Aluno Victor Daniel Castro</li>
+                        <li>Prof. Alexandre Cajazeira</li>
+                        <li>Prof. Alexandre Lages</li>
+                    </ul>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <h6 class="text-uppercase fw-bold text-dark mb-3">RECURSOS UTILIZADOS</h6>
+                    <ul class="list-unstyled mb-0 text-secondary" style="font-size: 0.88rem; line-height: 1.8;">
+                        <li>Bootstrap 5</li>
+                        <li>HTML</li>
+                        <li>CSS</li>
+                        <li>JAVA SCRIPT</li>
+                    </ul>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <h6 class="text-uppercase fw-bold text-dark mb-3">DISCIPLINAS</h6>
+                    <ul class="list-unstyled mb-0 text-secondary" style="font-size: 0.88rem; line-height: 1.8;">
+                        <li>Português</li>
+                        <li>Matemática</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-4 text-muted">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center">
+                    <img src="{% static 'img/logo_aprovaifpi 1.svg' %}" alt="Logo AprovaIFPI" height="36" class="me-2">
+                    <span class="text-dark fw-bold" style="font-size: 0.85rem;">© 2025 - Um produto AprovaIFPI.com</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // Cortar alternativas
+            document.addEventListener("click", function(e) {
+                const btnRiscar = e.target.closest(".btn-riscar-alternativa");
+                if (btnRiscar) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const altId = btnRiscar.getAttribute("data-alt-id");
+                    const card = document.getElementById("alt-card-" + altId);
+                    if (!card) return;
+
+                    const estaCortada = card.classList.toggle("cortada");
+
+                    if (estaCortada) {
+                        btnRiscar.title = "Restaurar alternativa";
+                        const radio = card.querySelector("input[type='radio']");
+                        if (radio && radio.checked) {
+                            radio.checked = false;
+                        }
+                    } else {
+                        btnRiscar.title = "Cortar alternativa que você acha incorreta";
+                    }
+                    return;
+                }
+
+                // Evitar selecionar alternativa cortada ao clicar nela
+                const cardCortado = e.target.closest(".alternativa-card.cortada");
+                if (cardCortado && !e.target.closest(".btn-riscar-alternativa")) {
+                    e.preventDefault();
+                }
+            });
+
+            // 1. Filter conteudos by disciplina (same pattern as questoes.html)
+            (function configurarFiltroConteudo() {
+                const discSelect = document.getElementById("select-disciplina");
+                const contSelect = document.getElementById("select-conteudo");
+
+                if (!discSelect || !contSelect) return;
+
+                function atualizarConteudos() {
+                    const discId = discSelect.value;
+                    const options = contSelect.querySelectorAll("option");
+
+                    options.forEach(opt => {
+                        if (opt.value === "") {
+                            opt.hidden = false;
+                            return;
+                        }
+                        opt.hidden = discId !== "" && opt.dataset.disciplina !== discId;
+                    });
+
+                    const selectedOpt = contSelect.options[contSelect.selectedIndex];
+                    if (selectedOpt && selectedOpt.hidden) {
+                        contSelect.value = "";
+                    }
+                }
+
+                discSelect.addEventListener("change", atualizarConteudos);
+                atualizarConteudos();
+            })();
+
+            // Validate form before submitting
+            const formSelecao = document.getElementById("form-selecao");
+            if (formSelecao) {
+                formSelecao.addEventListener("submit", function(e) {
+                    const disc = document.getElementById("select-disciplina");
+                    const cont = document.getElementById("select-conteudo");
+                    if (!disc.value || !cont.value) {
+                        e.preventDefault();
+                        alert("Por favor, selecione a disciplina e o conteúdo para iniciar a atividade.");
+                    }
+                });
+            }
+
+            // 3. When feedback is shown, highlight correct/incorrect alternatives
+            {% if feedback %}
+            (function highlightAlternativas() {
+                const alternativas = document.querySelectorAll("#alternativas-list .alternativa-card");
+                alternativas.forEach(card => {
+                    const isCorreta = card.getAttribute("data-correta") === "true";
+                    const radio = card.querySelector("input[type='radio']");
+
+                    if (isCorreta) {
+                        card.classList.add("alternativa-correta");
+                    } else if (radio && radio.checked) {
+                        card.classList.add("alternativa-incorreta");
+                    }
+                });
+            })();
+            {% endif %}
+
+            // 4. Progress bar animation
+            (function animateProgressBar() {
+                const fill = document.getElementById("progress-fill");
+                if (!fill) return;
+                const targetWidth = fill.style.width;
+                fill.style.width = "0%";
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        fill.style.width = targetWidth;
+                    });
+                });
+            })();
+
+        });
+
+        // adjustHeaderOffset function (same as questoes.html)
+        function adjustHeaderOffset() {
+            const header = document.querySelector('.header-fixed-wrapper');
+            if (header) {
+                const height = Math.ceil(header.getBoundingClientRect().height);
+                document.body.style.paddingTop = Math.max(height + 12, 92) + 'px';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', adjustHeaderOffset);
+        window.addEventListener('load', adjustHeaderOffset);
+        window.addEventListener('resize', adjustHeaderOffset);
+    </script>
+
+    <!-- Dark Mode Controller -->
+    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
+</body>
+</html>
+

@@ -18,6 +18,22 @@
 
     <!-- Perfil & Configurações CSS -->
     <link rel="stylesheet" href="{% static 'styles/perfil.css' %}?v=1.1">
+    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('aprovaifpi_theme');
+            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
+            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
+            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
+            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
+            {% endif %}
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
 </head>
 
 <body class="perfil-body">
@@ -34,7 +50,7 @@
                 <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarMenuDesktop">
                     <ul class="navbar-nav gap-2 gap-xl-4 align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'questoes' %}">INÍCIO</a>
+                            <a class="nav-link" href="{% url 'inicio' %}">INÍCIO</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'questoes' %}">QUESTÕES</a>
@@ -46,7 +62,7 @@
                             <a class="nav-link" href="{% url 'ranking' %}">RANKING</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sobre' %}">SOBRE</a>
+                            <a class="nav-link" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
                         </li>
                     </ul>
                 </div>
@@ -105,7 +121,7 @@
                     </div>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav gap-2">
-                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'questoes' %}">INÍCIO</a></li>
+                            <li class="nav-item"><a class="nav-link py-2" href="{% url 'inicio' %}">INÍCIO</a></li>
                             <li class="nav-item"><a class="nav-link py-2" href="{% url 'questoes' %}">QUESTÕES</a></li>
                             <li class="nav-item"><a class="nav-link py-2" href="{% url 'conteudos' %}">CONTEÚDOS</a></li>
                             <li class="nav-item"><a class="nav-link py-2" href="{% url 'ranking' %}">RANKING</a></li>
@@ -157,6 +173,48 @@
         </div>
 
         <div class="row g-4">
+            
+            <!-- Seção de Acessibilidade & Aparência -->
+            <div class="col-12">
+                <div class="settings-section-card" id="card-acessibilidade">
+                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
+                        <div>
+                            <h5 class="settings-card-title mb-1">
+                                <i class="bi bi-universal-access text-primary"></i>Acessibilidade e Aparência
+                            </h5>
+                            <p class="settings-card-subtitle mb-0">
+                                Personalize a experiência visual da plataforma. Ative o tema escuro para maior conforto visual durante seus estudos.
+                            </p>
+                        </div>
+                        <div class="form-check form-switch fs-4 m-0 d-flex align-items-center gap-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-tema-escuro" {% if perfil.tema_escuro %}checked{% endif %}>
+                            <label class="form-check-label fs-6 fw-bold text-dark" for="switch-tema-escuro" id="label-tema-status">
+                                {% if perfil.tema_escuro %}Tema Escuro Ativo{% else %}Tema Claro Ativo{% endif %}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="theme-selector-box pt-2">
+                        <!-- Card Tema Claro -->
+                        <div class="theme-option-card {% if not perfil.tema_escuro %}active{% endif %}" id="theme-card-light">
+                            <div class="theme-icon-circle theme-icon-light">
+                                <i class="bi bi-sun-fill"></i>
+                            </div>
+                            <div class="fw-bold mb-1">Tema Claro</div>
+                            <small class="text-muted d-block">Ideal para ambientes bem iluminados, com alto contraste e fundo claro.</small>
+                        </div>
+
+                        <!-- Card Tema Escuro -->
+                        <div class="theme-option-card {% if perfil.tema_escuro %}active{% endif %}" id="theme-card-dark">
+                            <div class="theme-icon-circle theme-icon-dark">
+                                <i class="bi bi-moon-stars-fill"></i>
+                            </div>
+                            <div class="fw-bold mb-1">Tema Escuro</div>
+                            <small class="text-muted d-block">Reduz o cansaço visual, economiza energia e melhora o foco em estudos noturnos.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <!-- Coluna Esquerda: Alterar E-mail e Informações Básicas -->
             <div class="col-12 col-lg-6">
@@ -271,5 +329,7 @@
         window.addEventListener('load', adjustHeaderOffset);
         window.addEventListener('resize', adjustHeaderOffset);
     </script>
+    <!-- Dark Mode Controller -->
+    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
 </body>
 </html>

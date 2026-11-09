@@ -1,0 +1,531 @@
+/* Inicio CSS - AprovaIFPI - Versão Ajustada e Fiel */
+:root {
+  --primary-blue: #0056d6;
+  --primary-blue-hover: #0045ab;
+  --accent-blue: #2563eb;
+  --strong-blue-line: #0047e1;
+  --bg-page: #f1f5f9;
+  --card-bg: #ffffff;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+}
+
+body.inicio-body {
+  background-color: var(--bg-page);
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  padding-top: 86px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   1. Carrossel de Banners (Tamanho Ampliado e Proporcional)
+   -------------------------------------------------------------------------- */
+.banner-carousel-section {
+  max-width: 980px;
+  margin: 1.5rem auto 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.banner-carousel-wrapper {
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 59, 255, 0.12);
+  background: linear-gradient(90deg, #003bff 0%, #022ecf 100%);
+}
+
+.carousel-banner-item {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-banner-img {
+  width: 100%;
+  height: auto;
+  max-height: 160px;
+  aspect-ratio: 643 / 109;
+  object-fit: cover;
+  display: block;
+}
+
+/* Indicadores de pontinhos (dots) */
+.carousel-indicators-custom {
+  position: relative;
+  margin-top: 12px;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  list-style: none;
+  padding: 0;
+}
+
+.carousel-indicators-custom button {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: none;
+  background-color: #cbd5e1;
+  transition: all 0.3s ease;
+  padding: 0;
+  cursor: pointer;
+}
+
+.carousel-indicators-custom button.active {
+  background-color: #0038b8;
+  width: 24px;
+  border-radius: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   2. Linha 100% Horizontal de Ponta a Ponta (Edge to Edge / Sem Margem)
+      Ocupa 100% da tela de margem a margem com cor azul forte marcante
+   -------------------------------------------------------------------------- */
+.full-bleed-blue-line {
+  width: 100%;
+  height: 2.1px;
+  background-color: rgb(101, 128, 248);
+  margin: 1.5rem 0 2rem 0;
+  display: block;
+  border: none;
+}
+
+/* --------------------------------------------------------------------------
+   3. Container de Conteúdo Amplo e Equilibrado (Cards & Dashboard)
+   -------------------------------------------------------------------------- */
+.inicio-content-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   4. Cards de Estatísticas (Ampliados, com Watermark Fiel à Referência)
+   -------------------------------------------------------------------------- */
+.stats-cards-row {
+  margin-bottom: 1.75rem;
+}
+
+.stat-box-card {
+  background-color: #ffffff;
+  border-radius: 22px;
+  padding: 1.5rem 1.15rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  min-height: 128px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-box-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+}
+
+.stat-box-label {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+  position: relative;
+  z-index: 2;
+}
+
+.stat-box-number {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #475569;
+  position: relative;
+  z-index: 2;
+}
+
+.stat-box-number.text-accent-blue {
+  color: #0056d6;
+}
+
+/* Watermark de fundo idêntica à referência */
+.stat-watermark {
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 94%;
+  max-height: 125px;
+  width: auto;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+/* --------------------------------------------------------------------------
+   5. Seção Inferior: Taxa de Acertos e Rankings (Ampliados)
+   -------------------------------------------------------------------------- */
+.dashboard-grid-row {
+  margin-bottom: 1.75rem;
+}
+
+.card-taxa-performance {
+  background-color: #ffffff;
+  border-radius: 22px;
+  padding: 1.6rem 1.35rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.section-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #475569;
+  text-align: center;
+  margin-bottom: 1.35rem;
+}
+
+/* Gráfico Circular de Acertos com Animação */
+.circle-progress-wrapper {
+  position: relative;
+  width: 145px;
+  height: 145px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.circle-progress-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 8;
+}
+
+.circle-bar {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 1.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.circle-progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+/* Badges de Ranking Escolar e Geral */
+.rank-badge-item {
+  margin-bottom: 1rem;
+}
+
+.rank-badge-item:last-child {
+  margin-bottom: 0;
+}
+
+.rank-badge-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+}
+
+.rank-pill-box {
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #334155;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.rank-pill-box:hover {
+  border-color: #94a3b8;
+  background-color: #f8fafc;
+}
+
+.rank-pill-box .rank-number {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #1e293b;
+}
+
+.rank-pill-box .rank-arrow {
+  color: #16a34a;
+  font-weight: 900;
+  font-size: 1.15rem;
+}
+
+.rank-pill-box .rank-scope {
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   6. Card do Ranking (Com Alternador Geral / Semanal)
+   -------------------------------------------------------------------------- */
+.card-ranking-board {
+  background-color: #ffffff;
+  border-radius: 22px;
+  padding: 1.6rem 1.35rem 1rem 1.35rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ranking-type-dropdown-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #334155;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.ranking-type-dropdown-btn:hover {
+  color: var(--primary-blue);
+}
+
+.ranking-type-dropdown-btn i {
+  font-size: 1.05rem;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.ranking-board-table {
+  width: 100%;
+}
+
+.ranking-board-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background-color 0.15s ease;
+  border-radius: 8px;
+}
+
+.ranking-board-row:hover {
+  background-color: #f8fafc;
+}
+
+.ranking-board-row:last-child {
+  border-bottom: none;
+}
+
+.rank-pos-col {
+  width: 40px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+}
+
+.rank-user-col {
+  flex-grow: 1;
+  padding: 0 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rank-xp-col {
+  font-size: 1.05rem;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.xp-tag-blue {
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.xp-val-dark {
+  color: #334155;
+  font-weight: 700;
+}
+
+.ranking-board-footer-link {
+  text-align: center;
+  margin-top: auto;
+  padding-top: 10px;
+  color: #94a3b8;
+  font-size: 1.35rem;
+  text-decoration: none;
+  display: block;
+  transition: color 0.2s ease;
+}
+
+.ranking-board-footer-link:hover {
+  color: var(--primary-blue);
+}
+
+/* --------------------------------------------------------------------------
+   7. Datas Importantes (Desktop)
+   -------------------------------------------------------------------------- */
+.desktop-datas-row {
+  width: 100%;
+  margin: 2rem 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.desktop-datas-row span {
+  transition: color 0.2s ease;
+  cursor: default;
+}
+
+.desktop-datas-row span:hover {
+  color: var(--primary-blue);
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsividade
+   -------------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+  body.inicio-body {
+    padding-top: 86px;
+  }
+
+  .banner-carousel-section {
+    padding: 0 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .inicio-content-container {
+    padding: 0 0.75rem;
+  }
+
+  .stat-box-card {
+    padding: 1.25rem 0.75rem;
+    min-height: 110px;
+  }
+
+  .stat-box-label {
+    font-size: 1rem;
+  }
+
+  .stat-box-number {
+    font-size: 2.1rem;
+  }
+
+  .stat-watermark {
+    height: 90%;
+    max-height: 95px;
+  }
+
+  /* Versão Mobile do Card de Taxa com layout horizontal */
+  .card-taxa-performance {
+    padding: 1.35rem 1rem;
+  }
+
+  .mobile-taxa-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 14px;
+  }
+
+  .mobile-circle-col {
+    flex-shrink: 0;
+  }
+
+  .circle-progress-wrapper {
+    width: 115px;
+    height: 115px;
+    margin: 0;
+  }
+
+  .circle-progress-text {
+    font-size: 1.6rem;
+  }
+
+  .mobile-ranks-col {
+    flex-grow: 1;
+  }
+
+  .rank-badge-item {
+    margin-bottom: 0.6rem;
+  }
+
+  .rank-pill-box {
+    padding: 8px 14px;
+    font-size: 0.95rem;
+  }
+
+  .rank-pill-box .rank-number {
+    font-size: 1.05rem;
+  }
+
+  .desktop-datas-row {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .stat-box-number {
+    font-size: 1.85rem;
+  }
+
+  .stat-box-label {
+    font-size: 0.95rem;
+  }
+
+  .rank-user-col {
+    font-size: 0.95rem;
+  }
+}

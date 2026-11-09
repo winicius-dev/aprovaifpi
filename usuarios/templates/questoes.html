@@ -110,6 +110,22 @@
             overflow-wrap: anywhere;
         }
     </style>
+    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('aprovaifpi_theme');
+            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
+            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
+            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
+            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
+            {% endif %}
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
 </head>
 
 <body class="questoes-body">
@@ -125,7 +141,7 @@
                 <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarMenuDesktop">
                     <ul class="navbar-nav gap-2 gap-xl-4 align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'questoes' %}">INÍCIO</a>
+                            <a class="nav-link" href="{% url 'inicio' %}">INÍCIO</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="{% url 'questoes' %}">QUESTÕES</a>
@@ -137,7 +153,7 @@
                             <a class="nav-link" href="{% url 'ranking' %}">RANKING</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sobre' %}">SOBRE</a>
+                            <a class="nav-link" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
                         </li>
                     </ul>
                 </div>
@@ -195,7 +211,7 @@
                     <div class="offcanvas-body">
                         <ul class="navbar-nav gap-2">
                             <li class="nav-item">
-                                <a class="nav-link py-2" href="{% url 'questoes' %}">INÍCIO</a>
+                                <a class="nav-link py-2" href="{% url 'inicio' %}">INÍCIO</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link active text-primary py-2" href="{% url 'questoes' %}">QUESTÕES</a>
@@ -207,7 +223,7 @@
                                 <a class="nav-link py-2" href="{% url 'ranking' %}">RANKING</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link py-2" href="{% url 'sobre' %}">SOBRE</a>
+                                <a class="nav-link py-2" href="{% url 'recuperaifpi' %}">RECUPERAIFPI</a>
                             </li>
                         </ul>
                         <hr>
@@ -302,10 +318,11 @@
 
                         <div class="col-6 col-lg-3 filtro-col-status">
                             <select name="filtro" class="filtro-select" id="filtro-status">
-                                <option value="todas" {% if filtro == "todas" or not filtro %}selected{% endif %}>Status</option>
-                                <option value="nao_respondidas" {% if filtro == "nao_respondidas" %}selected{% endif %}>Não respondidas</option>
+                                <option value="nao_respondidas" {% if filtro == "nao_respondidas" or not filtro %}selected{% endif %}>Não respondidas</option>
+                                <option value="respondidas" {% if filtro == "respondidas" %}selected{% endif %}>Respondidas</option>
                                 <option value="acertadas" {% if filtro == "acertadas" %}selected{% endif %}>Acertei</option>
                                 <option value="erradas" {% if filtro == "erradas" %}selected{% endif %}>Errei</option>
+                                <option value="todas_banco" {% if filtro == "todas_banco" %}selected{% endif %}>Todas as questões</option>
                             </select>
                         </div>
                     </div>
@@ -798,7 +815,7 @@
                         <li><a href="{% url 'questoes' %}" class="text-secondary text-decoration-none d-block py-1">Questões</a></li>
                         <li><a href="{% url 'conteudos' %}" class="text-secondary text-decoration-none d-block py-1">Conteúdos</a></li>
                         <li><a href="{% url 'ranking' %}" class="text-secondary text-decoration-none d-block py-1">Rankings</a></li>
-                        <li><a href="{% url 'sobre' %}" class="text-secondary text-decoration-none d-block py-1">Sobre</a></li>
+                        <li><a href="{% url 'recuperaifpi' %}" class="text-secondary text-decoration-none d-block py-1">RecuperaIFPI</a></li>
                     </ul>
                 </div>
 
@@ -1170,5 +1187,7 @@
         window.addEventListener('resize', adjustHeaderOffset);
     </script>
 
+    <!-- Dark Mode Controller -->
+    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
 </body>
 </html>

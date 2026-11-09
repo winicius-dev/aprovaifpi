@@ -21,6 +21,7 @@ class Perfil(models.Model):
     escola = models.ForeignKey(Escola, on_delete=models.PROTECT)
     banner_1 = models.ForeignKey('Conquista', null=True, blank=True, on_delete=models.SET_NULL, related_name="perfil_banner_1")
     banner_2 = models.ForeignKey('Conquista', null=True, blank=True, on_delete=models.SET_NULL, related_name="perfil_banner_2")
+    tema_escuro = models.BooleanField(default=False, verbose_name="Tema Escuro Ativado")
 
     def __str__(self):
         return self.nome
@@ -131,3 +132,106 @@ class ConquistaPerfil(models.Model):
 
     def __str__(self):
         return f"{self.perfil.nome} - {self.conquista.nome}"
+
+
+class SessaoRecuperacao(models.Model):
+    """Sessão de atividade de recuperação no RecuperaIFPI."""
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name="sessoes_recuperacao")
+    conteudo = models.ForeignKey(Conteudo, on_delete=models.PROTECT)
+    data_inicio = models.DateTimeField(auto_now_add=True)
+    data_fim = models.DateTimeField(null=True, blank=True)
+    total_questoes = models.IntegerField(default=0)
+    acertos = models.IntegerField(default=0)
+    erros = models.IntegerField(default=0)
+    xp_ganho = models.IntegerField(default=0)
+    finalizada = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-data_inicio"]
+
+    def __str__(self):
+        return f"Sessão {self.id} - {self.perfil.nome} - {self.conteudo.nome}"
+
+    @property
+    def percentual(self):
+        if self.total_questoes == 0:
+            return 0
+        return round(self.acertos / self.total_questoes * 100, 1)
+
+
+class CronogramaEstudoItem(models.Model):
+    """Sessão de estudo semanal no cronograma interativo."""
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name="cronograma_itens")
+    dia_semana = models.IntegerField(help_text="0=Segunda, 1=Terça, 2=Quarta, 3=Quinta, 4=Sexta, 5=Sábado, 6=Domingo")
+    horario_inicio = models.CharField(max_length=10, default="14:00")
+    horario_fim = models.CharField(max_length=10, default="15:00")
+    disciplina_nome = models.CharField(max_length=100)
+    cor = models.CharField(max_length=20, default="#0056d6")
+    observacoes = models.CharField(max_length=255, blank=True, default="")
+    ordem = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["dia_semana", "horario_inicio", "ordem"]
+
+    def __str__(self):
+        return f"{self.perfil.nome} - Dia {self.dia_semana}: {self.disciplina_nome} ({self.horario_inicio}-{self.horario_fim})"
+
+
+class EventoAgenda(models.Model):
+    """Compromisso pessoal na Agenda Acadêmica."""
+    CATEGORIAS = [
+        ("provas", "Provas"),
+        ("trabalhos", "Trabalhos"),
+        ("atividades", "Atividades"),
+        ("eventos", "Eventos escolares"),
+        ("palestras", "Palestras"),
+        ("lembretes", "Lembretes"),
+        ("outros", "Outros"),
+    ]
+
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name="eventos_agenda")
+    titulo = models.CharField(max_length=150)
+    data = models.DateField()
+    horario = models.TimeField(null=True, blank=True)
+    descricao = models.TextField(blank=True, default="")
+    categoria = models.CharField(max_length=50, choices=CATEGORIAS, default="outros")
+    cor = models.CharField(max_length=20, default="#0056d6")
+    concluido = models.BooleanField(default=False)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["data", "horario"]
+
+    def __str__(self):
+        return f"{self.titulo} - {self.data} ({self.perfil.nome})"
+
+
+class SemanaProva(models.Model):
+    """Período de semana de provas."""
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name="semanas_provas")
+    nome = models.CharField(max_length=150, help_text="Ex: Provas do 1º Bimestre")
+    data_inicio = models.DateField()
+    data_fim = models.DateField()
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-data_inicio"]
+
+    def __str__(self):
+        return f"{self.nome} ({self.data_inicio} até {self.data_fim})"
+
+
+class AvaliacaoSemanaProva(models.Model):
+    """Avaliação individual dentro de uma semana de provas."""
+    semana_prova = models.ForeignKey(SemanaProva, on_delete=models.CASCADE, related_name="avaliacoes")
+    disciplina_nome = models.CharField(max_length=100)
+    data = models.DateField()
+    horario = models.TimeField(null=True, blank=True)
+    conteudo = models.TextField(help_text="Conteúdo que será cobrado")
+    observacoes = models.TextField(blank=True, default="")
+
+    class Meta:
+        ordering = ["data", "horario"]
+
+    def __str__(self):
+        return f"{self.disciplina_nome} - {self.data} ({self.semana_prova.nome})"

@@ -17,24 +17,21 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <!-- Ranking & Perfil CSS -->
-    <link rel="stylesheet" href="{% static 'styles/ranking.css' %}?v=2.5">
-    <link rel="stylesheet" href="{% static 'styles/perfil.css' %}?v=1.1">
-    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+    <link rel="stylesheet" href="{% static 'styles/ranking.css' %}?v=6.0">
+    <link rel="stylesheet" href="{% static 'styles/perfil.css' %}?v=6.0">
+        <!-- Dark Mode Anti-Flicker & Stylesheet -->
     <script>
         (function() {
-            var theme = localStorage.getItem('aprovaifpi_theme');
-            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
-            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
-            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
-            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
-            {% endif %}
-            if (theme === 'dark') {
+            {% if request.user.is_authenticated and request.user.perfil.tema_escuro or perfil and perfil.tema_escuro %}
                 document.documentElement.setAttribute('data-theme', 'dark');
                 document.documentElement.classList.add('dark-mode');
-            }
+            {% else %}
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.classList.remove('dark-mode');
+            {% endif %}
         })();
     </script>
-    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=6.0">
 </head>
 
 <body class="ranking-body">
@@ -336,7 +333,7 @@
                         </thead>
                         <tbody>
                             {% for p in resto_perfis %}
-                                <tr>
+                                <tr class="{% if forloop.counter > 7 or p.posicao > 10 %}ranking-row-extra d-none{% endif %}">
                                     <td class="ps-4 fw-bold text-muted">{{ p.posicao }}</td>
                                     <td>
                                         {% if modalidade != "escola" %}
@@ -391,9 +388,12 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="table-chevron-footer">
-                    <i class="bi bi-chevron-down"></i>
-                </div>
+                {% if resto_perfis|length > 7 %}
+                    <div class="table-chevron-footer" id="btnToggleRankingExtras" role="button" tabindex="0" title="Ver outros participantes abaixo do Top 10" aria-expanded="false">
+                        <span class="chevron-text">Ver mais participantes</span>
+                        <i class="bi bi-chevron-down chevron-icon"></i>
+                    </div>
+                {% endif %}
             </div>
         </section>
 
@@ -524,6 +524,37 @@
                     if (toggleIcon) toggleIcon.className = 'bi bi-eye-slash';
                     if (toggleText) toggleText.textContent = 'Ocultar Hall da Fama';
                     localStorage.setItem('aprovaifpi_hall_hidden', 'false');
+                });
+            }
+
+            // Controle da setinha para exibir participantes abaixo do Top 10
+            const btnToggleExtras = document.getElementById('btnToggleRankingExtras');
+            if (btnToggleExtras) {
+                btnToggleExtras.addEventListener('click', function () {
+                    const extraRows = document.querySelectorAll('.ranking-row-extra');
+                    const isExpanded = this.classList.contains('expanded');
+                    const chevronText = this.querySelector('.chevron-text');
+
+                    if (isExpanded) {
+                        extraRows.forEach(row => row.classList.add('d-none'));
+                        this.classList.remove('expanded');
+                        this.setAttribute('aria-expanded', 'false');
+                        this.setAttribute('title', 'Ver outros participantes abaixo do Top 10');
+                        if (chevronText) chevronText.textContent = 'Ver mais participantes';
+                    } else {
+                        extraRows.forEach(row => row.classList.remove('d-none'));
+                        this.classList.add('expanded');
+                        this.setAttribute('aria-expanded', 'true');
+                        this.setAttribute('title', 'Recolher participantes abaixo do Top 10');
+                        if (chevronText) chevronText.textContent = 'Ver menos participantes';
+                    }
+                });
+
+                btnToggleExtras.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
                 });
             }
         });
@@ -761,6 +792,6 @@
         </div>
     </div>
     <!-- Dark Mode Controller -->
-    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
+    <script src="{% static 'js/theme.js?v=6.0' %}?v=1.0"></script>
 </body>
 </html>

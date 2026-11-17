@@ -1,0 +1,682 @@
+/* ==========================================================================
+   AprovaIFPI – Página de Conteúdos (conteudos.css)
+   Fiel às referências do projeto e ao padrão global do sistema
+   ========================================================================== */
+
+/* ── Container Geral & Tipografia Padrão ── */
+body.questoes-body,
+.conteudos-page-wrapper {
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1e293b;
+}
+
+.conteudos-page-wrapper {
+  padding-top: 0.5rem;
+  padding-bottom: 4rem;
+}
+
+/* ── 1. Apresentação (Hero Section 100% Horizontal com Linha Azul 100%) ── */
+.conteudos-hero-fullwidth {
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 2px solid #2b7fff;
+  padding: 2.2rem 0;
+  margin-bottom: 2.2rem;
+  position: relative;
+}
+
+.conteudos-hero-section {
+  width: 100%;
+}
+
+.conteudos-hero-text-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.hero-subtitle-top {
+  font-family: 'Poppins', 'Inter', -apple-system, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 0.15rem;
+  line-height: 1.2;
+}
+
+.hero-title-main {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #0056d6;
+  margin-bottom: 0.4rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.hero-badge-tag {
+  font-family: 'Poppins', sans-serif;
+  display: inline-block;
+  background-color: #0044b3;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+}
+
+/* Seta de navegação entre título e cards no Desktop */
+.hero-nav-arrow {
+  color: #0056d6;
+  font-size: 1.8rem;
+  font-weight: 800;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+/* Cards das Disciplinas */
+.disciplinas-cards-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-disciplina-thumb {
+  width: 115px;
+  height: 145px;
+  border-radius: 14px;
+  background:   rgb(30, 53, 255);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  user-select: none;
+  box-shadow: 0 3px 10px rgba(0, 60, 180, 0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  border: 3px solid transparent;
+}
+
+.card-disciplina-thumb:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 70, 200, 0.35);
+}
+
+.card-disciplina-thumb.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35), 0 6px 20px rgba(0, 70, 200, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Logo transparente como background dos cards */
+.card-disciplina-logo-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+  opacity: 0.55;
+  pointer-events: none;
+  filter: brightness(0) invert(1);
+}
+
+.card-disciplina-name {
+  position: relative;
+  z-index: 1;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* ── 2. Área da Disciplina (Título, Busca e Filtro) ── */
+.disciplina-info-header {
+  margin-bottom: 1.5rem;
+}
+
+.disciplina-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.disciplina-main-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.disciplina-support-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0056d6;
+  margin: 0;
+}
+
+/* Linha de Busca e Filtro */
+.conteudos-filter-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.conteudos-search-box {
+  flex: 1 1 260px;
+  position: relative;
+}
+
+.conteudos-search-input {
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  background-color: #e2e8f0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 36px 8px 14px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.conteudos-search-input:focus {
+  background-color: #ffffff;
+  border-color: #0056d6;
+  box-shadow: 0 0 0 3px rgba(0, 86, 214, 0.15);
+}
+
+.conteudos-search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+.conteudos-select-box {
+  flex: 1 1 220px;
+  position: relative;
+}
+
+.conteudos-select {
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  background-color: #e2e8f0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 32px 8px 14px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #1e293b;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23334155' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 10px;
+  transition: all 0.2s ease;
+}
+
+.conteudos-select:focus {
+  background-color: #ffffff;
+  border-color: #0056d6;
+  box-shadow: 0 0 0 3px rgba(0, 86, 214, 0.15);
+}
+
+/* ── 3. Indicadores de Desempenho ── */
+.indicadores-section {
+  margin-bottom: 2.2rem;
+}
+
+.indicador-card {
+  background-color: #e2e8f0;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.indicador-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.indicador-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.35rem;
+}
+
+.indicador-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.3rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #1e293b;
+}
+
+.indicador-value-questoes {
+  color: #0056d6;
+}
+
+/* ── 4. Lista de Conteúdos ── */
+.conteudos-list-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-heading {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 1rem;
+}
+
+.conteudo-strip-item {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: #e2e8f0;
+  border-radius: 7px;
+  padding: 10px 18px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.5px solid transparent;
+}
+
+.conteudo-strip-item:hover {
+  background-color: #cbd5e1;
+  transform: translateX(3px);
+}
+
+.conteudo-strip-item.active {
+  background-color: #dbeafe;
+  border-color: #0056d6;
+  color: #0056d6;
+  font-weight: 700;
+}
+
+.conteudo-strip-item .badge-questoes {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: rgba(0, 86, 214, 0.1);
+  color: #0056d6;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+/* Cardzinho de frequência no indicador */
+.cardzinho-frequencia-indicador {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background-color: #dbeafe;
+  color: #0056d6;
+  border: 1px solid rgba(0, 86, 214, 0.25);
+  padding: 2px 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 5px;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .cardzinho-frequencia-indicador {
+  background-color: rgba(0, 86, 214, 0.2);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Cardzinho de frequência na faixa de conteúdo */
+.badge-frequencia-prova {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.conteudo-strip-item:hover .badge-frequencia-prova {
+  background-color: #bae6fd;
+  color: #0369a1;
+}
+
+.conteudo-strip-item.active .badge-frequencia-prova {
+  background-color: #ffffff;
+  color: #0056d6;
+  border-color: #0056d6;
+  box-shadow: 0 1px 4px rgba(0, 86, 214, 0.15);
+}
+
+[data-theme="dark"] .badge-frequencia-prova {
+  background-color: rgba(2, 132, 199, 0.18);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+[data-theme="dark"] .conteudo-strip-item.active .badge-frequencia-prova {
+  background-color: #0f172a;
+  color: #60a5fa;
+  border-color: #3b82f6;
+}
+
+/* ── 5. Videoaulas ── */
+.videoaulas-section {
+  margin-bottom: 3rem;
+}
+
+.videoaula-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.videoaula-card:hover {
+  transform: translateY(-2px);
+}
+
+.videoaula-thumb-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.videoaula-card.selected .videoaula-thumb-wrapper {
+  outline: 3px solid #0056d6;
+  outline-offset: 2px;
+}
+
+.videoaula-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  transition: transform 0.25s ease;
+}
+
+.videoaula-card:hover .videoaula-thumb-img {
+  transform: scale(1.04);
+}
+
+.videoaula-placeholder-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+}
+
+.videoaula-play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  background-color: rgba(0, 86, 214, 0.92);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  padding-left: 3px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.videoaula-card:hover .videoaula-play-overlay {
+  background-color: #0056d6;
+  transform: translate(-50%, -50%) scale(1.12);
+  box-shadow: 0 6px 20px rgba(0, 86, 214, 0.5);
+}
+
+.videoaula-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 8px;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  transition: color 0.2s ease;
+}
+
+.videoaula-card:hover .videoaula-title {
+  color: #0056d6;
+}
+
+/* ── Responsividade Mobile (rigorosamente fiel à referência) ── */
+@media (max-width: 767.98px) {
+  .conteudos-hero-section .row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .hero-nav-arrow {
+    display: none;
+  }
+
+  .disciplinas-cards-row {
+    justify-content: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .card-disciplina-thumb {
+    width: calc(50% - 0.5rem);
+    height: 120px;
+  }
+
+  .hero-title-main {
+    font-size: 1.85rem;
+  }
+
+  .hero-subtitle-top {
+    font-size: 1.2rem;
+  }
+
+  .hero-badge-tag {
+    font-size: 0.95rem;
+    padding: 3px 10px;
+  }
+
+  .disciplina-main-title {
+    font-size: 1.5rem;
+  }
+
+  .indicador-value {
+    font-size: 2rem;
+  }
+
+  /* No mobile: Indicadores em 2 colunas e Progresso ocupa largura inteira */
+  .indicadores-mobile-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .indicador-col-mobile-half {
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .indicador-col-mobile-full {
+    flex: 1 1 100%;
+  }
+
+  .conteudos-hero-fullwidth {
+    padding: 1.6rem 0;
+    margin-bottom: 1.8rem;
+  }
+}
+
+/* ── Dark Mode Overrides ── */
+[data-theme="dark"] .conteudos-hero-fullwidth {
+  background-color: #0f172a;
+  border-bottom-color: #2563eb;
+}
+
+[data-theme="dark"] .conteudos-hero-section {
+  border-bottom-color: #2563eb;
+}
+
+[data-theme="dark"] .hero-subtitle-top {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .hero-title-main {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .disciplina-main-title {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .disciplina-support-text {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .conteudos-search-input,
+[data-theme="dark"] .conteudos-select {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .conteudos-search-input:focus,
+[data-theme="dark"] .conteudos-select:focus {
+  background-color: #0f172a;
+  border-color: #3b82f6;
+}
+
+[data-theme="dark"] .conteudos-search-icon {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .indicador-card {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+[data-theme="dark"] .indicador-label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .indicador-value {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .indicador-value-questoes {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .section-heading {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .conteudo-strip-item {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .conteudo-strip-item:hover {
+  background-color: #28364c;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .conteudo-strip-item.active {
+  background-color: #1e3a8a;
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .videoaula-thumb-wrapper {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+[data-theme="dark"] .videoaula-placeholder-bg {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+[data-theme="dark"] .videoaula-title {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .videoaula-card:hover .videoaula-title {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .modal-content {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  border-color: #334155;
+}

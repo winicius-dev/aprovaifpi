@@ -514,22 +514,19 @@
             color: #2563eb;
         }
     </style>
-    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+        <!-- Dark Mode Anti-Flicker & Stylesheet -->
     <script>
         (function() {
-            var theme = localStorage.getItem('aprovaifpi_theme');
-            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
-            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
-            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
-            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
-            {% endif %}
-            if (theme === 'dark') {
+            {% if request.user.is_authenticated and request.user.perfil.tema_escuro or perfil and perfil.tema_escuro %}
                 document.documentElement.setAttribute('data-theme', 'dark');
                 document.documentElement.classList.add('dark-mode');
-            }
+            {% else %}
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.classList.remove('dark-mode');
+            {% endif %}
         })();
     </script>
-    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=6.0">
 </head>
 
 <body class="questoes-body">
@@ -742,50 +739,287 @@
   box-shadow: 0 -2px 6px rgba(0, 86, 214, 0.08);
 }
 
-/* Cronograma */
+/* ── Cronograma Variables ── */
+:root {
+  --crono-radius: 14px;
+  --crono-radius-sm: 10px;
+  --crono-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --crono-shadow-hover: 0 6px 20px rgba(0,0,0,0.10);
+  --crono-transition: 0.22s cubic-bezier(.4,0,.2,1);
+  --crono-bg: #ffffff;
+  --crono-bg-alt: #f8fafc;
+  --crono-border: #e2e8f0;
+  --crono-text: #334155;
+  --crono-text-muted: #94a3b8;
+  --crono-accent: #3b82f6;
+  --crono-stats-bg: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+  --crono-th-bg: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+[data-theme="dark"] {
+  --crono-bg: #1e293b;
+  --crono-bg-alt: #0f172a;
+  --crono-border: #334155;
+  --crono-text: #f1f5f9;
+  --crono-text-muted: #94a3b8;
+  --crono-accent: #60a5fa;
+  --crono-stats-bg: linear-gradient(135deg, rgba(30,58,138,0.3) 0%, rgba(6,78,59,0.2) 100%);
+  --crono-th-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+/* ── Cronograma Wrapper ── */
+.cronograma-wrapper {
+  background: var(--crono-bg);
+  border-radius: var(--crono-radius);
+  box-shadow: var(--crono-shadow);
+  border: 1px solid var(--crono-border);
+  overflow: hidden;
+}
+
+/* ── Stats Row ── */
+.cronograma-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: var(--crono-stats-bg);
+  border-bottom: 1px solid var(--crono-border);
+}
+.crono-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background: var(--crono-bg);
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--crono-text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1px solid var(--crono-border);
+}
+.crono-stat-item i {
+  font-size: 1rem;
+  color: var(--crono-accent);
+}
+.crono-stat-value {
+  color: var(--crono-accent);
+  font-weight: 700;
+}
+
+/* ── Discipline Palette ── */
+.cronograma-palette-wrapper {
+  border-radius: var(--crono-radius);
+  box-shadow: var(--crono-shadow);
+  border: 1px solid var(--crono-border);
+  overflow: hidden;
+  background: var(--crono-bg);
+}
+.cronograma-palette-header {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cronograma-palette-body {
+  padding: 0.5rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+@media (max-width: 991.98px) {
+  .cronograma-palette-body {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
+    padding-bottom: 0.6rem;
+    scroll-snap-type: x mandatory;
+  }
+  .disciplina-palette-card {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    min-width: 140px;
+  }
+}
+.disciplina-palette-card {
+  border-radius: var(--crono-radius-sm);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.84rem;
+  cursor: grab;
+  user-select: none;
+  transition: transform var(--crono-transition), box-shadow var(--crono-transition), background var(--crono-transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  position: relative;
+}
+.disciplina-palette-card .disc-emoji {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.disciplina-palette-card .disc-name {
+  font-weight: 600;
+  flex: 1;
+}
+.disciplina-palette-card .disc-grip {
+  opacity: 0.35;
+  transition: opacity var(--crono-transition);
+}
+.disciplina-palette-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--crono-shadow-hover);
+  border-color: currentColor;
+}
+.disciplina-palette-card:hover .disc-grip {
+  opacity: 0.7;
+}
+.disciplina-palette-card:active {
+  cursor: grabbing;
+  transform: scale(0.97);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+.disciplina-palette-card.selected {
+  outline: 2px solid var(--crono-accent);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.3), var(--crono-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* ── Schedule Grid Table ── */
+.cronograma-grid-wrapper {
+  border-radius: var(--crono-radius);
+  box-shadow: var(--crono-shadow);
+  border: 1px solid var(--crono-border);
+  overflow: hidden;
+  background: var(--crono-bg);
+}
+.cronograma-grid-body {
+  padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .cronograma-table {
   width: 100%;
-  border-collapse: collapse;
-  min-width: 650px;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 600px;
 }
 .cronograma-table th,
 .cronograma-table td {
-  border: 1px solid #e2e8f0;
-  padding: 6px;
+  border: 1px solid var(--crono-border);
+  padding: 5px;
   vertical-align: top;
 }
-.cronograma-table th {
-  background: #f8fafc;
+.cronograma-table thead th {
+  background: var(--crono-th-bg);
   text-align: center;
   font-weight: 700;
-  font-size: 0.85rem;
-  color: #334155;
-  padding: 8px 4px;
+  font-size: 0.82rem;
+  color: var(--crono-text);
+  border-color: var(--crono-border);
+  padding: 10px 6px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  letter-spacing: 0.01em;
+}
+.cronograma-table thead th:first-child {
+  border-radius: 0;
 }
 .hora-col {
-  width: 75px;
+  width: 72px;
   text-align: center;
-  background: #f1f5f9;
+  background: var(--crono-bg-alt);
   font-weight: 600;
-  color: #64748b;
-  font-size: 0.8rem;
+  color: var(--crono-text-muted);
+  border-color: var(--crono-border);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  vertical-align: middle !important;
 }
+
+/* ── Dark Mode Table Overrides ── */
+[data-theme="dark"] .cronograma-table thead th,
+[data-theme="dark"] .cronograma-table th {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+[data-theme="dark"] .hora-col {
+  background: #0f172a !important;
+  background-color: #0f172a !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+}
+[data-theme="dark"] .cronograma-table td {
+  border-color: #334155 !important;
+}
+[data-theme="dark"] .cronograma-cell-slot {
+  background-color: #111a2e !important;
+  border-color: #243248 !important;
+}
+[data-theme="dark"] .cronograma-cell-slot:hover {
+  background-color: #1a2744 !important;
+}
+
+/* ── Cell Slots ── */
 .cronograma-cell-slot {
   min-height: 52px;
   height: 52px;
-  transition: background 0.15s;
-  background: #ffffff;
+  transition: background var(--crono-transition), box-shadow var(--crono-transition);
+  background: var(--crono-bg);
+  position: relative;
+}
+.cronograma-cell-slot:hover {
+  background: #f8fafc;
 }
 .cronograma-cell-slot.drag-over {
   background: #dbeafe !important;
-  outline: 2px dashed #0056d6;
+  outline: 2px dashed var(--crono-accent);
+  outline-offset: -2px;
+  box-shadow: inset 0 0 12px rgba(59,130,246,0.08);
 }
+.cronograma-cell-slot.slot-just-filled {
+  animation: slotPop 0.35s ease;
+}
+@keyframes slotPop {
+  0% { transform: scale(0.92); opacity: 0.5; }
+  60% { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── Filled Slot Items ── */
 .cronograma-slot-item {
-  border-radius: 6px;
-  padding: 4px 6px;
-  font-size: 0.78rem;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 0.76rem;
   position: relative;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: box-shadow var(--crono-transition), transform var(--crono-transition);
+}
+.cronograma-slot-item:hover {
+  box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+  transform: translateY(-1px);
+}
+.cronograma-slot-item .slot-emoji {
+  font-size: 0.85rem;
+  margin-right: 3px;
+}
+.cronograma-slot-item .slot-nome {
+  font-size: 0.78rem;
+}
+.cronograma-slot-item .slot-hora {
+  font-size: 0.68rem;
 }
 .cronograma-slot-item .slot-actions {
   display: none;
@@ -793,20 +1027,29 @@
 .cronograma-slot-item:hover .slot-actions {
   display: flex !important;
 }
-.disciplina-palette-card {
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
-  cursor: grab;
-  user-select: none;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.disciplina-palette-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-.disciplina-palette-card:active {
-  cursor: grabbing;
+
+/* ── Mobile Responsive ── */
+@media (max-width: 767.98px) {
+  .cronograma-table {
+    min-width: 520px;
+    font-size: 0.75rem;
+  }
+  .hora-col {
+    width: 56px;
+    font-size: 0.72rem;
+  }
+  .cronograma-cell-slot {
+    min-height: 44px;
+    height: 44px;
+  }
+  .cronograma-slot-item {
+    padding: 3px 5px;
+    font-size: 0.7rem;
+  }
+  .crono-stat-item {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.65rem;
+  }
 }
 
 /* Agenda / Calendário */
@@ -1274,36 +1517,77 @@
         {% elif secao == "cronograma" %}
         <!-- ==================== CRONOGRAMA DE ESTUDOS ==================== -->
         <section class="mb-4">
-          <div class="recupera-subtitle-card d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
-              <h5 class="mb-1"><i class="bi bi-calendar-week me-2 text-primary"></i>Cronograma de Estudos</h5>
-              <p class="mb-0 text-muted">Monte seu cronograma semanal arrastando as disciplinas para os horários desejados na grade.</p>
+          <div class="cronograma-wrapper">
+            <!-- Header do Cronograma -->
+            <div class="recupera-subtitle-card d-flex justify-content-between align-items-center flex-wrap gap-3 border-0 rounded-0" style="background: transparent;">
+              <div>
+                <h5 class="mb-1 d-flex align-items-center gap-2">
+                  <i class="bi bi-calendar-week text-primary fs-4"></i>
+                  <span class="fw-bold">Cronograma Semanal de Estudos</span>
+                </h5>
+                <p class="mb-0 text-muted" style="font-size: 0.92rem;">
+                  Planeje sua rotina arrastando disciplinas para a grade ou selecione uma matéria e clique nos horários.
+                </p>
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-semibold" id="btn-limpar-cronograma">
+                  <i class="bi bi-trash3 me-1"></i>Limpar
+                </button>
+                <button class="btn btn-primary btn-sm px-3 rounded-pill fw-semibold shadow-sm" id="btn-salvar-cronograma">
+                  <i class="bi bi-cloud-arrow-up me-1"></i>Salvar Cronograma
+                </button>
+              </div>
             </div>
-            <div class="d-flex gap-2">
-              <button class="btn btn-primary btn-sm px-3 shadow-sm" id="btn-salvar-cronograma"><i class="bi bi-save me-1"></i>Salvar Cronograma</button>
-              <button class="btn btn-outline-danger btn-sm px-3" id="btn-limpar-cronograma"><i class="bi bi-trash me-1"></i>Limpar Tudo</button>
+
+            <!-- Barra de Estatísticas Interativa -->
+            <div class="cronograma-stats">
+              <div class="crono-stat-item">
+                <i class="bi bi-clock-history"></i>
+                <span>Carga Horária:</span>
+                <span class="crono-stat-value" id="crono-stat-horas">0h</span>
+              </div>
+              <div class="crono-stat-item">
+                <i class="bi bi-book"></i>
+                <span>Disciplinas no Plano:</span>
+                <span class="crono-stat-value" id="crono-stat-disciplinas">0</span>
+              </div>
+              <div class="crono-stat-item">
+                <i class="bi bi-grid-3x3-gap"></i>
+                <span>Blocos Agendados:</span>
+                <span class="crono-stat-value" id="crono-stat-sessoes">0</span>
+              </div>
+              <div class="ms-auto d-none d-lg-flex align-items-center text-muted small">
+                <i class="bi bi-info-circle me-1 text-primary"></i>
+                <span>Clique numa matéria para selecionar ou arraste para os horários</span>
+              </div>
             </div>
           </div>
         </section>
 
+        <!-- Grade e Paleta do Cronograma -->
         <div class="row g-3">
+          <!-- Paleta de Disciplinas -->
           <div class="col-12 col-lg-3">
-            <div class="card shadow-sm border-0 h-100">
-              <div class="card-header bg-primary text-white fw-semibold d-flex align-items-center gap-2">
-                <i class="bi bi-book"></i> Disciplinas Disponíveis
+            <div class="cronograma-palette-wrapper h-100">
+              <div class="cronograma-palette-header">
+                <i class="bi bi-collection"></i>
+                <span>Disciplinas</span>
+                <span class="badge bg-white text-primary ms-auto" id="palette-count" style="font-size: 0.72rem;">0</span>
               </div>
-              <div class="card-body p-2" id="disciplinas-palette" style="max-height: 600px; overflow-y: auto;">
-                <!-- cards gerados via JS -->
+              <div class="cronograma-palette-body" id="disciplinas-palette">
+                <!-- Cards gerados via JS -->
               </div>
             </div>
           </div>
+
+          <!-- Tabela Semanal -->
           <div class="col-12 col-lg-9">
-            <div class="card shadow-sm border-0">
-              <div class="card-body p-2 overflow-auto">
+            <div class="cronograma-grid-wrapper">
+              <div class="cronograma-grid-body">
                 <table class="cronograma-table" id="cronograma-grid">
                   <thead>
                     <tr>
-                      <th class="hora-col">Horário</th>
+                      <th class="hora-col"><i class="bi bi-clock me-1"></i>Horário</th>
                       <th>Segunda</th>
                       <th>Terça</th>
                       <th>Quarta</th>
@@ -1313,7 +1597,7 @@
                     </tr>
                   </thead>
                   <tbody id="cronograma-body">
-                    <!-- linhas geradas via JS -->
+                    <!-- Linhas geradas via JS -->
                   </tbody>
                 </table>
               </div>
@@ -1322,37 +1606,46 @@
         </div>
 
         <!-- Modal Editar Slot -->
-        <div class="modal fade" id="modal-editar-slot" tabindex="-1">
-          <div class="modal-dialog">
-            <div class="modal-content border-0 shadow">
-              <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2 text-primary"></i>Editar Sessão de Estudo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal fade" id="modal-editar-slot" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+              <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fw-bold fs-6 d-flex align-items-center gap-2">
+                  <i class="bi bi-pencil-square"></i>
+                  <span>Editar Bloco de Estudo</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body p-4">
                 <input type="hidden" id="edit-slot-key">
                 <div class="mb-3">
-                  <label class="form-label fw-semibold">Disciplina</label>
-                  <input type="text" class="form-control" id="edit-slot-disciplina" readonly>
+                  <label class="form-label fw-bold small text-muted">DISCIPLINA</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-book text-primary"></i></span>
+                    <input type="text" class="form-control bg-light fw-semibold" id="edit-slot-disciplina" readonly>
+                  </div>
                 </div>
                 <div class="row g-2 mb-3">
                   <div class="col-6">
-                    <label class="form-label fw-semibold">Início</label>
+                    <label class="form-label fw-bold small text-muted">HORÁRIO INÍCIO</label>
                     <select class="form-select" id="edit-slot-inicio"></select>
                   </div>
                   <div class="col-6">
-                    <label class="form-label fw-semibold">Término</label>
+                    <label class="form-label fw-bold small text-muted">HORÁRIO TÉRMINO</label>
                     <select class="form-select" id="edit-slot-fim"></select>
                   </div>
                 </div>
-                <div class="mb-3">
-                  <label class="form-label fw-semibold">Observações / Tópicos</label>
-                  <input type="text" class="form-control" id="edit-slot-obs" placeholder="Ex: Exercícios do cap. 3...">
+                <div class="mb-2">
+                  <label class="form-label fw-bold small text-muted">OBSERVAÇÕES / TÓPICO DE ESTUDO</label>
+                  <input type="text" class="form-control" id="edit-slot-obs" placeholder="Ex: Resolver 15 exercícios do IFPI...">
+                  <div class="form-text small">Adicione anotações sobre o que planeja focar neste bloco.</div>
                 </div>
               </div>
-              <div class="modal-footer bg-light">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-primary" id="btn-confirmar-edit-slot">Salvar Alterações</button>
+              <div class="modal-footer bg-light py-2 px-4 border-top">
+                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold" id="btn-confirmar-edit-slot">
+                  <i class="bi bi-check2 me-1"></i>Salvar Alterações
+                </button>
               </div>
             </div>
           </div>
@@ -1365,11 +1658,37 @@
           for (var h = 6; h <= 22; h++) {
             HORAS.push((h < 10 ? '0' : '') + h + ':00');
           }
+
+          var EMOJI_MAP = {
+            'Português': '📖',
+            'Matemática': '📐',
+            'Física': '⚡',
+            'Química': '🧪',
+            'Biologia': '🧬',
+            'História': '🏛️',
+            'Geografia': '🌍',
+            'Filosofia': '💭',
+            'Sociologia': '👥',
+            'Inglês': '🇬🇧',
+            'Educação Física': '🏃',
+            'Artes': '🎨'
+          };
+          function getEmoji(nome) {
+            return EMOJI_MAP[nome] || '📘';
+          }
+
           var COR_MAP = {
-            'Português':'#3b82f6','Matemática':'#ef4444','Física':'#f59e0b',
-            'Química':'#10b981','Biologia':'#8b5cf6','História':'#ea580c',
-            'Geografia':'#06b6d4','Filosofia':'#d97706','Sociologia':'#2563eb',
-            'Inglês':'#059669','Redação':'#7c3aed','Educação Física':'#0d9488',
+            'Português':'#3b82f6',
+            'Matemática':'#ef4444',
+            'Física':'#f59e0b',
+            'Química':'#10b981',
+            'Biologia':'#8b5cf6',
+            'História':'#ea580c',
+            'Geografia':'#06b6d4',
+            'Filosofia':'#d97706',
+            'Sociologia':'#2563eb',
+            'Inglês':'#059669',
+            'Educação Física':'#0d9488',
             'Artes':'#b91c1c'
           };
           function getCor(nome) {
@@ -1381,10 +1700,12 @@
             return 'hsl(' + (Math.abs(hash) % 360) + ', 65%, 45%)';
           }
 
+          var disciplinaSelecionada = null;
           var estado = {};
           var itensIniciais = {{ cronograma_itens_json|safe }};
           if (Array.isArray(itensIniciais)) {
             itensIniciais.forEach(function(item) {
+              if (item.disciplina_nome && item.disciplina_nome.toLowerCase().includes('redação')) return;
               var key = item.dia_semana + '-' + item.horario_inicio;
               estado[key] = {
                 dia: item.dia_semana,
@@ -1398,38 +1719,106 @@
 
           var disciplinasList = {{ disciplinas_json|safe }};
           if (!Array.isArray(disciplinasList) || disciplinasList.length === 0) {
-            disciplinasList = ['Português', 'Matemática', 'Física', 'Química', 'Biologia', 'História', 'Geografia', 'Filosofia', 'Sociologia', 'Inglês', 'Redação', 'Educação Física', 'Artes'];
+            disciplinasList = ['Português', 'Matemática', 'Física', 'Química', 'Biologia', 'História', 'Geografia', 'Filosofia', 'Sociologia', 'Inglês', 'Educação Física', 'Artes'];
+          }
+          disciplinasList = disciplinasList.filter(function(d) {
+            return d && !d.toLowerCase().includes('redação');
+          });
+
+          function updateStats() {
+            var itens = Object.values(estado);
+            var totalSessoes = itens.length;
+            var discSet = {};
+            var totalMinutos = 0;
+
+            itens.forEach(function(it) {
+              discSet[it.disciplina] = true;
+              var hIni = parseInt(it.hora.split(':')[0], 10) || 0;
+              var hFim = parseInt(it.fim.split(':')[0], 10) || (hIni + 1);
+              var diff = Math.max(1, hFim - hIni);
+              totalMinutos += diff * 60;
+            });
+
+            var totalHoras = Math.round((totalMinutos / 60) * 10) / 10;
+            var elHoras = document.getElementById('crono-stat-horas');
+            var elDisc = document.getElementById('crono-stat-disciplinas');
+            var elSess = document.getElementById('crono-stat-sessoes');
+
+            if (elHoras) elHoras.textContent = totalHoras + 'h';
+            if (elDisc) elDisc.textContent = Object.keys(discSet).length;
+            if (elSess) elSess.textContent = totalSessoes;
           }
 
           function buildPalette() {
             var container = document.getElementById('disciplinas-palette');
+            var countEl = document.getElementById('palette-count');
             if (!container) return;
             container.innerHTML = '';
+            if (countEl) countEl.textContent = disciplinasList.length;
+
             disciplinasList.forEach(function(d) {
               var cor = getCor(d);
+              var emoji = getEmoji(d);
               var card = document.createElement('div');
               card.className = 'disciplina-palette-card mb-2 d-flex align-items-center justify-content-between';
-              card.style.background = cor + '18';
+              card.style.background = cor + '15';
               card.style.borderLeft = '4px solid ' + cor;
               card.draggable = true;
               card.dataset.disciplina = d;
-              card.innerHTML = '<span class="fw-semibold" style="color:' + cor + '">' + d + '</span><i class="bi bi-grip-vertical text-muted"></i>';
+              card.title = 'Arraste para a grade ou clique para preencher com toque';
+
+              card.innerHTML =
+                '<div class="d-flex align-items-center gap-2 text-truncate">' +
+                  '<span class="disc-emoji">' + emoji + '</span>' +
+                  '<span class="disc-name" style="color:' + cor + '">' + d + '</span>' +
+                '</div>' +
+                '<i class="bi bi-grip-vertical disc-grip text-muted"></i>';
+
               card.addEventListener('dragstart', function(e) {
                 e.dataTransfer.setData('text/plain', d);
+                e.dataTransfer.effectAllowed = 'copy';
               });
+
+              card.addEventListener('click', function() {
+                if (disciplinaSelecionada === d) {
+                  disciplinaSelecionada = null;
+                  card.classList.remove('selected');
+                } else {
+                  document.querySelectorAll('.disciplina-palette-card').forEach(function(c) {
+                    c.classList.remove('selected');
+                  });
+                  disciplinaSelecionada = d;
+                  card.classList.add('selected');
+                }
+              });
+
               container.appendChild(card);
             });
+          }
+
+          function preencherSlot(td, di, hora, hIdx, discNome) {
+            if (!discNome) return;
+            var fim = HORAS[hIdx + 1] || '23:00';
+            var key = di + '-' + hora;
+            estado[key] = { dia: di, hora: hora, fim: fim, disciplina: discNome, obs: '' };
+            renderSlot(td, key);
+            td.classList.add('slot-just-filled');
+            setTimeout(function() {
+              td.classList.remove('slot-just-filled');
+            }, 400);
+            updateStats();
           }
 
           function buildGrid() {
             var tbody = document.getElementById('cronograma-body');
             if (!tbody) return;
             tbody.innerHTML = '';
+
             HORAS.forEach(function(hora, hIdx) {
               var tr = document.createElement('tr');
               var tdH = document.createElement('td');
               tdH.className = 'hora-col';
-              tdH.textContent = hora;
+              tdH.innerHTML = '<span class="fw-bold">' + hora + '</span>';
               tr.appendChild(tdH);
 
               DIAS_NOMES.forEach(function(dia, di) {
@@ -1449,11 +1838,18 @@
                   e.preventDefault();
                   td.classList.remove('drag-over');
                   var disc = e.dataTransfer.getData('text/plain');
-                  if (!disc) return;
-                  var fim = HORAS[hIdx + 1] || '23:00';
-                  var key = di + '-' + hora;
-                  estado[key] = { dia: di, hora: hora, fim: fim, disciplina: disc, obs: '' };
-                  renderSlot(td, key);
+                  if (disc) {
+                    preencherSlot(td, di, hora, hIdx, disc);
+                  }
+                });
+
+                td.addEventListener('click', function(e) {
+                  if (e.target.closest('.slot-actions') || e.target.closest('button')) {
+                    return;
+                  }
+                  if (disciplinaSelecionada) {
+                    preencherSlot(td, di, hora, hIdx, disciplinaSelecionada);
+                  }
                 });
 
                 var key = di + '-' + hora;
@@ -1464,6 +1860,8 @@
               });
               tbody.appendChild(tr);
             });
+
+            updateStats();
           }
 
           function renderSlot(td, key) {
@@ -1473,6 +1871,7 @@
               return;
             }
             var cor = getCor(item.disciplina);
+            var emoji = getEmoji(item.disciplina);
             td.innerHTML = '';
 
             var box = document.createElement('div');
@@ -1481,31 +1880,33 @@
             box.style.borderLeft = '3px solid ' + cor;
 
             var title = document.createElement('div');
-            title.className = 'slot-nome fw-bold';
+            title.className = 'slot-nome fw-bold d-flex align-items-center gap-1';
             title.style.color = cor;
-            title.textContent = item.disciplina;
+            title.innerHTML = '<span class="slot-emoji">' + emoji + '</span> <span class="text-truncate">' + item.disciplina + '</span>';
             box.appendChild(title);
 
             var time = document.createElement('div');
-            time.className = 'slot-hora text-muted';
+            time.className = 'slot-hora text-muted mt-1';
             time.textContent = item.hora + ' – ' + item.fim;
             box.appendChild(time);
 
             if (item.obs) {
               var obsEl = document.createElement('div');
-              obsEl.className = 'text-muted small mt-1';
-              obsEl.style.fontSize = '0.7rem';
-              obsEl.textContent = item.obs;
+              obsEl.className = 'text-muted small mt-1 text-truncate';
+              obsEl.style.fontSize = '0.68rem';
+              obsEl.title = item.obs;
+              obsEl.innerHTML = '<i class="bi bi-sticky me-1"></i>' + item.obs;
               box.appendChild(obsEl);
             }
 
             var actions = document.createElement('div');
-            actions.className = 'slot-actions d-flex gap-1 mt-1';
+            actions.className = 'slot-actions d-flex gap-1 mt-1 justify-content-end';
 
             var editBtn = document.createElement('button');
-            editBtn.className = 'btn btn-xs btn-light p-0 px-1 border';
-            editBtn.title = 'Editar';
-            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+            editBtn.type = 'button';
+            editBtn.className = 'btn btn-xs btn-light p-0 px-1 border shadow-xs';
+            editBtn.title = 'Editar Horário ou Nota';
+            editBtn.innerHTML = '<i class="bi bi-pencil" style="font-size:0.7rem;"></i>';
             editBtn.onclick = function(e) {
               e.stopPropagation();
               abrirEditarSlot(key);
@@ -1513,13 +1914,15 @@
             actions.appendChild(editBtn);
 
             var delBtn = document.createElement('button');
-            delBtn.className = 'btn btn-xs btn-light p-0 px-1 border text-danger';
-            delBtn.title = 'Remover';
-            delBtn.innerHTML = '<i class="bi bi-x"></i>';
+            delBtn.type = 'button';
+            delBtn.className = 'btn btn-xs btn-light p-0 px-1 border text-danger shadow-xs';
+            delBtn.title = 'Remover Horário';
+            delBtn.innerHTML = '<i class="bi bi-trash" style="font-size:0.7rem;"></i>';
             delBtn.onclick = function(e) {
               e.stopPropagation();
               delete estado[key];
               td.innerHTML = '';
+              updateStats();
             };
             actions.appendChild(delBtn);
 
@@ -1563,9 +1966,28 @@
             btnSalvarSlot.onclick = function() {
               var key = document.getElementById('edit-slot-key').value;
               if (estado[key]) {
-                estado[key].hora = document.getElementById('edit-slot-inicio').value;
-                estado[key].fim = document.getElementById('edit-slot-fim').value;
-                estado[key].obs = document.getElementById('edit-slot-obs').value;
+                var novaHora = document.getElementById('edit-slot-inicio').value;
+                var novoFim = document.getElementById('edit-slot-fim').value;
+                var novaObs = document.getElementById('edit-slot-obs').value;
+
+                var partes = key.split('-');
+                var dia = partes[0];
+                var oldHora = partes[1];
+
+                if (novaHora !== oldHora) {
+                  delete estado[key];
+                  var newKey = dia + '-' + novaHora;
+                  estado[newKey] = {
+                    dia: parseInt(dia, 10),
+                    hora: novaHora,
+                    fim: novoFim,
+                    disciplina: document.getElementById('edit-slot-disciplina').value,
+                    obs: novaObs
+                  };
+                } else {
+                  estado[key].fim = novoFim;
+                  estado[key].obs = novaObs;
+                }
                 buildGrid();
               }
               var modalEl = document.getElementById('modal-editar-slot');
@@ -1589,9 +2011,11 @@
               document.body.appendChild(c);
             }
             var t = document.createElement('div');
-            t.className = 'alert alert-' + type + ' shadow py-2 px-3 mb-0';
-            t.style.minWidth = '220px';
-            t.innerHTML = '<i class="bi bi-info-circle me-1"></i> ' + msg;
+            t.className = 'alert alert-' + type + ' shadow-lg py-2 px-3 mb-0 d-flex align-items-center gap-2';
+            t.style.minWidth = '240px';
+            t.style.borderRadius = '10px';
+            var icon = type === 'success' ? 'check-circle-fill text-success' : 'info-circle-fill text-primary';
+            t.innerHTML = '<i class="bi bi-' + icon + ' fs-5"></i><div>' + msg + '</div>';
             c.appendChild(t);
             setTimeout(function() { t.remove(); }, 3500);
           }
@@ -1599,6 +2023,10 @@
           var btnSalvar = document.getElementById('btn-salvar-cronograma');
           if (btnSalvar) {
             btnSalvar.onclick = function() {
+              var originalHtml = btnSalvar.innerHTML;
+              btnSalvar.disabled = true;
+              btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Salvando...';
+
               var itens = Object.values(estado).map(function(item) {
                 return {
                   dia_semana: item.dia,
@@ -1608,6 +2036,7 @@
                   observacoes: item.obs || ''
                 };
               });
+
               fetch('/auth/recuperaifpi/cronograma/salvar/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF() },
@@ -1615,13 +2044,17 @@
               })
               .then(function(r) { return r.json(); })
               .then(function(data) {
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = originalHtml;
                 if (data.ok || data.sucesso) {
                   toast('Cronograma salvo com sucesso!', 'success');
                 } else {
-                  toast('Erro: ' + (data.erro || ''), 'danger');
+                  toast('Erro ao salvar: ' + (data.erro || ''), 'danger');
                 }
               })
               .catch(function() {
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = originalHtml;
                 toast('Erro de comunicação com o servidor.', 'danger');
               });
             };
@@ -1630,7 +2063,7 @@
           var btnLimpar = document.getElementById('btn-limpar-cronograma');
           if (btnLimpar) {
             btnLimpar.onclick = function() {
-              if (!confirm('Deseja realmente limpar todo o seu cronograma?')) return;
+              if (!confirm('Deseja realmente limpar todo o seu cronograma de estudos?')) return;
               fetch('/auth/recuperaifpi/cronograma/limpar/', {
                 method: 'POST',
                 headers: { 'X-CSRFToken': CSRF() }
@@ -2502,7 +2935,7 @@
     </script>
 
     <!-- Dark Mode Controller -->
-    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
+    <script src="{% static 'js/theme.js?v=6.0' %}?v=1.0"></script>
 </body>
 </html>
 

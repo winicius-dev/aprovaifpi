@@ -1,6 +1,6 @@
 /**
- * AprovaIFPI — Theme Controller (Dark Mode)
- * Gerencia a persistência em localStorage e sincronização com o backend.
+ * AprovaIFPI — Theme Controller (Dark Mode Individual por Conta)
+ * O tema é individual e persistido no Perfil de cada usuário (banco de dados).
  */
 (function() {
   function applyTheme(theme) {
@@ -15,14 +15,13 @@
     }
   }
 
-  // Aplicação instantânea imediata
-  var current = localStorage.getItem('aprovaifpi_theme') || 'light';
-  applyTheme(current);
+  // O tema da conta é determinado pelo atributo data-theme inserido pelo Django no <html>
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(currentTheme);
 
-  // Expõe função global para alternância
+  // Expõe função global para alternância imediata (ex: tela de configurações)
   window.setAprovaTheme = function(theme, syncServer) {
     if (theme !== 'dark' && theme !== 'light') return;
-    localStorage.setItem('aprovaifpi_theme', theme);
     applyTheme(theme);
 
     // Atualiza controles na tela caso existam (ex: na página de configurações)
@@ -47,7 +46,7 @@
       labelStatus.textContent = (theme === 'dark') ? 'Tema Escuro Ativo' : 'Tema Claro Ativo';
     }
 
-    // Se solicitado sincronizar com servidor via API
+    // Sincroniza com a conta no servidor via API
     if (syncServer !== false) {
       var csrfToken = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
       fetch('/auth/api/tema/alternar/', {
@@ -63,12 +62,11 @@
     }
   };
 
-  // Garante que assim que o DOM carregar a classe esteja no body e listeners ativos
+  // Ao carregar o DOM, sincroniza os seletores da página de configurações
   document.addEventListener('DOMContentLoaded', function() {
-    var theme = localStorage.getItem('aprovaifpi_theme') || 'light';
+    var theme = document.documentElement.getAttribute('data-theme') || 'light';
     applyTheme(theme);
 
-    // Inicializa controles de UI se estiver na tela de configurações
     var themeSwitch = document.getElementById('switch-tema-escuro');
     var lightCard = document.getElementById('theme-card-light');
     var darkCard = document.getElementById('theme-card-dark');
@@ -86,11 +84,15 @@
     }
 
     if (lightCard) {
+      if (theme === 'light') lightCard.classList.add('active');
+      else lightCard.classList.remove('active');
       lightCard.addEventListener('click', function() {
         window.setAprovaTheme('light', true);
       });
     }
     if (darkCard) {
+      if (theme === 'dark') darkCard.classList.add('active');
+      else darkCard.classList.remove('active');
       darkCard.addEventListener('click', function() {
         window.setAprovaTheme('dark', true);
       });

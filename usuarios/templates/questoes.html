@@ -110,22 +110,19 @@
             overflow-wrap: anywhere;
         }
     </style>
-    <!-- Dark Mode Anti-Flicker & Stylesheet -->
+        <!-- Dark Mode Anti-Flicker & Stylesheet -->
     <script>
         (function() {
-            var theme = localStorage.getItem('aprovaifpi_theme');
-            {% if request.user.is_authenticated and perfil and perfil.tema_escuro %}
-            if (theme === null) { theme = 'dark'; localStorage.setItem('aprovaifpi_theme', 'dark'); }
-            {% elif request.user.is_authenticated and perfil and not perfil.tema_escuro %}
-            if (theme === null) { theme = 'light'; localStorage.setItem('aprovaifpi_theme', 'light'); }
-            {% endif %}
-            if (theme === 'dark') {
+            {% if request.user.is_authenticated and request.user.perfil.tema_escuro or perfil and perfil.tema_escuro %}
                 document.documentElement.setAttribute('data-theme', 'dark');
                 document.documentElement.classList.add('dark-mode');
-            }
+            {% else %}
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.classList.remove('dark-mode');
+            {% endif %}
         })();
     </script>
-    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=3.0">
+    <link rel="stylesheet" href="{% static 'styles/dark-mode.css' %}?v=6.0">
 </head>
 
 <body class="questoes-body">
@@ -1188,6 +1185,6 @@
     </script>
 
     <!-- Dark Mode Controller -->
-    <script src="{% static 'js/theme.js' %}?v=1.0"></script>
+    <script src="{% static 'js/theme.js?v=6.0' %}?v=1.0"></script>
 </body>
 </html>

@@ -735,6 +735,11 @@ body.dark-mode,
   color: #94a3b8 !important;
 }
 
+[data-theme="dark"] .table-chevron-footer:hover {
+  background-color: #1e293b !important;
+  color: #60a5fa !important;
+}
+
 [data-theme="dark"] .card-hall-fama {
   background-color: #1e293b !important;
   border: 1.5px solid #334155 !important;
@@ -755,6 +760,32 @@ body.dark-mode,
 /* =========================================================
    PÁGINA RECUPERA IF (recuperaifpi.html / recuperaifpi.css)
    ========================================================= */
+/* Barra de Progresso no Modo Atividade */
+[data-theme="dark"] .recupera-progress-wrapper {
+  background: #1e293b !important;
+  background-color: #1e293b !important;
+  border: 1.5px solid #334155 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .recupera-progress-text {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .recupera-progress-wrapper span {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .recupera-progress-wrapper span:first-child {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .recupera-progress-bar-bg {
+  background-color: #0f172a !important;
+  border: 1px solid #334155 !important;
+}
+
 [data-theme="dark"] .recupera-subtitle-card {
   background: #162032 !important;
   border: 1.5px solid #334155 !important;
@@ -941,12 +972,64 @@ body.dark-mode,
 }
 
 /* Cronograma */
+[data-theme="dark"] .cronograma-wrapper,
 [data-theme="dark"] .cronograma-header-card,
 [data-theme="dark"] .cronograma-palette-card,
 [data-theme="dark"] .cronograma-grid-card,
+[data-theme="dark"] .cronograma-palette-wrapper,
+[data-theme="dark"] .cronograma-grid-wrapper,
 [data-theme="dark"] .crono-board-wrap {
   background-color: #1e293b !important;
-  border: 1.5px solid #334155 !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .cronograma-stats {
+  background: linear-gradient(135deg, rgba(30,58,138,0.25) 0%, rgba(6,78,59,0.18) 100%) !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .crono-stat-item {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .crono-stat-value {
+  color: #60a5fa !important;
+}
+
+[data-theme="dark"] .disciplina-palette-card {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .disciplina-palette-card .disc-name {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .cronograma-slot-item {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .cronograma-slot-item .slot-hora {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .modal-content {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .modal-header.bg-light,
+[data-theme="dark"] .modal-footer.bg-light {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .modal-body .form-control,
+[data-theme="dark"] .modal-body .form-select {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
   color: #f8fafc !important;
 }
 
@@ -954,12 +1037,14 @@ body.dark-mode,
   border-color: #334155 !important;
 }
 
+[data-theme="dark"] .cronograma-table thead th,
 [data-theme="dark"] .cronograma-table th,
 [data-theme="dark"] .cronograma-table th.col-horario,
 [data-theme="dark"] .cronograma-cell-horario,
 [data-theme="dark"] .hora-col {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
   background-color: #0f172a !important;
-  color: #cbd5e1 !important;
+  color: #f1f5f9 !important;
   border-color: #334155 !important;
 }
 
@@ -1402,4 +1487,37 @@ body.dark-mode,
 [data-theme="dark"] [style*="color: #1a1a2e"],
 [data-theme="dark"] [style*="color: #333333"] {
   color: #f8fafc !important;
+}
+
+/* =========================================================
+   BANNERS NO MODO ESCURO
+   ========================================================= */
+[data-theme="dark"] .banner-carousel-wrapper {
+  background: #1e293b;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .banner-carousel-wrapper:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .carousel-indicators-custom button {
+  background-color: #334155 !important;
+}
+
+[data-theme="dark"] .carousel-indicators-custom button.active {
+  background-color: #3b82f6 !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .profile-cover-banner {
+  background: #0f172a;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .banner-badge {
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }

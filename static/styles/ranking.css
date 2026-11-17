@@ -399,8 +399,25 @@ body.ranking-body {
 .podio-banners {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 7px;
   min-height: 32px;
+}
+
+.podio-banners .banner-badge {
+  animation: podiumBadgeFloat 4s ease-in-out infinite alternate;
+}
+
+.podio-banners .banner-badge:nth-child(2) {
+  animation-delay: 1.2s;
+}
+
+@keyframes podiumBadgeFloat {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-2.5px);
+  }
 }
 
 .podio-ofensiva {
@@ -467,10 +484,17 @@ body.ranking-body {
   background-color: #ffffff;
   border-top: 1px solid #f1f5f9;
   text-align: center;
-  padding: 8px;
-  color: #94a3b8;
-  font-size: 1.15rem;
+  padding: 10px 16px;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 600;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  transition: all 0.2s ease;
 }
 
 .table-chevron-footer:hover {
@@ -478,9 +502,36 @@ body.ranking-body {
   background-color: #f8fafc;
 }
 
+.table-chevron-footer .chevron-icon {
+  font-size: 1.15rem;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+  line-height: 1;
+}
+
+.table-chevron-footer.expanded .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.ranking-row-extra {
+  animation: fadeInRankingRow 0.25s ease-in-out;
+}
+
+@keyframes fadeInRankingRow {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* --------------------------------------------------------------------------
-   7. Banners / Conquistas (Gradientes Refinados)
+   7. Banners / Conquistas
    -------------------------------------------------------------------------- */
+/* Badge Base */
 .banner-badge {
   display: inline-flex;
   align-items: center;

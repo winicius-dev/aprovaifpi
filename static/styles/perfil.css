@@ -110,16 +110,31 @@ body.perfil-body {
 }
 
 /* --------------------------------------------------------------------------
-   2. Capa / Banner do Topo
+   2. Capa / Banner do Topo (Gradiente Fluido Animado & Efeitos de Luz)
    -------------------------------------------------------------------------- */
 .profile-cover-banner {
-  background: linear-gradient(135deg, #0045e6 0%, #0067d4 50%, #0284c7 100%);
+  background: linear-gradient(125deg, #0038b8 0%, #005ce6 35%, #0284c7 70%, #1d4ed8 100%);
+  background-size: 250% 250%;
+  animation: profileCoverFlow 12s ease-in-out infinite alternate;
   height: 160px;
   border-radius: 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 69, 230, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 56, 184, 0.22);
   margin-bottom: -65px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes profileCoverFlow {
+  0% {
+    background-position: 0% 30%;
+  }
+  50% {
+    background-position: 100% 70%;
+  }
+  100% {
+    background-position: 0% 30%;
+  }
 }
 
 .profile-cover-pattern {
@@ -128,9 +143,12 @@ body.perfil-body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
-  background-size: 18px 18px;
-  opacity: 0.7;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.18) 1.5px, transparent 1.5px),
+    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(255, 255, 255, 0.18), transparent 75%);
+  background-size: 20px 20px, 100% 100%;
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -349,14 +367,15 @@ body.perfil-body {
 }
 
 /* --------------------------------------------------------------------------
-   6. Banners Equipados & Gerenciamento de Banners
+   6. Banners Equipados & Gerenciamento de Banners (Design & Animações Pro)
    -------------------------------------------------------------------------- */
 .equipped-banners-box {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 2px dashed #cbd5e1;
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 22px;
   margin-bottom: 24px;
+  transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .equipped-slots-grid {
@@ -369,21 +388,33 @@ body.perfil-body {
   background-color: #ffffff;
   border-radius: 14px;
   border: 1px solid #e2e8f0;
-  padding: 16px;
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 110px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.banner-slot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  border-color: #93c5fd;
 }
 
 .banner-slot-card.empty-slot {
   border: 2px dashed #cbd5e1;
   background-color: #f8fafc;
   color: #94a3b8;
+  box-shadow: none;
+}
+
+.banner-slot-card.empty-slot:hover {
+  border-color: #60a5fa;
+  background-color: #f1f5f9;
 }
 
 .banner-slot-header {
@@ -392,38 +423,79 @@ body.perfil-body {
   text-transform: uppercase;
   color: var(--text-muted);
   letter-spacing: 0.06em;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
+/* Badge Base */
 .banner-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 0.85rem;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 6px;
+  font-size: 0.74rem;
   font-weight: 700;
   color: #ffffff !important;
   text-transform: none;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   border: none;
   line-height: 1.25;
 }
 
-/* Mapeamento de gradientes de banners */
-.banner-veterano, .banner-domino { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-.banner-top-1, .banner-top1 { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
-.banner-rumo-ao-ifpi { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-.banner-centena, .banner-gabaritou { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
-.banner-mestre { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
-.banner-palavra-certa, .banner-palavreado { background: linear-gradient(135deg, #be123c 0%, #881337 100%); }
-.banner-polivalente { background: linear-gradient(135deg, #84cc16 0%, #4d7c0f 100%); }
-.banner-na-mosca { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
-.banner-top-10 { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
-.banner-top-3-semanal { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); }
-.banner-ativo { background: linear-gradient(135deg, #f97316 0%, #c2410c 100%); }
+.banner-badge.hall-banner {
+  min-width: 125px;
+  justify-content: center;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+}
+
+/* Mapeamento de gradientes e cores dos banners */
+.banner-veterano, .banner-domino {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.banner-top-1, .banner-top1 {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+}
+
+.banner-rumo-ao-ifpi {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.banner-centena, .banner-gabaritou {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+}
+
+.banner-mestre {
+  background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+}
+
+.banner-palavra-certa, .banner-palavreado {
+  background: linear-gradient(135deg, #be123c 0%, #881337 100%);
+}
+
+.banner-polivalente {
+  background: linear-gradient(135deg, #84cc16 0%, #4d7c0f 100%);
+}
+
+.banner-na-mosca {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.banner-top-10 {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.banner-top-3-semanal {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+}
+
+.banner-ativo {
+  background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+}
 
 /* Grid de conquistas para equipar */
 .achievements-gallery-grid {
